@@ -1,0 +1,13 @@
+{
+    "name": "Tomas",
+    "year_birth": 1987,
+    "favorite_color": "red",
+    "country": "Brazil",
+    "marks": [
+        10,
+        12,
+        11,
+        15
+    ],
+    "pass": true
+}

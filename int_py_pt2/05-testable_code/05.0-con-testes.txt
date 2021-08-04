@@ -1,0 +1,36 @@
+Fixtures
+
+- uma fixture é um valor fixo para um conjunto de testes
+- é usado muitas vezes para guardar um objeto que requer um pouco mais
+de trabalho para ser criado
+- para definir uma fixture, implementamos uma função que cria o objeto
+e a marcamos com:
+    - @pytest.fixture 
+
+Parametrização
+
+import pytest
+
+@pytest.mark.parametrize("entrada,valor_esperado", [
+    (0, 0),
+    (1, 1),
+    (2, 8),
+    (-2, -8),
+    (10, 1000)
+
+def test_cubo(entrada, valor_esperado):
+    assert cubo(entrada) == valor_esperado
+
+ Uma boa bateria de testes:
+  - explicita o comportamento do código
+  - protege o código de mudanças por terceiros
+  - protege o código de nós mesmos
+  - garante que o código funciona para os casos mais importantes
+
+Exercícios:
+-----------
+
+1. Escrever uma versão do teste-Bhaskara usando 
+@pytest.mark.parametrize;
+
+2. Escrever uma bateria de testes para o seu código preferido.

@@ -1,0 +1,8 @@
+Módulos são arquivos .py que contém 
+  - definições
+  - comandos
+
+Um módulo pode ser importado por outro utilizando o comando import
+
+O nome do módulo (nome do arquivo sem a extensão .py) fica disponível 
+na variável __name__ 

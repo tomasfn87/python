@@ -1,0 +1,20 @@
+Matrizes
+
+ - listas de listas
+ - estruta de dados bidimensional com linhas e colunas
+   - onde são armazenados dados
+
+A
+1 2 3
+4 5 6
+7 8 9
+
+A[0] [0]
+A[2] [1] = 99 
+
+** Exercícios **
+
+1) Imprimir 01-cria_matriz organizadamente, uma linha por linha;
+
+2) Refazer 01-cria_matriz e pedir ao usuário o input de cada valor da
+matriz;

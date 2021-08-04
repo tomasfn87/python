@@ -1,0 +1,4 @@
+   Several lines
+   of strings
+   written to our file:
+   strings_and_files.txt

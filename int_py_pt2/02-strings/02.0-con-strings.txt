@@ -1,0 +1,102 @@
+|  | ||> Strings <|| |  |
+
+int, float, bool
+str, listas
+
+Funções com strings / métodos
+obj_str.upper()
+obj_str.lower()
+obj_str.capitalize() - funciona com maius. e minusc.
+obj_str.strip
+obj_str.count('a')
+obj_str.count('1')
+obj_str.replace("fogo", "gelo") - troca 'fogo' por 'gelo'
+obj_str.center(20)
+obj_str.capitalize().center(80)
+obj_str.find("má") - se tiver 'má' retorna int com a posição da 1ª ocorrência de 'má'
+obj_str.find("ma") - se n tiver 'ma' retorna -1
+---
+
+Exercício
+
+Escrever uma função que recebe uma lista de Strings contendo nomes de
+pessoas como  parâmetro e devolve o nome mais curto. A função deve
+ignorar espaços antes e depois do nome e deve devolver  o nome
+"capitalizado", i.e., apenas com a 1ª letra maiúscula.
+---
+
+lista_de_nomes = ["    ana       ", "jOSé ", "aleSSandra", "Eustácio", "cAsSiAnO", "AlEf"]
+
+mais_curto(lista_de_nomes) - devolve o nome mais curto da lista_de_nomes
+
+testa_mais_curto() - testa pra vários casos diferentes se o mais_curto() está
+funcionando.
+---
+
+** Comparar strings **
+
+x == y
+x != y
+x is y
+x > y
+x >= y
+x < y
+x <= y
+
+ord('A')
+ord('a')
+ord('B')
+ord('b')
+
+"Maçã".lower() > "banana".lower()
+---
+
+Exercício
+
+Escreva uma função que recebe um array de strings como parâmetro e
+devolve o primeiro string na ordem lexicográfica, ignorando-se 
+letras maiúsculas e minúsculas. 
+
+menor_string(meu_string)
+
+Fazer um teste. 
+
+def testa_menor_string():
+    teste_pontual(["ana", "maria", "José", "Valdemar"], "ana")
+    teste_pontual
+---
+
+Conceitos úteis:
+
+1)
+
+x, y = 10
+x, y = 25, 15
+x, y = y, x
+
+def peso_altura():
+    return 77, 1.83
+peso, altura = peso_altura()
+
+2) 
+
+x += 10
+x -= 10
+x /= 10
+x //= 10
+x *= 10
+x **= 10
+x %= 10
+
+3) 
+
+def valor_1_valor_2(valor_1, valor_2 = 30):
+--> se não for atribuído nenhum valor a input2, o valor será 30.
+
+4)
+
+assert x == y
+
+def function(x):
+	assert x > 0
+	return x

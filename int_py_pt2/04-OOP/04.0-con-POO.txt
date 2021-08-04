@@ -1,0 +1,10 @@
+Objeto = dados + código
+ - encapsulamento
+
+Classes
+ - definem os tipos de objetos
+ - definem quais os dados e o código dos objetos
+
+Dados => atributos
+Códigos => métodos
+Os objetos são chamados de instâncias das classes.

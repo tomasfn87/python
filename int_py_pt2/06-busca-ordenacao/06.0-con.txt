@@ -1,0 +1,48 @@
+* Algoritmo de Ordenação
+
+  * Seleção Direta
+    - A cada passo, busca pelo menor elemento do pedaço ainda não
+    ordenado da lista e o coloca no início da lista.
+    - No 1º passo, busca o menor elemento de todos e o coloca na
+    posição inicial da lista.
+    - No 2º passo, busca o 2º menor elemento da lista e o coloca
+    na 2ª posição da lista.
+    - No 3º passo, busca o 3º menor elemento da lista e o coloca
+    na 3ª posição da lista.
+
+  * Algoritmo da Bolha (BubbleSort)
+    - Pense na lista como um tubo de ensaio vertical onde os elementos
+    mais leves sobem à superfície como uma bolha e os mais pesados 
+    afundam.
+    - Percorre a lista múltiplas vezes; a cada passagem, compara todos
+    os elementos adjacentes e troca de lugar os que estiverem foram de
+    ordem. 
+    - A cada passagem, o elemento mais pesado se deposita no fundo do 
+    tubo de ensaio, i.e., o maior elemento da lista vai para o final
+    dela. 
+
+  * Eficiência de busca
+    - A Busca Sequencial, como vimos, não é lá muito eficiente.
+    - Deve-se tirar vantagem do fato de que a lista está ordenada.
+
+  * Algoritmo da Busca Binária
+    - Objetivo: localizar o elemento x em uma lista 
+    - Considere o elemento m do meio da lista
+    - x == m => encontrou!
+    - x < m => procure apenas na 1ª metade (esquerda)
+    - x > m => procure apenas na 2ª metade (direita)
+
+  * Complexidade da Busca Binária
+    - Dado uma lista de n elementos
+    - No pior caso, teremos que efetuar
+      - Log2 n comparações
+
+    - Numa busca entre 2 milhões de itens:
+      - Log2 (2 milhões) = 20,9
+      - Resposta em menos de 21 milissegundos
+
+  * Conclusão: 
+    - A busca binária é bastante eficiente e é muito usada.
+    - Ao estudar a eficiência de um algoritmo, é interessante testar
+    o desempenho, realizando experimentos para medir o tempo de 
+    execução de diferentes soluções em diferentes casos. 
