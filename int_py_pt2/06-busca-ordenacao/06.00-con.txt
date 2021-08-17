@@ -45,4 +45,21 @@
     - A busca binária é bastante eficiente e é muito usada.
     - Ao estudar a eficiência de um algoritmo, é interessante testar
     o desempenho, realizando experimentos para medir o tempo de 
-    execução de diferentes soluções em diferentes casos. 
+    execução de diferentes soluções em diferentes casos.
+  
+  * Ordenação por Intercalação
+   - Divida a lista na metade recursivamente, até que cada sublista
+   contenha apenas 1 elemento (portanto, já ordenada).
+   - Repetidamente, intercale as sublistas para produzir novas listas
+   ordenadas.
+   - Repita até que tenhamos apenas uma lista no final (que estará 
+   ordenada).
+   - Animação interessante em 
+   https://www.toptal.com/developers/sorting-algorithms
+
+  * Conclusão 
+   - Recursão é uma ferramenta poderosa para se lidar com problemas
+   complexos.
+   - Aplica o princípio da Divisão e Conquista.
+   - Em programação, normalmente é indentificada por funções ou métodos
+   que chamam a si mesmos.

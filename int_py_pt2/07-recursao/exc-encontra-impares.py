@@ -1,17 +1,14 @@
 import pytest
 
-def encontra_impares(lista):
-    return agrupar_impares(lista[:])
-
-def agrupar_impares(lista, apenas_impares=False):
+def encontra_impares(lista, apenas_impares=False):
     if apenas_impares == True:
-        return lista
+        return lista[:]
     else:
         impares = []
-        for i in lista:
+        for i in lista[:]:
             if i % 2 != 0:
                 impares.append(i)
-        return agrupar_impares(impares, True)
+        return encontra_impares(impares, True)
 
 
 @pytest.mark.parametrize("lista, impares",[
