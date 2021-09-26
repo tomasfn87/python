@@ -12,12 +12,18 @@ values = []
 for value in dicionario.values():
   values.append(value)
 
-print("Keys(" + str(len(keys)) + "):")
+print("Chaves(" + str(len(keys)) + "):")
 for i in range (0, len(keys)):
     print(" - " + str(keys[i]))
     
 print()
 
-print("Values(" + str(len(values)) + "):")
+print("Valores(" + str(len(values)) + "):")
 for i in range (0, len(values)):
     print(" - " + str(values[i]))
+
+print()
+
+for key in dicionario:
+    print(str(key).capitalize(), end=": ")
+    print(dicionario[key])
