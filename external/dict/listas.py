@@ -13,7 +13,7 @@ def atribuir_valores(dicionario, lista):
     return
 
 def criar_dicionario(lista_chaves, lista_valores):
-    dicionario = criar_entradas(lista_chaves)
+    dicionario = criar_chaves(lista_chaves)
     atribuir_valores(dicionario, lista_valores)
     return dicionario
 
