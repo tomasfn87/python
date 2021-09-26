@@ -15,7 +15,7 @@ for value in dicionario.values():
 print("Chaves(" + str(len(keys)) + "):")
 for i in range (0, len(keys)):
     print(" - " + str(keys[i]))
-    
+
 print()
 
 print("Valores(" + str(len(values)) + "):")
