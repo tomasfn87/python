@@ -36,7 +36,10 @@ def test_atribuir_valores_simples(dicionario, lista, resultado, atribuir_valores
 @pytest.mark.parametrize("dicionario, lista, novo, resultado, dicionario_original", [
     ({"product": "", "value": ""}, ["beer", "$2.25"], True, {"product": "beer", "value": "$2.25"}, {"product": "", "value": ""}),
     ({"firstname": "", "lastname": ""}, ["Ivan", ", the terrible"], True, {"firstname": "Ivan", "lastname": ", the terrible"}, {"firstname": "", "lastname": ""}),
-    ({"height": "", "width": ""}, ["160px", "220px"], True, {"height": "160px", "width": "220px"}, {"height": "", "width": ""})
+    ({"height": "", "width": ""}, ["160px", "220px"], True, {"height": "160px", "width": "220px"}, {"height": "", "width": ""}),
+    ({"product": "", "value": ""}, ["beer", "$2.25"], False, {"product": "beer", "value": "$2.25"}, {"product": "beer", "value": "$2.25"}),
+    ({"firstname": "", "lastname": ""}, ["Ivan", ", the terrible"], False, {"firstname": "Ivan", "lastname": ", the terrible"}, {"firstname": "Ivan", "lastname": ", the terrible"}),
+    ({"height": "", "width": ""}, ["160px", "220px"], False, {"height": "160px", "width": "220px"}, {"height": "160px", "width": "220px"})
 ])
 def test_atribuir_valores_completo(dicionario, lista, novo, resultado, dicionario_original, atribuir_valores):
     assert atribuir_valores(dicionario, lista, novo) == resultado \
