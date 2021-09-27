@@ -10,7 +10,7 @@ def atribuir_valores(dicionario, lista):
     for i in dicionario:
         dicionario[i] = lista[c]
         c += 1
-    return
+    return dicionario
 
 def criar_dicionario(lista_chaves, lista_valores):
     dicionario = criar_chaves(lista_chaves)
