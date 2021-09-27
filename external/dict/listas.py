@@ -6,10 +6,9 @@ def criar_chaves(lista):
 
 def atribuir_valores(dicionario, lista, novo=False):
     assert len(dicionario) == len(lista)
+    dicionario_final = dicionario
     if novo == True:
         dicionario_final = {}
-    elif novo == False:
-        dicionario_final = dicionario
     c = 0
     for i in dicionario:
         dicionario_final[i] = lista[c]
