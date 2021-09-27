@@ -28,7 +28,7 @@ class TestBhaskara:
     '''
     def test_Bhaskara_01(self, bha):
         assert bha.calcular_raizes(4, 4, 4) == 0
-e
+
     def test_Bhaskara_02(self, bha):
         assert bha.calcular_raizes(1, 0, 0) == (1, 0)
 

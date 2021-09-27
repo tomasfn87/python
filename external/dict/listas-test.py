@@ -39,8 +39,8 @@ def test_atribuir_valores_simples(dicionario, lista, resultado, atribuir_valores
     ({"height": "", "width": ""}, ["160px", "220px"], True, {"height": "160px", "width": "220px"}, {"height": "", "width": ""})
 ])
 def test_atribuir_valores_completo(dicionario, lista, novo, resultado, dicionario_original, atribuir_valores):
-    assert atribuir_valores(dicionario, lista, novo) == resultado
-    assert dicionario == dicionario_original
+    assert atribuir_valores(dicionario, lista, novo) == resultado \
+    and dicionario == dicionario_original
 
 @pytest.mark.parametrize("lista_chaves, lista_valores, resultado", [
     (["product", "value"], ["beer", "$2.25"], {"product": "beer", "value": "$2.25"}),
