@@ -22,7 +22,7 @@ def main():
 
     print('\n{0:_^66}'.format('Allez, {nome}!'.format(nome='mon frère')))
     print('{0:_^66}'.format('Je vous en prie, {tempo0}!'.format(tempo0='à bientôt')))
-    print('{0:_^66}'.format('Nous nous verons {tempo1}.'.format(tempo1='la semaine prochaine')))
+    print('{0:_^66}'.format('Nous nous verrons {tempo1}.'.format(tempo1='la semaine prochaine')))
 
     print('\n\t1.3)')
     print('\tkey-word based:')

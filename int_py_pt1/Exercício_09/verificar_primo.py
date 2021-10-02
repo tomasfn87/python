@@ -29,7 +29,7 @@ def test_checar_primo_4():
 def test_checar_primo_4():
     assert checar_primo(11) == True
 
-def main():
+""" def main():
     n = int(input('Insira o número a ser verificado se é primo: '))
     while n >= 0:
         if checar_primo(n) == True:
@@ -38,4 +38,4 @@ def main():
             print('\t', n, 'não é primo =|')
         n = int(input('\nInsira outro número a ser verificado: '))
 
-main()
+main() """
