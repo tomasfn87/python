@@ -30,12 +30,12 @@ with client:
     db = client.test
     porNome = db.produtos.find().sort("tipo", 1)
     porPreco = db.produtos.find().sort("preco", -1)
-    porPrecoMaiorOuIgualA5 = db.produtos.find({"preco": {"$gte": 5}}).sort("preco", 1)
-    porPrecoMenorOuIgualA6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
-    porPrecoMaiorQue4MenorQue7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
+    porPrecoMaiorOuIgual5 = db.produtos.find({"preco": {"$gte": 5}}).sort("preco", 1)
+    porPrecoMenorOuIgual6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
+    porPrecoMaior4Menor7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
 
 imprimirListaProdutos("Por nome (crescente)", porNome, "-")
 imprimirListaProdutos("Por preco (descrescente)", porPreco, "-")
-imprimirListaProdutos("Por preco: maior ou igual a 5 (crescente)", porPrecoMaiorOuIgualA5, "-")
-imprimirListaProdutos("Por preco: menor ou igual a 6 (decrescente)", porPrecoMenorOuIgualA6, "-")
-imprimirListaProdutos("Por preço: maior que 4 e menor a 7 (crescente)", porPrecoMaiorQue4MenorQue7, "-", False)
+imprimirListaProdutos("Por preco: maior ou igual a 5 (crescente)", porPrecoMaiorOuIgual5, "-")
+imprimirListaProdutos("Por preco: menor ou igual a 6 (decrescente)", porPrecoMenorOuIgual6, "-")
+imprimirListaProdutos("Por preço: maior que 4 e menor a 7 (crescente)", porPrecoMaior4Menor7, "-", False)
