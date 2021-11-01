@@ -2,12 +2,6 @@ import pymongo
 import sys
 sys.path.append("/home/morbi/filtering")
 from texto import Texto as T
-
-def espacar(n):
-    espaco = ""
-    while len(espaco) < n:
-        espaco += " "
-    return espaco
             
 def analisarListaDict(lista):
     maiorItem = 0
@@ -36,9 +30,9 @@ def listarProdutos(lista):
     maiorItem = analisarListaDict(listaProdutos)
     for i in listaProdutos:
         print(
-            "{}{}|  R${}".format(
+            "{}{}|  R$ {}".format(
                 i["nome"].capitalize(),
-                espacar(maiorItem - 2 - len(i["nome"])),
+                T.espacar(maiorItem - 2 - len(i["nome"])),
                 T.trocar_caracter(i["preco"], ".", ",")
             )
         )
