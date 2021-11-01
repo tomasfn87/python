@@ -37,7 +37,7 @@ def listarProdutos(lista):
             )
         )
 
-def imprimirListaProdutos(title, lista, separator, end=True):
+def imprimirListaProdutos(title, separator, lista, end=True):
     assert len(separator) == 1
     print(title)
     split = ""
@@ -106,7 +106,7 @@ def buscarProdutos():
         print("** ERRO! Opção inválida! **")
         return buscarProdutos()
     print()
-    imprimirListaProdutos("Resultado da busca:", resultado, "-")
+    imprimirListaProdutos("Resultado da busca:", "-", resultado)
     return buscarProdutos()
 
 def main():
