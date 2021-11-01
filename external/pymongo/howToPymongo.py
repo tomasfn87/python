@@ -9,17 +9,6 @@ def espacar(n):
         espaco += " "
     return espaco
             
-def criarListaProdutos(lista):
-    lista = list(lista)
-    listaProdutos = []
-    for i in range(0, len(lista)):
-        listaProdutos.append({ "nome": "", "preco": 0 })
-        listaProdutos[i]["nome"] = "{} {}".format(
-            lista[i]["tipo"], lista[i]["subtipo"]
-        )
-        listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
-    return listaProdutos
-
 def analisarListaDict(lista):
     maiorItem = 0
     tamanhoAtual = 0
@@ -30,6 +19,17 @@ def analisarListaDict(lista):
             maiorItem = tamanhoAtual
         tamanhoAtual = 0
     return maiorItem
+
+def criarListaProdutos(lista):
+    lista = list(lista)
+    listaProdutos = []
+    for i in range(0, len(lista)):
+        listaProdutos.append({ "nome": "", "preco": 0 })
+        listaProdutos[i]["nome"] = "{} {}".format(
+            lista[i]["tipo"], lista[i]["subtipo"]
+        )
+        listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
+    return listaProdutos
 
 def listarProdutos(lista):
     listaProdutos = criarListaProdutos(lista)
@@ -94,13 +94,18 @@ def buscarProdutos():
         resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0}).sort("subtipo", 1)
+        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0}) \
+                               .sort("subtipo", 1)
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}).sort("tipo", 1)
+        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}) \
+                               .sort("tipo", 1)
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
-        resultado = db.produtos.find({"$or": [{"tipo": opcao_2}, {"subtipo": opcao_2}]},{"_id":0}).sort("tipo", 1)
+        resultado = db.produtos.find({"$or": [
+            {"tipo": opcao_2},
+            {"subtipo": opcao_2}
+        ]},  {"_id":0}).sort("tipo", 1)
     elif opcao_1 == "0":
         return
     else:
@@ -115,5 +120,4 @@ def main():
     buscarProdutos()
 
 main()
-# imprimirListaProdutos("Lista de produtos", porNome, "-", False)
 
