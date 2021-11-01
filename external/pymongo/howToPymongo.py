@@ -47,8 +47,9 @@ def buscarProdutos():
     print(" - 1) para ver todos os produtos ordenados por tipo")
     print(" - 2) para ver todos os produtos ordenados por preço (crescente)")
     print(" - 3) para ver todos os produtos ordenados por preço (decrescente)")
-    print(" - 4) para buscar por tipo \n   - Exemplo: 'laranja' ou 'pera'")
-    print(" - 5) para buscar por subtipo \n   - Exemplo: 'lima' ou 'red'")
+    print(" - 4) para buscar por tipo (Exemplo: 'laranja' ou 'pera')")
+    print(" - 5) para buscar por subtipo (Exemplo: 'lima' ou 'red')")
+    print(" - 6) para buscar por tipo ou subtipo")
     print("\nDigite sua opção e aperte ENTER (0 para sair): ", end="")
 
     resultado = []
@@ -66,6 +67,9 @@ def buscarProdutos():
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
         resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}).sort("tipo", 1)
+    elif opcao_1 == "6":
+        opcao_2 = input("Digite o tipo ou subtipo: ")
+        resultado = db.produtos.find({"$or": [{"tipo": opcao_2}, {"subtipo": opcao_2}]},{"_id":0}).sort("tipo", 1)
     elif opcao_1 == "0":
         return
     else:
