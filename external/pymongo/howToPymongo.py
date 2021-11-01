@@ -1,18 +1,49 @@
 import pymongo
 import sys
-sys.path.append('/home/morbi/filtering')
+sys.path.append("/home/morbi/filtering")
 from texto import Texto as T
 
-def listarProdutos(lista):
+def espacar(n):
+    espaco = ""
+    while len(espaco) < n:
+        espaco += " "
+    return espaco
+            
+def criarListaProdutos(lista):
+    lista = list(lista)
+    listaProdutos = []
     for i in range(0, len(lista)):
-        print(
-            "{} {}\t | R${}".format(
-            lista[i]["tipo"].capitalize(),
-            lista[i]["subtipo"],
-            T.trocar_caracter(lista[i]["preco"], ".", ",")
-        ))
+        listaProdutos.append({ "nome": "", "preco": 0 })
+        listaProdutos[i]["nome"] = "{} {}".format(
+            lista[i]["tipo"], lista[i]["subtipo"]
+        )
+        listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
+    return listaProdutos
 
-def imprimirListaProdutos(title, arr, separator, end=True):
+def analisarListaDict(lista):
+    maiorItem = 0
+    tamanhoAtual = 0
+    for i in lista:
+        for key in i.keys():
+            tamanhoAtual += len(str(i[key]))
+        if tamanhoAtual > maiorItem:
+            maiorItem = tamanhoAtual
+        tamanhoAtual = 0
+    return maiorItem
+
+def listarProdutos(lista):
+    listaProdutos = criarListaProdutos(lista)
+    maiorItem = analisarListaDict(listaProdutos)
+    for i in listaProdutos:
+        print(
+            "{}{}|  R${}".format(
+                i["nome"].capitalize(),
+                espacar(maiorItem - 2 - len(i["nome"])),
+                T.trocar_caracter(i["preco"], ".", ",")
+            )
+        )
+
+def imprimirListaProdutos(title, lista, separator, end=True):
     assert len(separator) == 1
     print(title)
     split = ""
@@ -20,7 +51,7 @@ def imprimirListaProdutos(title, arr, separator, end=True):
         split += separator
         i += 1
     print(split)
-    listarProdutos(list(arr))
+    listarProdutos(lista)
     if end == True:
         print()
 
@@ -28,11 +59,11 @@ client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
 
 with client:
     db = client.test
-    porNome = db.produtos.find().sort("tipo", 1)
-    porPreco = db.produtos.find().sort("preco", -1)
-    porPrecoMaiorOuIgual5 = db.produtos.find({"preco": {"$gte": 5}}).sort("preco", 1)
-    porPrecoMenorOuIgual6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
-    porPrecoMaior4Menor7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
+    # porNome = db.produtos.find().sort("tipo", 1)
+    # porPreco = db.produtos.find().sort("preco", -1)
+    # porPrecoMaiorOuIgual5 = db.produtos.find({"preco": {"$gte": 5}}).sort("preco", 1)
+    # porPrecoMenorOuIgual6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
+    # porPrecoMaior4Menor7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
 
 """
 imprimirListaProdutos("Por nome (crescente)", porNome, "-")
@@ -84,3 +115,5 @@ def main():
     buscarProdutos()
 
 main()
+# imprimirListaProdutos("Lista de produtos", porNome, "-", False)
+
