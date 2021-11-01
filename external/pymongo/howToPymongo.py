@@ -12,7 +12,7 @@ def listarProdutos(lista):
             T.trocar_caracter(lista[i]["preco"], ".", ",")
         ))
 
-def imprimirListaProdutos( title, arr, separator, end=True):
+def imprimirListaProdutos(title, arr, separator, end=True):
     assert len(separator) == 1
     print(title)
     split = ""
@@ -44,9 +44,11 @@ imprimirListaProdutos("Por preço: maior que 4 e menor que 7 (crescente)", porPr
 
 def buscarProdutos():
     print("Escolha uma das opções abaixo: ")
-    print(" - 1) para ver todos os produtos")
-    print(" - 2) para buscar por tipo \n   - Exemplo: 'laranja' ou 'pera'")
-    print(" - 3) para buscar por subtipo \n   - Exemplo: 'lima' ou 'red'")
+    print(" - 1) para ver todos os produtos ordenados por tipo")
+    print(" - 2) para ver todos os produtos ordenados por preço (crescente)")
+    print(" - 3) para ver todos os produtos ordenados por preço (decrescente)")
+    print(" - 4) para buscar por tipo \n   - Exemplo: 'laranja' ou 'pera'")
+    print(" - 5) para buscar por subtipo \n   - Exemplo: 'lima' ou 'red'")
     print("\nDigite sua opção e aperte ENTER (0 para sair): ", end="")
 
     resultado = []
@@ -55,9 +57,13 @@ def buscarProdutos():
     if opcao_1 == "1":
         resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
     elif opcao_1 == "2":
+        resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
+    elif opcao_1 == "3":
+        resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
+    elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
         resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0}).sort("subtipo", 1)
-    elif opcao_1 == "3":
+    elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
         resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}).sort("tipo", 1)
     elif opcao_1 == "0":
@@ -65,9 +71,9 @@ def buscarProdutos():
     else:
         print("** ERRO! Opção inválida! **")
         return buscarProdutos()
-    imprimirListaProdutos("\nResultado da busca:", resultado, "-")
+    print()
+    imprimirListaProdutos("Resultado da busca:", resultado, "-")
     return buscarProdutos()
-
 
 def main():
     print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
