@@ -59,59 +59,101 @@ with client:
     # porPrecoMenorOuIgual6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
     # porPrecoMaior4Menor7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
 
-"""
-imprimirListaProdutos("Por nome (crescente)", porNome, "-")
-imprimirListaProdutos("Por preco (descrescente)", porPreco, "-")
-imprimirListaProdutos("Por preco: maior ou igual a 5 (crescente)", porPrecoMaiorOuIgual5, "-")
-imprimirListaProdutos("Por preco: menor ou igual a 6 (decrescente)", porPrecoMenorOuIgual6, "-")
-imprimirListaProdutos("Por preço: maior que 4 e menor que 7 (crescente)", porPrecoMaior4Menor7, "-", False)
-"""
+# imprimirListaProdutos("Por nome (crescente)", porNome, "-")
+# imprimirListaProdutos("Por preco (descrescente)", porPreco, "-")
+# imprimirListaProdutos("Por preco: maior ou igual a 5 (crescente)", porPrecoMaiorOuIgual5, "-")
+# imprimirListaProdutos("Por preco: menor ou igual a 6 (decrescente)", porPrecoMenorOuIgual6, "-")
+# imprimirListaProdutos("Por preço: maior que 4 e menor que 7 (crescente)", porPrecoMaior4Menor7, "-", False)
+
+
+def novaBusca():
+        print("Escolha uma das opções abaixo: ")
+        print(" - 1) Nova busca")
+        print(" - 0) Sair")
+        print(" * Digite sua opção e aperte ENTER: ", end="")
+        repetir = input()
+        if repetir == "1":
+            print()
+            return buscarProdutos()
+        elif repetir == "0":
+            return print("\nSaindo... até a próxima busca!")
+        else:
+            print("** ERRO! Opção inválida! **\n")
+            return novaBusca()
 
 def buscarProdutos():
     print("Escolha uma das opções abaixo: ")
-    print(" - 1) para ver todos os produtos ordenados por tipo")
-    print(" - 2) para ver todos os produtos ordenados por preço (crescente)")
-    print(" - 3) para ver todos os produtos ordenados por preço (decrescente)")
-    print(" - 4) para buscar por tipo (Exemplo: 'laranja' ou 'pera')")
-    print(" - 5) para buscar por subtipo (Exemplo: 'lima' ou 'red')")
-    print(" - 6) para buscar por tipo ou subtipo")
-    print("\nDigite sua opção e aperte ENTER (0 para sair): ", end="")
+    print(" - 1) Ver todos os produtos ordenados por tipo")
+    print(" - 2) Ver todos os produtos ordenados por preço (crescente)")
+    print(" - 3) Ver todos os produtos ordenados por preço (decrescente)")
+    print(" - 4) Buscar por tipo (Exemplo: 'laranja' ou 'pera')")
+    print(" - 5) Buscar por subtipo (Exemplo: 'lima' ou 'red')")
+    print(" - 6) Buscar por tipo ou subtipo")
+    print(" - 7) Definir preço máximo")
+    print(" - 8) Definir preço mínimo")
+    print(" - 9) Definir preços máximo e mínimo")
+    print(" - 0) Sair")
+    print(" * Digite sua opção e aperte ENTER: ", end="")
 
     resultado = []
 
     opcao_1 = input()
     if opcao_1 == "1":
         resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
+
     elif opcao_1 == "2":
         resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
+
     elif opcao_1 == "3":
         resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
+
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
         resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0}) \
-                               .sort("subtipo", 1)
+                        .sort("subtipo", 1)
+
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
         resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}) \
-                               .sort("tipo", 1)
+                        .sort("tipo", 1)
+
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
         resultado = db.produtos.find({"$or": [
             {"tipo": opcao_2},
             {"subtipo": opcao_2}
-        ]},  {"_id":0}).sort("tipo", 1)
+        ]}, {"_id":0}).sort("tipo", 1)
+
+    elif opcao_1 == "7":
+        maximo = float(input("Digite o preço máximo: "))
+        resultado = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
+                        .sort("preco", -1)
+
+    elif opcao_1 == "8":
+        minimo = float(input("Digite o preço mínimo: "))
+        resultado = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+                        .sort("preco", 1)
+
+    elif opcao_1 == "9":
+        maximo = float(input("Digite o preço máximo: "))
+        minimo = float(input("Digite o preço mínimo: "))
+        resultado = db.produtos.find(
+            {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
+        ).sort("preco", -1)
+
     elif opcao_1 == "0":
-        return
+        return print("\nObrigado por consultar os produtos, até logo!")
+
     else:
-        print("** ERRO! Opção inválida! **")
+        print("** ERRO! Opção inválida! **\n")
         return buscarProdutos()
+
     print()
     imprimirListaProdutos("Resultado da busca:", "-", resultado)
-    return buscarProdutos()
+    novaBusca()
 
 def main():
     print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
     buscarProdutos()
 
 main()
-
