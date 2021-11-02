@@ -49,7 +49,7 @@ def imprimirListaProdutos(title, separator, lista, end=True):
     if end == True:
         print()
 
-def novaBusca():
+def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
     print(" - 1) Nova busca")
     print(" - 0) Sair")
@@ -57,14 +57,20 @@ def novaBusca():
     repetir = input()
     if repetir == "1":
         print()
-        return buscarProdutos()
+        return buscarProdutos(db)
     elif repetir == "0":
         return print("\nSaindo... até a próxima busca!")
     else:
         print("** ERRO! Opção inválida! **\n")
-        return novaBusca()
+        return novaBusca(db)
 
-def buscarProdutos(dB):
+def digitarNumero(textoInput, textoErro):
+    numero = T.verificar_numero(input(textoInput))
+    while numero == False:
+        numero = T.verificar_numero(input(textoErro))
+    return numero
+
+def buscarProdutos(db):
     print("Escolha uma das opções abaixo: ")
     print(" - 1) Ver todos os produtos ordenados por tipo")
     print(" - 2) Ver todos os produtos ordenados por preço (crescente)")
@@ -82,45 +88,57 @@ def buscarProdutos(dB):
 
     opcao_1 = input()
     if opcao_1 == "1":
-        resultado = dB.produtos.find({},{"_id":0}).sort("tipo", 1)
+        resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "2":
-        resultado = dB.produtos.find({},{"_id":0}).sort("preco", 1)
+        resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
 
     elif opcao_1 == "3":
-        resultado = dB.produtos.find({},{"_id":0}).sort("preco", -1)
+        resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
 
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = dB.produtos.find({"tipo": opcao_tipo},{"_id":0})\
+        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0})\
                         .sort("subtipo", 1)
 
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = dB.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
+        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
                         .sort("tipo", 1)
 
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
-        resultado = dB.produtos.find({"$or": [
+        resultado = db.produtos.find({"$or": [
             {"tipo": opcao_2},
             {"subtipo": opcao_2}
         ]}, {"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "7":
-        maximo = float(input("Digite o preço máximo: "))
-        resultado = dB.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
+        maximo = digitarNumero(
+            "Digite o preço máximo: ",
+            "Erro: o preço máximo deve ser inteiro ou decimal: "
+        )
+        resultado = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                         .sort("preco", -1)
 
     elif opcao_1 == "8":
-        minimo = float(input("Digite o preço mínimo: "))
-        resultado = dB.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+        minimo = digitarNumero(
+            "Digite o preço mínimo: ",
+            "Erro: o preço mínimo deve ser inteiro ou decimal: "
+        )
+        resultado = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                         .sort("preco", 1)
 
     elif opcao_1 == "9":
-        maximo = float(input("Digite o preço máximo: "))
-        minimo = float(input("Digite o preço mínimo: "))
-        resultado = dB.produtos.find(
+        maximo = digitarNumero(
+            "Digite o preço máximo: ",
+            "Erro: o preço máximo deve ser inteiro ou decimal: "
+        )
+        minimo = digitarNumero(
+            "Digite o preço mínimo: ",
+            "Erro: o preço mínimo deve ser inteiro ou decimal: "
+        )
+        resultado = db.produtos.find(
             {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
         ).sort("preco", -1)
 
@@ -129,11 +147,11 @@ def buscarProdutos(dB):
 
     else:
         print("** ERRO! Opção inválida! **\n")
-        return buscarProdutos()
+        return buscarProdutos(db)
 
     print()
     imprimirListaProdutos("Resultado da busca:", "-", resultado)
-    novaBusca()
+    novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
 
