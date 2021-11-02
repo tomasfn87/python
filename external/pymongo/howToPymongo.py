@@ -92,12 +92,12 @@ def buscarProdutos():
 
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0}) \
+        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0})\
                         .sort("subtipo", 1)
 
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0}) \
+        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
                         .sort("tipo", 1)
 
     elif opcao_1 == "6":
