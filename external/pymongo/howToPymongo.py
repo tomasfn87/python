@@ -51,8 +51,7 @@ def imprimirListaProdutos(title, separator, lista, end=True):
 
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
-    print(" - 1) Nova busca")
-    print(" - 0) Sair")
+    print(" - 1) Nova busca  |  0) Sair")
     print(" * Digite sua opção e aperte ENTER: ", end="")
     repetir = input()
     if repetir == "1":
