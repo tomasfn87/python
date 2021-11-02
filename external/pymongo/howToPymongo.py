@@ -49,37 +49,20 @@ def imprimirListaProdutos(title, separator, lista, end=True):
     if end == True:
         print()
 
-client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
-
-with client:
-    db = client.test
-    # porNome = db.produtos.find().sort("tipo", 1)
-    # porPreco = db.produtos.find().sort("preco", -1)
-    # porPrecoMaiorOuIgual5 = db.produtos.find({"preco": {"$gte": 5}}).sort("preco", 1)
-    # porPrecoMenorOuIgual6 = db.produtos.find({"preco": {"$lte": 6}}).sort("preco", -1)
-    # porPrecoMaior4Menor7 = db.produtos.find({"preco": {"$gt": 4, "$lt": 7}}).sort("preco", 1)
-
-# imprimirListaProdutos("Por nome (crescente)", porNome, "-")
-# imprimirListaProdutos("Por preco (descrescente)", porPreco, "-")
-# imprimirListaProdutos("Por preco: maior ou igual a 5 (crescente)", porPrecoMaiorOuIgual5, "-")
-# imprimirListaProdutos("Por preco: menor ou igual a 6 (decrescente)", porPrecoMenorOuIgual6, "-")
-# imprimirListaProdutos("Por preço: maior que 4 e menor que 7 (crescente)", porPrecoMaior4Menor7, "-", False)
-
-
 def novaBusca():
-        print("Escolha uma das opções abaixo: ")
-        print(" - 1) Nova busca")
-        print(" - 0) Sair")
-        print(" * Digite sua opção e aperte ENTER: ", end="")
-        repetir = input()
-        if repetir == "1":
-            print()
-            return buscarProdutos()
-        elif repetir == "0":
-            return print("\nSaindo... até a próxima busca!")
-        else:
-            print("** ERRO! Opção inválida! **\n")
-            return novaBusca()
+    print("Escolha uma das opções abaixo: ")
+    print(" - 1) Nova busca")
+    print(" - 0) Sair")
+    print(" * Digite sua opção e aperte ENTER: ", end="")
+    repetir = input()
+    if repetir == "1":
+        print()
+        return buscarProdutos()
+    elif repetir == "0":
+        return print("\nSaindo... até a próxima busca!")
+    else:
+        print("** ERRO! Opção inválida! **\n")
+        return novaBusca()
 
 def buscarProdutos():
     print("Escolha uma das opções abaixo: ")
@@ -151,6 +134,11 @@ def buscarProdutos():
     print()
     imprimirListaProdutos("Resultado da busca:", "-", resultado)
     novaBusca()
+
+client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
+
+with client:
+    db = client.test
 
 def main():
     print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
