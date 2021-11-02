@@ -64,7 +64,7 @@ def novaBusca():
         print("** ERRO! Opção inválida! **\n")
         return novaBusca()
 
-def buscarProdutos():
+def buscarProdutos(dB):
     print("Escolha uma das opções abaixo: ")
     print(" - 1) Ver todos os produtos ordenados por tipo")
     print(" - 2) Ver todos os produtos ordenados por preço (crescente)")
@@ -82,45 +82,45 @@ def buscarProdutos():
 
     opcao_1 = input()
     if opcao_1 == "1":
-        resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
+        resultado = dB.produtos.find({},{"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "2":
-        resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
+        resultado = dB.produtos.find({},{"_id":0}).sort("preco", 1)
 
     elif opcao_1 == "3":
-        resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
+        resultado = dB.produtos.find({},{"_id":0}).sort("preco", -1)
 
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0})\
+        resultado = dB.produtos.find({"tipo": opcao_tipo},{"_id":0})\
                         .sort("subtipo", 1)
 
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
+        resultado = dB.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
                         .sort("tipo", 1)
 
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
-        resultado = db.produtos.find({"$or": [
+        resultado = dB.produtos.find({"$or": [
             {"tipo": opcao_2},
             {"subtipo": opcao_2}
         ]}, {"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "7":
         maximo = float(input("Digite o preço máximo: "))
-        resultado = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
+        resultado = dB.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                         .sort("preco", -1)
 
     elif opcao_1 == "8":
         minimo = float(input("Digite o preço mínimo: "))
-        resultado = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+        resultado = dB.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                         .sort("preco", 1)
 
     elif opcao_1 == "9":
         maximo = float(input("Digite o preço máximo: "))
         minimo = float(input("Digite o preço mínimo: "))
-        resultado = db.produtos.find(
+        resultado = dB.produtos.find(
             {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
         ).sort("preco", -1)
 
@@ -142,6 +142,6 @@ with client:
 
 def main():
     print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
-    buscarProdutos()
+    buscarProdutos(db)
 
 main()
