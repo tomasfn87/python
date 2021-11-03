@@ -3,12 +3,16 @@ import sys
 sys.path.append("/home/morbi/filtering")
 from texto import Texto as T
             
-def analisarListaDict(lista):
+def analisarListaDict(lista, chaves=[]):
     maiorItem = 0
     tamanhoAtual = 0
     for i in lista:
-        for key in i.keys():
-            tamanhoAtual += len(str(i[key]))
+        if chaves in [[], "", {}, ()]:
+            for c in i.keys():
+                tamanhoAtual += len(str(i[c]))
+        else:
+            for c in chaves:
+                tamanhoAtual += len(str(i[c]))
         if tamanhoAtual > maiorItem:
             maiorItem = tamanhoAtual
         tamanhoAtual = 0
@@ -27,26 +31,26 @@ def criarListaProdutos(lista):
 
 def listarProdutos(lista):
     listaProdutos = criarListaProdutos(lista)
-    maiorItem = analisarListaDict(listaProdutos)
+    maiorItem = analisarListaDict(listaProdutos, ["nome"])
     for i in listaProdutos:
         print(
             "{}{}|  R$ {}".format(
                 i["nome"].capitalize(),
-                T.espacar(maiorItem - 2 - len(i["nome"])),
+                T.espacar(maiorItem - len(i["nome"]) + 2),
                 T.trocar_caracter(i["preco"], ".", ",")
             )
         )
 
-def imprimirListaProdutos(title, separator, lista, end=True):
-    assert len(separator) == 1
+def imprimirListaProdutos(title, separador, lista, fim=True):
+    assert len(separador) == 1
     print(title)
-    split = ""
+    separacao = ""
     for i in range(0, len(title)):
-        split += separator
+        separacao += separador
         i += 1
-    print(split)
+    print(separacao)
     listarProdutos(lista)
-    if end == True:
+    if fim == True:
         print()
 
 def novaBusca(db):
