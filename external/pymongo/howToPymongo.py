@@ -51,7 +51,7 @@ def imprimirListaProdutos(title, separator, lista, end=True):
 
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
-    print(" - 1) Nova busca  |  0) Sair")
+    print(" - 1) Nova busca  | - 0) Sair")
     print(" * Digite sua opção e aperte ENTER: ", end="")
     repetir = input()
     if repetir == "1":
@@ -97,20 +97,21 @@ def buscarProdutos(db):
 
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = db.produtos.find({"tipo": opcao_tipo},{"_id":0})\
+        resultado = db.produtos.find({"tipo": opcao_tipo.lower()},{"_id":0})\
                         .sort("subtipo", 1)
 
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0})\
-                        .sort("tipo", 1)
+        resultado = db.produtos.find(
+            {"subtipo": opcao_subtipo.lower()},{"_id":0}
+        ).sort("tipo", 1)
 
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
         resultado = db.produtos.find({"$or": [
-            {"tipo": opcao_2},
-            {"subtipo": opcao_2}
-        ]}, {"_id":0}).sort("tipo", 1)
+            {"tipo": opcao_2.lower()},
+            {"subtipo": opcao_2.lower()}
+        ]},{"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "7":
         maximo = digitarNumero(
