@@ -1,7 +1,9 @@
 import pymongo
 import sys
 sys.path.append("/home/morbi/filtering")
+sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
+from listas import Listas as L
             
 def analisarListaDict(lista, chaves=[]):
     maiorItem = 0
@@ -18,7 +20,7 @@ def analisarListaDict(lista, chaves=[]):
         tamanhoAtual = 0
     return maiorItem
 
-def criarListaProdutos(lista):
+def criarListaProdutos(lista, check=False, key=""):
     lista = list(lista)
     listaProdutos = []
     for i in range(0, len(lista)):
@@ -27,7 +29,7 @@ def criarListaProdutos(lista):
             lista[i]["tipo"], lista[i]["subtipo"]
         )
         listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
-    return listaProdutos
+    return L.sortDictsByKey(listaProdutos, "nome")
 
 def listarProdutos(lista):
     listaProdutos = criarListaProdutos(lista)
@@ -92,6 +94,7 @@ def buscarProdutos(db):
     opcao_1 = input()
     if opcao_1 == "1":
         resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
+        return imprimirListaProdutos("Resultado da busca:", "-", resultado)
 
     elif opcao_1 == "2":
         resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
