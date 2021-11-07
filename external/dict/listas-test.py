@@ -57,3 +57,34 @@ class TesteListas:
     ])
     def test_obter_valores(self, dicionario, resultado, L):
         assert L.obter_valores(dicionario) == resultado
+    
+    @pytest.mark.parametrize("dictArr, key, resultado", [
+        ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
+        ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}])
+    ])
+    def test_sortDictsByKey(self, dictArr, key, resultado, L):
+        assert L.sortDictsByKey(dictArr, key) == resultado
+    
+    @pytest.mark.parametrize("dictArr, key, resultado", [
+        ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", True),
+        ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", True),
+        ([{'chave2': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", False),
+        ([{'chave2': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", False),
+        ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave2", False),
+        ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave2", False)
+    ])
+    def test_dictsHaveKey(self, dictArr, key, resultado, L):
+        assert L.dictsHaveKey(dictArr, key) == resultado
+    
+    @pytest.mark.parametrize("lista, resultado", [
+        ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], 16)
+    ])
+    def test_analisarListaDict_simples(self, lista, resultado, L):
+        assert L.analisarListaDict(lista) == resultado
+    
+    @pytest.mark.parametrize("lista, chaves, resultado", [
+        ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome", "cabelo"], 16),
+        ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome"], 8)
+    ])
+    def test_analisarListaDict_completo(self, lista, chaves, resultado, L):
+        assert L.analisarListaDict(lista, chaves) == resultado
