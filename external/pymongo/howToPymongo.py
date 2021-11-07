@@ -4,21 +4,6 @@ sys.path.append("/home/morbi/filtering")
 sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
-            
-def analisarListaDict(lista, chaves=[]):
-    maiorItem = 0
-    tamanhoAtual = 0
-    for i in lista:
-        if chaves in [[], "", {}, ()]:
-            for c in i.keys():
-                tamanhoAtual += len(str(i[c]))
-        else:
-            for c in chaves:
-                tamanhoAtual += len(str(i[c]))
-        if tamanhoAtual > maiorItem:
-            maiorItem = tamanhoAtual
-        tamanhoAtual = 0
-    return maiorItem
 
 def criarListaProdutos(lista, check=False, key=""):
     lista = list(lista)
@@ -33,7 +18,7 @@ def criarListaProdutos(lista, check=False, key=""):
 
 def listarProdutos(lista):
     listaProdutos = criarListaProdutos(lista)
-    maiorItem = analisarListaDict(listaProdutos, ["nome"])
+    maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     for i in listaProdutos:
         print(
             "{}{}|  R$ {}".format(
@@ -94,7 +79,6 @@ def buscarProdutos(db):
     opcao_1 = input()
     if opcao_1 == "1":
         resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
-        return imprimirListaProdutos("Resultado da busca:", "-", resultado)
 
     elif opcao_1 == "2":
         resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
