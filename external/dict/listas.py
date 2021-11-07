@@ -35,7 +35,7 @@ class Listas:
     
     def sortDictsByKey(dict_arr, key):
         # receives an array containing dictionaries that contain the informed key
-        if Listas.hasKey(dict_arr, key) == False:
+        if Listas.dictsHaveKey(dict_arr, key) == False:
             return False
         sortedDictArr = dict_arr[:]
         values = []
@@ -50,7 +50,7 @@ class Listas:
             i += 1
         return sortedDictArr
     
-    def hasKey(dict_arr, key):
+    def dictsHaveKey(dict_arr, key):
         # checks if all items in array containing dictionaries contrain the informed key
         for d in dict_arr:
             if key not in d.keys():
