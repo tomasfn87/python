@@ -32,3 +32,42 @@ class Listas:
         for i in dicionario:
             lista_valores.append(dicionario[i])
         return lista_valores
+    
+    def sortDictsByKey(dict_arr, key):
+        # receives an array containing dictionaries that contain the informed key
+        if Listas.hasKey(dict_arr, key) == False:
+            return False
+        sortedDictArr = dict_arr[:]
+        values = []
+        for d in dict_arr:
+            values.append(d[key])
+        i = 1
+        while i < len(values):
+            for j in range(0, len(values) - i):
+                if values[j] > values[j+1]:
+                    values[j], values[j+1] = values[j+1], values[j]
+                    sortedDictArr[j], sortedDictArr[j+1] = sortedDictArr[j+1], sortedDictArr[j]
+            i += 1
+        return sortedDictArr
+    
+    def hasKey(dict_arr, key):
+        # checks if all items in array containing dictionaries contrain the informed key
+        for d in dict_arr:
+            if key not in d.keys():
+                return False
+        return True
+    
+    def analisarListaDict(lista, chaves=[]):
+        maiorItem = 0
+        tamanhoAtual = 0
+        for i in lista:
+            if chaves in [[], "", {}, ()]:
+                for c in i.keys():
+                    tamanhoAtual += len(str(i[c]))
+            else:
+                for c in chaves:
+                    tamanhoAtual += len(str(i[c]))
+            if tamanhoAtual > maiorItem:
+                maiorItem = tamanhoAtual
+            tamanhoAtual = 0
+        return maiorItem
