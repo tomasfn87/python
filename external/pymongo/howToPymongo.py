@@ -5,7 +5,7 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def criarListaProdutos(lista, check=False, key=""):
+def criarListaProdutos(lista, ordenada=False):
     lista = list(lista)
     listaProdutos = []
     for i in range(0, len(lista)):
@@ -14,10 +14,12 @@ def criarListaProdutos(lista, check=False, key=""):
             lista[i]["tipo"], lista[i]["subtipo"]
         )
         listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
-    return L.sortDictsByKey(listaProdutos, "nome")
+    if ordenada != False:
+        return L.sortDictsByKey(listaProdutos, "nome")
+    return listaProdutos
 
-def listarProdutos(lista):
-    listaProdutos = criarListaProdutos(lista)
+def listarProdutos(lista, ordenada=False):
+    listaProdutos = criarListaProdutos(lista, ordenada)
     maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     for i in listaProdutos:
         print(
@@ -28,7 +30,7 @@ def listarProdutos(lista):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, fim=True):
+def imprimirListaProdutos(title, separador, lista, ord=False, fim=True):
     assert len(separador) == 1
     print(title)
     separacao = ""
@@ -36,7 +38,7 @@ def imprimirListaProdutos(title, separador, lista, fim=True):
         separacao += separador
         i += 1
     print(separacao)
-    listarProdutos(lista)
+    listarProdutos(lista, ord)
     if fim == True:
         print()
 
@@ -141,8 +143,11 @@ def buscarProdutos(db):
         return buscarProdutos(db)
 
     print()
-    imprimirListaProdutos("Resultado da busca:", "-", resultado)
-    novaBusca(db)
+    if opcao_1 in ["1", "4", "5", "6"]:
+        imprimirListaProdutos("Resultado da busca:", "-", resultado, True)
+    else:
+        imprimirListaProdutos("Resultado da busca:", "-", resultado, False)
+    return novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
 
