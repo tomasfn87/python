@@ -13,7 +13,7 @@ def criarListaProdutos(lista, ord, key):
         listaProdutos[i]["nome"] = "{} {}".format(
             lista[i]["tipo"], lista[i]["subtipo"]
         )
-        listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
+        listaProdutos[i]["preco"] = lista[i]["preco"]
     if ord != False:
         return L.sortDictsByKey(listaProdutos, key)
     return listaProdutos
@@ -46,7 +46,7 @@ def imprimirListaProdutos(title, separador, lista, ord, key="", fim=True):
         separacao2 += separador
         i += 1
 
-    print("{}:{}".format(separacao1, separacao2))
+    print("{}|{}".format(separacao1, separacao2))
 
     listarProdutos(listaProdutos, maiorItem)
     if fim == True:
@@ -144,9 +144,9 @@ def buscarProdutos(db):
 
     print()
     if opcao_1 in ["1", "4", "5", "6"]:
-        imprimirListaProdutos("Sua busca:", ".", busca, 1, "nome")
+        imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
     else:
-        imprimirListaProdutos("Sua busca:", ".", busca, 0)
+        imprimirListaProdutos("Sua busca:", "–", busca, 0)
     return novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
