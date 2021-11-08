@@ -77,7 +77,8 @@ class TesteListas:
         assert L.dictsHaveKey(dictArr, key) == resultado
     
     @pytest.mark.parametrize("lista, resultado", [
-        ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], 16)
+        ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], 16),
+        ([{"nome": "Ana Carolina", "cabelo": "ruivo"},{"nome": "Maria Aparecida", "cabelo": "castanho"},{"nome": "Maria Eduarda", "cabelo": "preto"}], 23)
     ])
     def test_analisarListaDict_simples(self, lista, resultado, L):
         assert L.analisarListaDict(lista) == resultado
