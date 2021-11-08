@@ -18,10 +18,8 @@ def criarListaProdutos(lista, ord, key):
         return L.sortDictsByKey(listaProdutos, key)
     return listaProdutos
 
-def listarProdutos(lista, ord, key):
-    listaProdutos = criarListaProdutos(lista, ord, key)
-    maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
-    for i in listaProdutos:
+def listarProdutos(lista, maiorItem):
+    for i in lista:
         print(
             "{}{}|  R$ {}".format(
                 i["nome"].capitalize(),
@@ -30,15 +28,18 @@ def listarProdutos(lista, ord, key):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, ord, key, fim=True):
+def imprimirListaProdutos(title, separador, lista, ord, key="", fim=True):
     assert len(separador) == 1
     print(title)
+    listaProdutos = criarListaProdutos(lista, ord, key)
+    tamanhoSeparador = L.analisarListaDict(listaProdutos, ["nome", "preco"])
+    maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     separacao = ""
-    for i in range(0, len(title)):
+    for i in range(0, tamanhoSeparador + 10):
         separacao += separador
         i += 1
     print(separacao)
-    listarProdutos(lista, ord, key)
+    listarProdutos(listaProdutos, maiorItem)
     if fim == True:
         print()
 
