@@ -28,7 +28,7 @@ def listarProdutos(lista, maiorItem):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, ord, key="", fim=True):
+def imprimirListaProdutos(title, separador, lista, ord=False, key="", fim=True):
     assert len(separador) == 1
     print(title)
     listaProdutos = criarListaProdutos(lista, ord, key)
@@ -146,7 +146,7 @@ def buscarProdutos(db):
     if opcao_1 in ["1", "4", "5", "6"]:
         imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
     else:
-        imprimirListaProdutos("Sua busca:", "–", busca, 0)
+        imprimirListaProdutos("Sua busca:", "–", busca)
     return novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
