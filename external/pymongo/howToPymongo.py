@@ -5,7 +5,7 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def criarListaProdutos(lista, ordenada=False):
+def criarListaProdutos(lista, ord, key):
     lista = list(lista)
     listaProdutos = []
     for i in range(0, len(lista)):
@@ -14,12 +14,12 @@ def criarListaProdutos(lista, ordenada=False):
             lista[i]["tipo"], lista[i]["subtipo"]
         )
         listaProdutos[i]["preco"] = "{}".format(lista[i]["preco"])
-    if ordenada != False:
-        return L.sortDictsByKey(listaProdutos, "nome")
+    if ord != False:
+        return L.sortDictsByKey(listaProdutos, key)
     return listaProdutos
 
-def listarProdutos(lista, ordenada=False):
-    listaProdutos = criarListaProdutos(lista, ordenada)
+def listarProdutos(lista, ord, key):
+    listaProdutos = criarListaProdutos(lista, ord, key)
     maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     for i in listaProdutos:
         print(
@@ -30,7 +30,7 @@ def listarProdutos(lista, ordenada=False):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, ord=False, fim=True):
+def imprimirListaProdutos(title, separador, lista, ord, key, fim=True):
     assert len(separador) == 1
     print(title)
     separacao = ""
@@ -38,7 +38,7 @@ def imprimirListaProdutos(title, separador, lista, ord=False, fim=True):
         separacao += separador
         i += 1
     print(separacao)
-    listarProdutos(lista, ord)
+    listarProdutos(lista, ord, key)
     if fim == True:
         print()
 
@@ -76,32 +76,32 @@ def buscarProdutos(db):
     print(" - 0) Sair")
     print(" * Digite sua opção e aperte ENTER: ", end="")
 
-    resultado = []
+    busca = []
 
     opcao_1 = input()
     if opcao_1 == "1":
-        resultado = db.produtos.find({},{"_id":0}).sort("tipo", 1)
+        busca = db.produtos.find({},{"_id":0}).sort("tipo", 1)
 
     elif opcao_1 == "2":
-        resultado = db.produtos.find({},{"_id":0}).sort("preco", 1)
+        busca = db.produtos.find({},{"_id":0}).sort("preco", 1)
 
     elif opcao_1 == "3":
-        resultado = db.produtos.find({},{"_id":0}).sort("preco", -1)
+        busca = db.produtos.find({},{"_id":0}).sort("preco", -1)
 
     elif opcao_1 == "4":
         opcao_tipo = input("Digite o tipo desejado: ")
-        resultado = db.produtos.find({"tipo": opcao_tipo.lower()},{"_id":0})\
+        busca = db.produtos.find({"tipo": opcao_tipo.lower()},{"_id":0})\
                         .sort("subtipo", 1)
 
     elif opcao_1 == "5":
         opcao_subtipo = input("Digite o subtipo: ")
-        resultado = db.produtos.find(
+        busca = db.produtos.find(
             {"subtipo": opcao_subtipo.lower()},{"_id":0}
         ).sort("tipo", 1)
 
     elif opcao_1 == "6":
         opcao_2 = input("Digite o tipo ou subtipo: ")
-        resultado = db.produtos.find({"$or": [
+        busca = db.produtos.find({"$or": [
             {"tipo": opcao_2.lower()},
             {"subtipo": opcao_2.lower()}
         ]},{"_id":0}).sort("tipo", 1)
@@ -111,7 +111,7 @@ def buscarProdutos(db):
             "Digite o preço máximo: ",
             "Erro: o preço máximo deve ser inteiro ou decimal: "
         )
-        resultado = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
+        busca = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                         .sort("preco", -1)
 
     elif opcao_1 == "8":
@@ -119,7 +119,7 @@ def buscarProdutos(db):
             "Digite o preço mínimo: ",
             "Erro: o preço mínimo deve ser inteiro ou decimal: "
         )
-        resultado = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+        busca = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                         .sort("preco", 1)
 
     elif opcao_1 == "9":
@@ -131,7 +131,7 @@ def buscarProdutos(db):
             "Digite o preço mínimo: ",
             "Erro: o preço mínimo deve ser inteiro ou decimal: "
         )
-        resultado = db.produtos.find(
+        busca = db.produtos.find(
             {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
         ).sort("preco", -1)
 
@@ -144,9 +144,9 @@ def buscarProdutos(db):
 
     print()
     if opcao_1 in ["1", "4", "5", "6"]:
-        imprimirListaProdutos("Resultado da busca:", "-", resultado, True)
+        imprimirListaProdutos("Sua busca:", "-", busca, 1, "nome")
     else:
-        imprimirListaProdutos("Resultado da busca:", "-", resultado, False)
+        imprimirListaProdutos("Sua busca:", "-", busca, 0)
     return novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
@@ -158,4 +158,5 @@ def main():
     print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
     buscarProdutos(db)
 
-main()
+if __name__ == "__main__":
+    main()
