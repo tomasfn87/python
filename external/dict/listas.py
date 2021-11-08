@@ -41,12 +41,12 @@ class Listas:
         values = []
         for d in dict_arr:
             values.append(d[key])
-        i = 1
-        while i < len(values):
+        for i in range(1, len(values)):
             for j in range(0, len(values) - i):
                 if values[j] > values[j+1]:
                     values[j], values[j+1] = values[j+1], values[j]
-                    sortedDictArr[j], sortedDictArr[j+1] = sortedDictArr[j+1], sortedDictArr[j]
+                    sortedDictArr[j], sortedDictArr[j+1] = \
+                        sortedDictArr[j+1], sortedDictArr[j]
             i += 1
         return sortedDictArr
     
@@ -61,8 +61,9 @@ class Listas:
         maiorItem = 0
         tamanhoAtual = 0
         for i in lista:
+            allKeys = i.keys()
             if chaves in [[], "", {}, ()]:
-                for c in i.keys():
+                for c in allKeys:
                     tamanhoAtual += len(str(i[c]))
             else:
                 for c in chaves:
