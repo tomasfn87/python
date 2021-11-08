@@ -5,7 +5,7 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def criarListaProdutos(lista, ord, key):
+def criarListaProdutos(lista, ord=False, key=""):
     lista = list(lista)
     listaProdutos = []
     for i in range(0, len(lista)):
@@ -28,29 +28,26 @@ def listarProdutos(lista, maiorItem):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, ord=False, key="", fim=True):
+def imprimirListaProdutos(title, separador, lista, ord=False, key=""):
     assert len(separador) == 1
     print(title)
     listaProdutos = criarListaProdutos(lista, ord, key)
     maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
-    tamanhoSeparador1 = maiorItem
-    tamanhoSeparador2 = L.analisarListaDict(listaProdutos, ["preco"])
+    tamanhoSeparacao1 = maiorItem
+    tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"])
     
     separacao1 = ""
-    for i in range(0, tamanhoSeparador1 + 2):
+    for i in range(0, tamanhoSeparacao1 + 2):
         separacao1 += separador
         i += 1
     
     separacao2 = ""
-    for i in range(0, tamanhoSeparador2 + 5):
+    for i in range(0, tamanhoSeparacao2 + 5):
         separacao2 += separador
         i += 1
 
     print("{}|{}".format(separacao1, separacao2))
-
     listarProdutos(listaProdutos, maiorItem)
-    if fim == True:
-        print()
 
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
@@ -147,6 +144,7 @@ def buscarProdutos(db):
         imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
     else:
         imprimirListaProdutos("Sua busca:", "–", busca)
+    print()
     return novaBusca(db)
 
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
