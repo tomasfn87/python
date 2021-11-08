@@ -14,7 +14,7 @@ def criarListaProdutos(lista, ord=False, key=""):
             lista[i]["tipo"], lista[i]["subtipo"]
         )
         listaProdutos[i]["preco"] = lista[i]["preco"]
-    if ord != False:
+    if ord == True:
         return L.sortDictsByKey(listaProdutos, key)
     return listaProdutos
 
