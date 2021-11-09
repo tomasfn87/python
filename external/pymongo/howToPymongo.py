@@ -98,7 +98,7 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
-    print(" - 1) Nova busca  s) Sair")
+    print(" - 1) Nova busca  [S]air")
     print(" * Digite sua opção e aperte ENTER: ", end="")
     repetir = input()
     if repetir == "1":
@@ -125,7 +125,7 @@ def buscarProdutos(db):
       - Tipo:   - 3) tipo    - 4) subtipo  - 34) ambos
       - Preço:  - 5) máximo  - 6) mínimo   - 56) ambos'''
     )
-    print("\n * Digite uma das opções acima (s): sair): ", end="")
+    print("\n * Digite uma das opções acima ou [S]air: ", end="")
 
     busca = []
 
