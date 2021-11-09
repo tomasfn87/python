@@ -108,6 +108,14 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
 
     listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
     
+def digitarNumero(textoInput, textoErro, db):
+    numero = input(textoInput)
+    voltar(numero, db)
+    numero = T.verificar_numero(numero)
+    while not numero:
+        numero = T.verificar_numero(input(textoErro))
+    return numero
+
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
     print(" - 1) Nova busca  [S]air")
@@ -122,12 +130,11 @@ def novaBusca(db):
         print("** ERRO! Opção inválida! **\n")
         return novaBusca(db)
 
-def digitarNumero(textoInput, textoErro):
-    numero = T.verificar_numero(input(textoInput))
-    while numero == False:
-        numero = T.verificar_numero(input(textoErro))
-    return numero
-
+def voltar(opcao, db):
+    if opcao.lower() in ["v", "voltar"]:
+        print()
+        return buscarProdutos(db)
+    
 def buscarProdutos(db):
     print(
 '''Escolha uma das opções abaixo (adicione '-' para inverter [Ex: -34])
@@ -153,20 +160,23 @@ def buscarProdutos(db):
         busca = db.Produtos.find({},{"_id":0}).sort("preco", -1)
 
     elif opcao_1 in ["3", "-3"]:
-        opcao_tipo = input("Digite o tipo desejado: ")
+        opcao_tipo = input("Digite o tipo desejado (ou [V]oltar): ")
+        voltar(opcao_tipo, db)
         busca = db.Produtos.find({"$or": [
             {"tipo": opcao_tipo.lower()}
         ]}, {"_id":0})
 
     elif opcao_1 in ["4", "-4"]:
-        opcao_subtipo = input("Digite o subtipo: ")
+        opcao_subtipo = input("Digite o subtipo (ou [V]oltar): ")
+        voltar(opcao_subtipo, db)
         busca = db.Produtos.find({"$or": [
             {"subtipo": opcao_subtipo.lower()},
             {"subtipo": opcao_subtipo.lower().capitalize()}
         ]}, {"_id":0})
 
     elif opcao_1 in ["34", "-34"]:
-        opcao_2 = input("Digite o tipo ou subtipo: ")
+        opcao_2 = input("Digite o tipo ou subtipo (ou [V]oltar): ")
+        voltar(opcao_2, db)
         busca = db.Produtos.find({"$or": [
             {"tipo": opcao_2.lower()},
             {"subtipo": opcao_2.lower()},
@@ -175,8 +185,8 @@ def buscarProdutos(db):
 
     elif opcao_1 in ["5", "-5"]:
         maximo = digitarNumero(
-            "Digite o preço máximo: ",
-            "Erro: o preço máximo deve ser inteiro ou decimal: "
+            "Digite o preço máximo (ou [V]oltar): ",
+            "Erro: o preço máximo deve ser inteiro ou decimal: ", db
         )
         if opcao_1 == "5":
             busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
@@ -187,8 +197,8 @@ def buscarProdutos(db):
 
     elif opcao_1 in ["6", "-6"]:
         minimo = digitarNumero(
-            "Digite o preço mínimo: ",
-            "Erro: o preço mínimo deve ser inteiro ou decimal: "
+            "Digite o preço mínimo (ou [V]oltar): ",
+            "Erro: o preço mínimo deve ser inteiro ou decimal: ", db
         )
         if opcao_1 == "6":
             busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
@@ -199,12 +209,12 @@ def buscarProdutos(db):
 
     elif opcao_1 in ["56", "-56"]:
         maximo = digitarNumero(
-            "Digite o preço máximo: ",
-            "Erro: o preço máximo deve ser inteiro ou decimal: "
+            "Digite o preço máximo (ou [V]oltar): ",
+            "Erro: o preço máximo deve ser inteiro ou decimal: ", db
         )
         minimo = digitarNumero(
-            "Digite o preço mínimo: ",
-            "Erro: o preço mínimo deve ser inteiro ou decimal: "
+            "Digite o preço mínimo (ou [V]oltar): ",
+            "Erro: o preço mínimo deve ser inteiro ou decimal: ", db
         )
         if opcao_1 == "56":
             busca = db.Produtos.find(
