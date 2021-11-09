@@ -30,12 +30,15 @@ def listarProdutos(lista, maiorItem):
             )
         )
 
-def imprimirListaProdutos(title, separador, lista, ord=False, key=""):
+def imprimirListaProdutos(separador, lista, ord=False, key=""):
     assert len(separador) == 1
     listaProdutos = criarListaProdutos(lista, ord, key)
     if listaProdutos == False:
         return print("Nenhum resultado.")
-    print(title)
+    elif len(listaProdutos) == 1:
+        print("1 resultado:")
+    else:
+        print("{} resultados:".format(len(listaProdutos)))
     maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     tamanhoSeparacao1 = maiorItem
     tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"])
@@ -50,7 +53,7 @@ def imprimirListaProdutos(title, separador, lista, ord=False, key=""):
         separacao2 += separador
         i += 1
 
-    print("{}|{}".format(separacao1, separacao2))
+    print("{} {}".format(separacao1, separacao2))
     listarProdutos(listaProdutos, maiorItem)
 
 def novaBusca(db):
@@ -145,9 +148,9 @@ def buscarProdutos(db):
 
     print()
     if opcao_1 in ["1", "4", "5", "6"]:
-        imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
+        imprimirListaProdutos("–", busca, 1, "nome")
     else:
-        imprimirListaProdutos("Sua busca:", "–", busca)
+        imprimirListaProdutos("–", busca)
     print()
     return novaBusca(db)
 
