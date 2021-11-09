@@ -25,10 +25,10 @@ def verificarMongo(mongoURL, timeout):
     except:
         print("ERRO: Conexão ao mongoDb recusada.")
         print("Por favor inicie o mongodDb ou verifique o endereço do MongoClient.")
-        print("Tentar novamente?", end=" ")
         return False
 
 def reconectar(mongoURL):
+    print("Tentar novamente?", end=" ")
     retry = input().lower()
     if retry in ["s",  "sim", "y", "yes"]:
         iniciarBusca(mongoURL)
