@@ -33,7 +33,7 @@ class Listas:
             lista_valores.append(dicionario[i])
         return lista_valores
     
-    def sortDictsByKey(dict_arr, key):
+    def sortDictsByKey(dict_arr, key, inv=False):
         # receives an array containing dictionaries that contain the informed key
         if Listas.dictsHaveKey(dict_arr, key) == False:
             return False
@@ -43,10 +43,16 @@ class Listas:
             values.append(d[key])
         for i in range(1, len(values)):
             for j in range(0, len(values) - i):
-                if values[j] > values[j+1]:
-                    values[j], values[j+1] = values[j+1], values[j]
-                    sortedDictArr[j], sortedDictArr[j+1] = \
-                        sortedDictArr[j+1], sortedDictArr[j]
+                if inv:
+                    if values[j] < values[j+1]:
+                        values[j], values[j+1] = values[j+1], values[j]
+                        sortedDictArr[j], sortedDictArr[j+1] = \
+                            sortedDictArr[j+1], sortedDictArr[j]
+                else:
+                    if values[j] > values[j+1]:
+                        values[j], values[j+1] = values[j+1], values[j]
+                        sortedDictArr[j], sortedDictArr[j+1] = \
+                            sortedDictArr[j+1], sortedDictArr[j]
             i += 1
         return sortedDictArr
     
