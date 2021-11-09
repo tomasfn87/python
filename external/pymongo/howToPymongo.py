@@ -140,7 +140,9 @@ def buscarProdutos(db):
         return buscarProdutos(db)
 
     print()
-    if opcao_1 in ["1", "4", "5", "6"]:
+    if len(list(busca)) < 1:
+        print("A busca não encontrou resultados.")
+    elif opcao_1 in ["1", "4", "5", "6"]:
         imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
     else:
         imprimirListaProdutos("Sua busca:", "–", busca)
