@@ -17,10 +17,7 @@ def iniciarBusca(client):
 
 def verificarMongo(client):
     try:
-        pymongo.MongoClient(
-            host = ["mongodb://127.0.0.1:27017"],
-            serverSelectionTimeoutMS = 1500
-        ).server_info()
+        client.server_info()
         return True
     except:
         print("ERRO: Conexão ao mongoDb recusada.")
