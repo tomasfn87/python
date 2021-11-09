@@ -5,19 +5,22 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def iniciarBusca(client):
-    if not verificarMongo(client):
-        reconectar(client)
+def iniciarBusca(mongoURL):
+    if not verificarMongo(mongoURL, 1500):
+        reconectar(mongoURL)
     else:
+        client = pymongo.MongoClient(mongoURL)
         with client:
             db = client.test
         print("Bem vindo à busca de produtos!", end=" ")
         print("Vamos encontrar o que você precisa:\n")
         buscarProdutos(db)
 
-def verificarMongo(client):
+def verificarMongo(mongoURL, timeout):
     try:
-        client.server_info()
+        pymongo.MongoClient(
+            host = [mongoURL], serverSelectionTimeoutMS = timeout
+        ).server_info()
         return True
     except:
         print("ERRO: Conexão ao mongoDb recusada.")
@@ -25,16 +28,16 @@ def verificarMongo(client):
         print("Tentar novamente?", end=" ")
         return False
 
-def reconectar(client):
+def reconectar(mongoURL):
     retry = input().lower()
     if retry in ["s",  "sim", "y", "yes"]:
-        iniciarBusca(client)
+        iniciarBusca(mongoURL)
     elif retry in ["n", "não", "nao", "no", "non", "nein"]:
         print("A busca funciona em um banco de dados cujos itens possuem as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
         return False
     else:
         print("Opção inválida, digite [S]im ou [N]ão:", end=" ")
-        reconectar(client)
+        reconectar(mongoURL)
 
 def criarListaProdutos(lista, ord=False, key="", inv=0):
     lista = list(lista)
@@ -220,8 +223,8 @@ def buscarProdutos(db):
     return novaBusca(db)
 
 def main():
-    client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
-    iniciarBusca(client)
+    mongoURL = "mongodb://127.0.0.1:27017"
+    iniciarBusca(mongoURL)
 
 if __name__ == "__main__":
     main()
