@@ -54,15 +54,24 @@ def criarListaProdutos(lista, ord=False, key="", inv=0):
         return L.sortDictsByKey(listaProdutos, key, inv)
     return listaProdutos
 
-def listarProdutos(lista, maiorItem):
+def listarProdutos(lista, maiorItem, larguraMinimaCol1):
     for i in lista:
-        print(
-            "{}{}|  R$ {}".format(
-                i["nome"],
-                T.espacar(maiorItem - len(i["nome"]) + 2),
-                T.trocar_caracter(i["preco"], ".", ",")
+        if maiorItem < larguraMinimaCol1:
+            print(
+                "{}{}|  R$ {}".format(
+                    i["nome"],
+                    T.espacar(larguraMinimaCol1 - len(i["nome"]) + 3),
+                    T.trocar_caracter(i["preco"], ".", ",")
+                )
             )
-        )
+        else:
+            print(
+                "{}{}|  R$ {}".format(
+                    i["nome"],
+                    T.espacar(maiorItem - len(i["nome"]) + 2),
+                    T.trocar_caracter(i["preco"], ".", ",")
+                )
+            )
 
 def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     assert len(separador) == 1
@@ -73,12 +82,13 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     else:
         print("Itens encontrados: {}\n".format(len(listaProdutos)))
 
-    maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
+    maiorItem1 = L.analisarListaDict(listaProdutos, ["nome"])
+    maiorItem2 = L.analisarListaDict(listaProdutos, ["preco"])
 
     titulos = ["Nome", "Preço"]
-    tamanhoSeparacao1 = maiorItem - len(titulos[0]) + 1
-    tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"])\
-        - len(titulos[1]) - 3
+    
+    tamanhoSeparacao1 = maiorItem1 - len(titulos[0]) + 1
+    tamanhoSeparacao2 = maiorItem2 - len(titulos[1]) - 3
     
     separacao1 = "{} {} ".format(separador, titulos[0])
     for i in range(0, tamanhoSeparacao1 - 2):
@@ -93,8 +103,10 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
         i += 1
 
     print("{}|{}".format(separacao1, separacao2))
-    
-    listarProdutos(listaProdutos, maiorItem)
+
+    larguraMinimaCol1 = len(titulos[0])
+
+    listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
     
 def novaBusca(db):
     print("Escolha uma das opções abaixo: ")
@@ -223,8 +235,7 @@ def buscarProdutos(db):
     return novaBusca(db)
 
 def main():
-    mongoURL = "mongodb://127.0.0.1:27017"
-    iniciarBusca(mongoURL)
+    iniciarBusca("mongodb://127.0.0.1:27017")
 
 if __name__ == "__main__":
     main()
