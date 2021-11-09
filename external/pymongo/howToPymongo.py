@@ -5,6 +5,25 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
+def verificarMongo(client):
+    try:
+        pymongo.MongoClient(
+            host = ["mongodb://127.0.0.1:27017"],
+            serverSelectionTimeoutMS = 1500
+        ).server_info()
+        return True
+    except:
+        print("ERRO: Conexão ao mongoDb recusada.")
+        print("Por favor inicie o mongodDb ou verifique o endereço do MongoClient.")
+        print("Tentar novamente?", end=" ")
+        retry = input().lower()
+        if retry in ["s",  "sim", "y", "yes"]:
+            verificarMongo(client)
+        elif retry in ["n", "não", "nao", "no", "non", "nein"]:
+            print("A busca funciona em um banco de dados cujos itens possuem \
+as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
+            return False
+
 def criarListaProdutos(lista, ord=False, key="", inv=0):
     lista = list(lista)
     if len(lista) == 0:
@@ -45,14 +64,15 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
 
     titulos = ["Nome", "Preço"]
     tamanhoSeparacao1 = maiorItem - len(titulos[0]) + 1
-    tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"]) - len(titulos[1]) - 1
+    tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"])\
+        - len(titulos[1]) - 1
     
-    separacao1 = "{} {}:".format(separador, titulos[0])
+    separacao1 = "{} {} ".format(separador, titulos[0])
     for i in range(0, tamanhoSeparacao1 - 2):
         separacao1 += separador
         i += 1
     
-    separacao2 = "{} {}:".format(separador, titulos[1])
+    separacao2 = "{} {} ".format(separador, titulos[1])
     for i in range(0, tamanhoSeparacao2 + 5):
         separacao2 += separador
         i += 1
@@ -93,7 +113,7 @@ def buscarProdutos(db):
 
     busca = []
 
-    opcao_1 = input().lower()
+    opcao_1 = input()
     if opcao_1 == "1":
         busca = db.Produtos.find({},{"_id":0}).sort("tipo", 1)
     elif opcao_1 == "1i":
@@ -105,25 +125,25 @@ def buscarProdutos(db):
         busca = db.Produtos.find({},{"_id":0}).sort("preco", -1)
 
     elif opcao_1 in ["3", "3i"]:
-        opcao_tipo = input("Digite o tipo desejado: ").lower()
-        busca = db.Produtos.find({"tipo": opcao_tipo},{"_id":0})
+        opcao_tipo = input("Digite o tipo desejado: ")
+        busca = db.Produtos.find({"$or": [
+            {"tipo": opcao_tipo.lower()}
+        ]}, {"_id":0})
 
     elif opcao_1 in ["4", "4i"]:
-        opcao_subtipo = input("Digite o subtipo: ").lower()
-        busca = db.Produtos.find({"subtipo": opcao_subtipo},{"_id":0})
+        opcao_subtipo = input("Digite o subtipo: ")
+        busca = db.Produtos.find({"$or": [
+            {"subtipo": opcao_subtipo.lower()},
+            {"subtipo": opcao_subtipo.lower().capitalize()}
+        ]}, {"_id":0})
 
-    elif opcao_1 == "34":
-        opcao_2 = input("Digite o tipo ou subtipo: ").lower()
+    elif opcao_1 in ["34", "34i"]:
+        opcao_2 = input("Digite o tipo ou subtipo: ")
         busca = db.Produtos.find({"$or": [
-            {"tipo": opcao_2},
-            {"subtipo": opcao_2}
-        ]},{"_id":0})
-    elif opcao_1 == "34i":
-        opcao_2 = input("Digite o tipo ou subtipo: ").lower()
-        busca = db.Produtos.find({"$or": [
-            {"tipo": opcao_2},
-            {"subtipo": opcao_2}
-        ]},{"_id":0})
+            {"tipo": opcao_2.lower()},
+            {"subtipo": opcao_2.lower()},
+            {"subtipo": opcao_2.lower().capitalize()}
+        ]}, {"_id":0})
 
     elif opcao_1 in ["5", "5i"]:
         maximo = digitarNumero(
@@ -188,22 +208,17 @@ def buscarProdutos(db):
 
 
 def main():
-    try:
-        pymongo.MongoClient(
-            host = ["mongodb://127.0.0.1:27017"],
-            serverSelectionTimeoutMS = 750
-        ).server_info()
-    except:
-        print("ERROR: Connection to mongoDb refused.")
-        return print("Please start mongodDb or enter correct host address.")
-
     client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
-    with client:
-        db = client.test
-
-    print("Bem vindo à busca de produtos!", end=" ")
-    print("Vamos encontrar o que você precisa:\n")
-    buscarProdutos(db)
+    
+    conectado = verificarMongo(client)
+    if conectado:
+        with client:
+            db = client.test
+        print("Bem vindo à busca de produtos!", end=" ")
+        print("Vamos encontrar o que você precisa:\n")
+        buscarProdutos(db)
+    else:
+        return
 
 if __name__ == "__main__":
     main()
