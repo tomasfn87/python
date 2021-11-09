@@ -62,8 +62,17 @@ class TesteListas:
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}])
     ])
-    def test_sortDictsByKey(self, dictArr, key, resultado, L):
+    def test_sortDictsByKey_simples(self, dictArr, key, resultado, L):
         assert L.sortDictsByKey(dictArr, key) == resultado
+    
+    @pytest.mark.parametrize("dictArr, key, inv, resultado", [
+        ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", 0, [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
+        ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", 0, [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}]),
+        ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", 1, [{'chave1': 'Ac'}, {'chave1': 'Ab'}, {'chave1': 'Aa'}]),
+        ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", 1, [{'chave1': 'Bc'}, {'chave1': 'Bb'}, {'chave1': 'Ba'}, {'chave1': 'Ac'}, {'chave1': 'Ab'}, {'chave1': 'Aa'}])
+    ])
+    def test_sortDictsByKey_inverso(self, dictArr, key, inv, resultado, L):
+        assert L.sortDictsByKey(dictArr, key, inv) == resultado
     
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", True),
