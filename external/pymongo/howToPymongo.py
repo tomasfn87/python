@@ -5,7 +5,7 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def criarListaProdutos(lista, ord=False, key="", inv=False):
+def criarListaProdutos(lista, ord=False, key="", inv=0):
     lista = list(lista)
     if len(lista) == 0:
         return False
@@ -30,7 +30,7 @@ def listarProdutos(lista, maiorItem):
             )
         )
 
-def imprimirListaProdutos(separador, lista, ord=False, key="", inv=False):
+def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     assert len(separador) == 1
     listaProdutos = criarListaProdutos(lista, ord, key, inv)
     if listaProdutos == False:
@@ -77,56 +77,75 @@ def digitarNumero(textoInput, textoErro):
     return numero
 
 def buscarProdutos(db):
-    print("Escolha uma das opções abaixo: ")
-    print(" * Exibir todos, ordenados por:")
-    print("   - Nome:  1) padrão     2) inverso") 
-    print("   - Preço: 3) crescente  4) decrescente")
-    print(" * Buscar por:")
-    print("   - Tipo:  5) tipo       6) subtipo  7) ambos")
-    print("   - Preço: 8) máximo     9) mínimo   0) ambos")
-    print("\n* Digite uma das opções acima (s = sair): ", end="")
+    print(
+'''Escolha uma das opções abaixo (adicione 'i' para inverter [Ex: 34i])
+    * Exibir todos, ordenados por:
+                - 1) nome    - 2) preço
+    * Buscar por:
+      - Tipo:   - 3) tipo    - 4) subtipo  - 34) ambos
+      - Preço:  - 5) máximo  - 6) mínimo   - 56) ambos'''
+    )
+    print("\n * Digite uma das opções acima (s): sair): ", end="")
 
     busca = []
 
-    opcao_1 = input()
+    opcao_1 = input().lower()
     if opcao_1 == "1":
         busca = db.produtos.find({},{"_id":0}).sort("tipo", 1)
-    elif opcao_1 == "2":
+    elif opcao_1 == "1i":
         busca = db.produtos.find({},{"_id":0}).sort("tipo", -1)
-    elif opcao_1 == "3":
+
+    elif opcao_1 == "2":
         busca = db.produtos.find({},{"_id":0}).sort("preco", 1)
-    elif opcao_1 == "4":
+    elif opcao_1 == "2i":
         busca = db.produtos.find({},{"_id":0}).sort("preco", -1)
-    elif opcao_1 == "5":
-        opcao_tipo = input("Digite o tipo desejado: ")
-        busca = db.produtos.find({"tipo": opcao_tipo.lower()},{"_id":0})\
-                        .sort("subtipo", 1)
-    elif opcao_1 == "6":
-        opcao_subtipo = input("Digite o subtipo: ")
-        busca = db.produtos.find(
-            {"subtipo": opcao_subtipo.lower()},{"_id":0}
-        ).sort("tipo", 1)
-    elif opcao_1 == "7":
-        opcao_2 = input("Digite o tipo ou subtipo: ")
+
+    elif opcao_1 in ["3", "3i"]:
+        opcao_tipo = input("Digite o tipo desejado: ").lower()
+        busca = db.produtos.find({"tipo": opcao_tipo},{"_id":0})
+
+    elif opcao_1 in ["4", "4i"]:
+        opcao_subtipo = input("Digite o subtipo: ").lower()
+        busca = db.produtos.find({"subtipo": opcao_subtipo},{"_id":0})
+
+    elif opcao_1 == "34":
+        opcao_2 = input("Digite o tipo ou subtipo: ").lower()
         busca = db.produtos.find({"$or": [
-            {"tipo": opcao_2.lower()},
-            {"subtipo": opcao_2.lower()}
-        ]},{"_id":0}).sort("tipo", 1)
-    elif opcao_1 == "8":
+            {"tipo": opcao_2},
+            {"subtipo": opcao_2}
+        ]},{"_id":0})
+    elif opcao_1 == "34i":
+        opcao_2 = input("Digite o tipo ou subtipo: ").lower()
+        busca = db.produtos.find({"$or": [
+            {"tipo": opcao_2},
+            {"subtipo": opcao_2}
+        ]},{"_id":0})
+
+    elif opcao_1 in ["5", "5i"]:
         maximo = digitarNumero(
             "Digite o preço máximo: ",
             "Erro: o preço máximo deve ser inteiro ou decimal: "
         )
-        busca = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
-                        .sort("preco", -1)
-    elif opcao_1 == "9":
-        minimo = digitarNumero(
-            "Digite o preço mínimo: ",
-            "Erro: o preço mínimo deve ser inteiro ou decimal: "
-        )
-        busca = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+        if opcao_1 == "5":
+            busca = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                         .sort("preco", 1)
-    elif opcao_1 == "0":
+        else:
+            busca = db.produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
+                        .sort("preco", -1)
+
+    elif opcao_1 in ["6", "6i"]:
+        minimo = digitarNumero(
+            "Digite o preço mínimo: ",
+            "Erro: o preço mínimo deve ser inteiro ou decimal: "
+        )
+        if opcao_1 == "6":
+            busca = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+                        .sort("preco", 1)
+        else:
+            busca = db.produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
+                        .sort("preco", -1)
+
+    elif opcao_1 in ["56", "56i"]:
         maximo = digitarNumero(
             "Digite o preço máximo: ",
             "Erro: o preço máximo deve ser inteiro ou decimal: "
@@ -135,20 +154,29 @@ def buscarProdutos(db):
             "Digite o preço mínimo: ",
             "Erro: o preço mínimo deve ser inteiro ou decimal: "
         )
-        busca = db.produtos.find(
-            {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
-        ).sort("preco", -1)
-    elif opcao_1.lower() in ["s", "sair", "exit", "quit"]:
+        if opcao_1 == "56":
+            busca = db.produtos.find(
+                {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
+            ).sort("preco", 1)
+        else:
+            busca = db.produtos.find(
+                {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
+            ).sort("preco", -1)
+
+    elif opcao_1 in ["s", "sair", "exit", "quit"]:
         return print("\nObrigado por consultar os produtos, até logo!")
     else:
         print("** ERRO! Opção inválida! **\n")
         return buscarProdutos(db)
 
     print()
-    if opcao_1 in ["1", "4", "5", "6"]:
+    # ordem alfabética
+    if opcao_1 in ["1", "3", "4", "34"]:
         imprimirListaProdutos("–", busca, 1, "nome")
-    elif opcao_1 in ["2"]:
+    # ordem alfabética inversa
+    elif opcao_1.lower() in ["1i", "3i", "4i", "34i"]:
         imprimirListaProdutos("–", busca, 1, "nome", 1)
+    # demais casos
     else:
         imprimirListaProdutos("–", busca)
     print()
