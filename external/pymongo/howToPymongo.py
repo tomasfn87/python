@@ -160,7 +160,8 @@ with client:
     db = client.test
 
 def main():
-    print("Bem vindo à busca de produtos! Vamos encontrar o que você precisa:\n")
+    print("Bem vindo à busca de produtos!", end=" ") 
+    print("Vamos encontrar o que você precisa:\n")
     buscarProdutos(db)
 
 if __name__ == "__main__":
