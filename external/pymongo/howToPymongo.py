@@ -104,7 +104,7 @@ def novaBusca(db):
     if repetir == "1":
         print()
         return buscarProdutos(db)
-    elif repetir.lower() in ["s", "sair", "exit", "quit"]:
+    elif repetir.lower() in ["s", "sair", "exit", "quit", "-"]:
         return print("\nSaindo... até a próxima busca!")
     else:
         print("** ERRO! Opção inválida! **\n")
@@ -203,7 +203,7 @@ def buscarProdutos(db):
                 {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
             ).sort("preco", -1)
 
-    elif opcao_1 in ["s", "sair", "exit", "quit"]:
+    elif opcao_1 in ["s", "sair", "exit", "quit", "-"]:
         return print("\nObrigado por consultar os produtos, até logo!")
     else:
         print("** ERRO! Opção inválida! **\n")
