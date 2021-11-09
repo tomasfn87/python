@@ -5,6 +5,16 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
+def iniciarBusca(client):
+    if not verificarMongo(client):
+        reconectar(client)
+    else:
+        with client:
+            db = client.test
+        print("Bem vindo à busca de produtos!", end=" ")
+        print("Vamos encontrar o que você precisa:\n")
+        buscarProdutos(db)
+
 def verificarMongo(client):
     try:
         pymongo.MongoClient(
@@ -16,13 +26,18 @@ def verificarMongo(client):
         print("ERRO: Conexão ao mongoDb recusada.")
         print("Por favor inicie o mongodDb ou verifique o endereço do MongoClient.")
         print("Tentar novamente?", end=" ")
-        retry = input().lower()
-        if retry in ["s",  "sim", "y", "yes"]:
-            verificarMongo(client)
-        elif retry in ["n", "não", "nao", "no", "non", "nein"]:
-            print("A busca funciona em um banco de dados cujos itens possuem \
-as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
-            return False
+        return False
+
+def reconectar(client):
+    retry = input().lower()
+    if retry in ["s",  "sim", "y", "yes"]:
+        iniciarBusca(client)
+    elif retry in ["n", "não", "nao", "no", "non", "nein"]:
+        print("A busca funciona em um banco de dados cujos itens possuem as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
+        return False
+    else:
+        print("Opção inválida, digite [S]im ou [N]ão:", end=" ")
+        reconectar(client)
 
 def criarListaProdutos(lista, ord=False, key="", inv=0):
     lista = list(lista)
@@ -206,19 +221,9 @@ def buscarProdutos(db):
     print()
     return novaBusca(db)
 
-
 def main():
     client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
-    
-    conectado = verificarMongo(client)
-    if conectado:
-        with client:
-            db = client.test
-        print("Bem vindo à busca de produtos!", end=" ")
-        print("Vamos encontrar o que você precisa:\n")
-        buscarProdutos(db)
-    else:
-        return
+    iniciarBusca(client)
 
 if __name__ == "__main__":
     main()
