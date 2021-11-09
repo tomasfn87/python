@@ -7,6 +7,8 @@ from listas import Listas as L
 
 def criarListaProdutos(lista, ord=False, key=""):
     lista = list(lista)
+    if len(lista) == 0:
+        return False
     listaProdutos = []
     for i in range(0, len(lista)):
         listaProdutos.append({ "nome": "", "preco": 0 })
@@ -30,8 +32,10 @@ def listarProdutos(lista, maiorItem):
 
 def imprimirListaProdutos(title, separador, lista, ord=False, key=""):
     assert len(separador) == 1
-    print(title)
     listaProdutos = criarListaProdutos(lista, ord, key)
+    if listaProdutos == False:
+        return print("Nenhum resultado.")
+    print(title)
     maiorItem = L.analisarListaDict(listaProdutos, ["nome"])
     tamanhoSeparacao1 = maiorItem
     tamanhoSeparacao2 = L.analisarListaDict(listaProdutos, ["preco"])
@@ -140,9 +144,7 @@ def buscarProdutos(db):
         return buscarProdutos(db)
 
     print()
-    if len(list(busca)) < 1:
-        print("A busca não encontrou resultados.")
-    elif opcao_1 in ["1", "4", "5", "6"]:
+    if opcao_1 in ["1", "4", "5", "6"]:
         imprimirListaProdutos("Sua busca:", "–", busca, 1, "nome")
     else:
         imprimirListaProdutos("Sua busca:", "–", busca)
