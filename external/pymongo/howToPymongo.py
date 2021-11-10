@@ -109,7 +109,10 @@ def digitarNumero(textoInput, textoErro):
     else:
         numero = T.verificar_numero(numero)
         while not numero:
-            numero = T.verificar_numero(input(textoErro))
+            numero = input(textoErro)
+            if voltar(numero):
+                return False 
+            numero = T.verificar_numero(numero)
     return numero
 
 def novaBusca(db):
@@ -132,9 +135,9 @@ def voltar(opcao):
         return True
     return False
     
-def menuBusca(opcoes, db):
+def menuBusca(opcoes, m, db):
     print(
-'''Escolha uma das opções abaixo (adicione '-' para inverter [Ex: -34])
+'''Escolha uma das opções abaixo (adicione '-' para inverter [Ex: -34 ou 34-])
     * Exibir todos, ordenados por:
                 - 1) nome    - 2) preço
     * Buscar por:
@@ -150,7 +153,7 @@ def menuBusca(opcoes, db):
         if opcao_1 in i:
             ## Sair
             if opcao_1 in opcoes[0]:
-                print("\nObrigado por consultar os produtos, até logo!")
+                print("\n{}".format(m["tchau"]))
                 return False
 
             ## Ordem alfabética
@@ -158,30 +161,31 @@ def menuBusca(opcoes, db):
                 # Item 1 - Todos, por nome
                 if opcao_1 == "1":
                     busca = db.Produtos.find({},{"_id":0}).sort("tipo", 1)
-                elif opcao_1 == "-1":
+                elif opcao_1 in ["-1", "1-"]:
                     busca = db.Produtos.find({},{"_id":0}).sort("tipo", -1)
                 # Item 3 - Por tipo Ex: laranja, banana
-                elif opcao_1 in ["3", "-3"]:
-                    opcao_tipo = input(" * Digite o tipo (ou [V]oltar): ")
+                elif opcao_1 in ["3", "-3", "3-"]:
+                    
+                    opcao_tipo = input(" * Digite o tipo{}: ".format(m["voltar"]))
                     if voltar(opcao_tipo):
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
                         {"tipo": opcao_tipo.lower()}
                     ]}, {"_id":0})
                 # Item 4 - Por subtipo Ex: lima, nanica
-                elif opcao_1 in ["4", "-4"]:
-                    opcao_subtipo = input(" * Digite o subtipo (ou [V]oltar): ")
+                elif opcao_1 in ["4", "-4", "4-"]:
+                    opcao_subtipo = input(" * Digite o subtipo{}: ".format(m["voltar"]))
                     if voltar(opcao_subtipo):
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
                         {"subtipo": opcao_subtipo.lower()},
                         {"subtipo": opcao_subtipo.lower().capitalize()}
                     ]}, {"_id":0})
                 # Item 34 - Por tipo e subtipo Ex: pera, verde
-                elif opcao_1 in ["34", "-34"]:
-                    opcao_2 = input(" * Digite o tipo ou subtipo (ou [V]oltar): ")
+                elif opcao_1 in ["34", "-34", "34-"]:
+                    opcao_2 = input(" * Digite o tipo ou subtipo{}: ".format(m["voltar"]))
                     if voltar(opcao_2):
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
                         {"tipo": opcao_2.lower()},
                         {"subtipo": opcao_2.lower()},
@@ -194,15 +198,14 @@ def menuBusca(opcoes, db):
                 # Item 2 - todos, por preço
                 if opcao_1 == "2":
                     busca = db.Produtos.find({},{"_id":0}).sort("preco", 1)
-                elif opcao_1 == "-2":
+                elif opcao_1 in ["-2", "2-"]:
                     busca = db.Produtos.find({},{"_id":0}).sort("preco", -1)
                 # Item 5 - definir preço máximo, por preço
-                elif opcao_1 in ["5", "-5"]:
-                    userInput = " * Digite o preço máximo (ou [V]oltar): "
-                    error = "Erro: o preço máximo deve ser inteiro ou decimal: "
-                    maximo = digitarNumero(userInput, error)
+                elif opcao_1 in ["5", "-5", "5-"]:
+                    userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
+                    maximo = digitarNumero(userInput, m["precoMaxErr"])
                     if not maximo:
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     if opcao_1 == "5":
                         busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                                     .sort("preco", 1)
@@ -210,12 +213,11 @@ def menuBusca(opcoes, db):
                         busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                                     .sort("preco", -1)
                 # Item 6 - definir preço mínimo, por preço
-                elif opcao_1 in ["6", "-6"]:
-                    userInput = " * Digite o preço mínimo (ou [V]oltar): "
-                    error = "Erro: o preço mínimo deve ser inteiro ou decimal: "
-                    minimo = digitarNumero(userInput, error)
+                elif opcao_1 in ["6", "-6", "6-"]:
+                    userInput = "{}{}: ".format(m["precoMin"], m["voltar"])
+                    minimo = digitarNumero(userInput, m["precoMinErr"])
                     if not minimo:
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     if opcao_1 == "6":
                         busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                                     .sort("preco", 1)
@@ -223,17 +225,15 @@ def menuBusca(opcoes, db):
                         busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                                     .sort("preco", -1)
                 # Item 56 - Definir preços máximo e mínimo, por preço
-                elif opcao_1 in ["56", "-56"]:
-                    userInput = " * Digite o preço máximo (ou [V]oltar): "
-                    error = "Erro: o preço máximo deve ser inteiro ou decimal: "
-                    maximo = digitarNumero(userInput, error)
+                elif opcao_1 in ["56", "-56", "56-"]:
+                    userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
+                    maximo = digitarNumero(userInput, m["precoMaxErr"])
                     if not maximo:
-                        return menuBusca(opcoes, db)
-                    userInput = " * Digite o preço mínimo (ou [V]oltar): "
-                    error = "Erro: o preço mínimo deve ser inteiro ou decimal: "
-                    minimo = digitarNumero(userInput, error)
+                        return menuBusca(opcoes, m, db)
+                    userInput = "{}{}: ".format(m["precoMin"], m["voltar"])
+                    minimo = digitarNumero(userInput, m["precoMinErr"])
                     if not minimo:
-                        return menuBusca(opcoes, db)
+                        return menuBusca(opcoes, m, db)
                     if opcao_1 == "56":
                         busca = db.Produtos.find(
                             {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
@@ -244,8 +244,8 @@ def menuBusca(opcoes, db):
                         ).sort("preco", -1)
                 return (opcao_1, busca)
     ## Opção inválida
-    print("** ERRO! Opção inválida! **\n")
-    return menuBusca(opcoes, db)
+    print("{}\n".format(m["opcaoInvalida"]))
+    return menuBusca(opcoes, m, db)
     
 def buscarProdutos(db):
     opcoes = [
@@ -254,12 +254,25 @@ def buscarProdutos(db):
         # 1 Ordem alfabética
         ["1", "3", "4", "34"],
         # 2 Ordem alfabética inversa
-        ["-1", "-3", "-4", "-34"],
+        ["-1", "1-", "-3", "3-", "-4", "4-","-34", "34-"],
         # 3 Input numérico
-        ["2", "-2", "5", "-5", "6", "-6", "56", "-56"]
+        [
+            "2", "-2", "2-", "5", "-5", "5-",
+            "6", "-6", "6-", "56", "-56", "56-"
+        ]
     ]
 
-    termosBusca = menuBusca(opcoes, db)
+    m = {
+        "voltar": " (ou [V]oltar)", 
+        "tchau": "Obrigado por consultar os produtos, até logo!",
+        "precoMin": " * Digite o preço mínimo",
+        "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
+        "precoMax": " * Digite o preço máximo",
+        "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
+        "opcaoInvalida": "** ERRO! Opção inválida! **"
+    }
+
+    termosBusca = menuBusca(opcoes, m, db)
     if not termosBusca:
         return
     
