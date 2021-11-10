@@ -25,7 +25,7 @@ def verificarMongo(mongoURL, timeout):
 def reconectar(mongoURL):
     retry = input().lower()
     if retry in ["s",  "sim", "y", "yes"]:
-        verificarBusca(mongoURL)
+        return verificarBusca(mongoURL)
     elif retry in ["n", "não", "nao", "no", "non", "nein"]:
         print("A busca funciona em um banco de dados cujos itens possuem as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
         return False
@@ -162,7 +162,7 @@ def menuBusca(opcoes, db):
                     busca = db.Produtos.find({},{"_id":0}).sort("tipo", -1)
                 # Item 3 - Por tipo
                 elif opcao_1 in ["3", "-3"]:
-                    opcao_tipo = input("Digite o tipo desejado (ou [V]oltar): ")
+                    opcao_tipo = input(" * Digite o tipo desejado (ou [V]oltar): ")
                     if voltar(opcao_tipo):
                         return menuBusca(opcoes, db)
                     busca = db.Produtos.find({"$or": [
@@ -170,7 +170,7 @@ def menuBusca(opcoes, db):
                     ]}, {"_id":0})
                 # Item 4 - Por subtipo
                 elif opcao_1 in ["4", "-4"]:
-                    opcao_subtipo = input("Digite o subtipo (ou [V]oltar): ")
+                    opcao_subtipo = input(" * Digite o subtipo (ou [V]oltar): ")
                     if voltar(opcao_subtipo):
                         return menuBusca(opcoes, db)
                     busca = db.Produtos.find({"$or": [
@@ -179,7 +179,7 @@ def menuBusca(opcoes, db):
                     ]}, {"_id":0})
                 # Item 34 - Por tipo e subtipo
                 elif opcao_1 in ["34", "-34"]:
-                    opcao_2 = input("Digite o tipo ou subtipo (ou [V]oltar): ")
+                    opcao_2 = input(" * Digite o tipo ou subtipo (ou [V]oltar): ")
                     if voltar(opcao_2):
                         return menuBusca(opcoes, db)
                     busca = db.Produtos.find({"$or": [
@@ -198,7 +198,7 @@ def menuBusca(opcoes, db):
                     busca = db.Produtos.find({},{"_id":0}).sort("preco", -1)
                 # Item 5 - definir preço máximo
                 elif opcao_1 in ["5", "-5"]:
-                    userInput = "Digite o preço máximo (ou [V]oltar): "
+                    userInput = " * Digite o preço máximo (ou [V]oltar): "
                     error = "Erro: o preço máximo deve ser inteiro ou decimal: "
                     maximo = digitarNumero(userInput, error)
                     if not maximo:
@@ -211,7 +211,7 @@ def menuBusca(opcoes, db):
                                     .sort("preco", -1)
                 # Item 6 - definir preço mínimo
                 elif opcao_1 in ["6", "-6"]:
-                    userInput = "Digite o preço mínimo (ou [V]oltar): "
+                    userInput = " * Digite o preço mínimo (ou [V]oltar): "
                     error = "Erro: o preço mínimo deve ser inteiro ou decimal: "
                     minimo = digitarNumero(userInput, error)
                     if not minimo:
@@ -224,12 +224,12 @@ def menuBusca(opcoes, db):
                                     .sort("preco", -1)
                 # Item 56 - Definir preços máximo e mínimo
                 elif opcao_1 in ["56", "-56"]:
-                    userInput = "Digite o preço máximo (ou [V]oltar): "
+                    userInput = " * Digite o preço máximo (ou [V]oltar): "
                     error = "Erro: o preço máximo deve ser inteiro ou decimal: "
                     maximo = digitarNumero(userInput, error)
                     if not maximo:
                         return menuBusca(opcoes, db)
-                    userInput = "Digite o preço mínimo (ou [V]oltar): "
+                    userInput = " * Digite o preço mínimo (ou [V]oltar): "
                     error = "Erro: o preço mínimo deve ser inteiro ou decimal: "
                     minimo = digitarNumero(userInput, error)
                     if not minimo:
