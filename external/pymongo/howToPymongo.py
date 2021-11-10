@@ -5,16 +5,10 @@ sys.path.append("/home/morbi/python/external/dict")
 from texto import Texto as T
 from listas import Listas as L
 
-def iniciarBusca(mongoURL):
-    if not verificarMongo(mongoURL, 1500):
-        reconectar(mongoURL)
-    else:
-        client = pymongo.MongoClient(mongoURL)
-        with client:
-            db = client.test
-        print("Bem vindo à busca de produtos!", end=" ")
-        print("Vamos encontrar o que você precisa:\n")
-        buscarProdutos(db)
+def verificarBusca(mongoURL):
+    while not verificarMongo(mongoURL, 1500):
+        return reconectar(mongoURL)
+    return True
 
 def verificarMongo(mongoURL, timeout):
     try:
@@ -25,13 +19,13 @@ def verificarMongo(mongoURL, timeout):
     except:
         print("ERRO: Conexão ao mongoDb recusada.")
         print("Por favor inicie o mongodDb ou verifique o endereço do MongoClient.")
+        print("Tentar novamente?", end=" ")
         return False
 
 def reconectar(mongoURL):
-    print("Tentar novamente?", end=" ")
     retry = input().lower()
     if retry in ["s",  "sim", "y", "yes"]:
-        iniciarBusca(mongoURL)
+        verificarBusca(mongoURL)
     elif retry in ["n", "não", "nao", "no", "non", "nein"]:
         print("A busca funciona em um banco de dados cujos itens possuem as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
         return False
@@ -108,10 +102,8 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
 
     listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
     
-def digitarNumero(textoInput, textoErro, db):
-    numero = input(textoInput)
-    voltar(numero, db)
-    numero = T.verificar_numero(numero)
+def digitarNumero(textoInput, textoErro):
+    numero = T.verificar_numero(input(textoInput))
     while not numero:
         numero = T.verificar_numero(input(textoErro))
     return numero
@@ -133,9 +125,9 @@ def novaBusca(db):
 def voltar(opcao, db):
     if opcao.lower() in ["v", "voltar"]:
         print()
-        return buscarProdutos(db)
+        return menuBusca(db)
     
-def buscarProdutos(db):
+def menuBusca(db):
     print(
 '''Escolha uma das opções abaixo (adicione '-' para inverter [Ex: -34])
     * Exibir todos, ordenados por:
@@ -149,7 +141,11 @@ def buscarProdutos(db):
     busca = []
 
     opcao_1 = input()
-    if opcao_1 == "1":
+    
+    if opcao_1 in ["s", "sair", "exit", "quit", "-"]:
+        return print("\nObrigado por consultar os produtos, até logo!")
+    
+    elif opcao_1 == "1":
         busca = db.Produtos.find({},{"_id":0}).sort("tipo", 1)
     elif opcao_1 == "-1":
         busca = db.Produtos.find({},{"_id":0}).sort("tipo", -1)
@@ -186,8 +182,9 @@ def buscarProdutos(db):
     elif opcao_1 in ["5", "-5"]:
         maximo = digitarNumero(
             "Digite o preço máximo (ou [V]oltar): ",
-            "Erro: o preço máximo deve ser inteiro ou decimal: ", db
+            "Erro: o preço máximo deve ser inteiro ou decimal: "
         )
+        voltar(str(maximo), db)
         if opcao_1 == "5":
             busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
                         .sort("preco", 1)
@@ -198,8 +195,9 @@ def buscarProdutos(db):
     elif opcao_1 in ["6", "-6"]:
         minimo = digitarNumero(
             "Digite o preço mínimo (ou [V]oltar): ",
-            "Erro: o preço mínimo deve ser inteiro ou decimal: ", db
+            "Erro: o preço mínimo deve ser inteiro ou decimal: "
         )
+        voltar(str(minimo), db)
         if opcao_1 == "6":
             busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                         .sort("preco", 1)
@@ -210,12 +208,14 @@ def buscarProdutos(db):
     elif opcao_1 in ["56", "-56"]:
         maximo = digitarNumero(
             "Digite o preço máximo (ou [V]oltar): ",
-            "Erro: o preço máximo deve ser inteiro ou decimal: ", db
+            "Erro: o preço máximo deve ser inteiro ou decimal: "
         )
+        voltar(str(maximo), db)
         minimo = digitarNumero(
             "Digite o preço mínimo (ou [V]oltar): ",
-            "Erro: o preço mínimo deve ser inteiro ou decimal: ", db
+            "Erro: o preço mínimo deve ser inteiro ou decimal: "
         )
+        voltar(str(minimo), db)
         if opcao_1 == "56":
             busca = db.Produtos.find(
                 {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
@@ -224,28 +224,41 @@ def buscarProdutos(db):
             busca = db.Produtos.find(
                 {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
             ).sort("preco", -1)
-
-    elif opcao_1 in ["s", "sair", "exit", "quit", "-"]:
-        return print("\nObrigado por consultar os produtos, até logo!")
     else:
         print("** ERRO! Opção inválida! **\n")
-        return buscarProdutos(db)
-
+        return menuBusca(db)
+    return (opcao_1, busca)
+    
+def buscarProdutos(db):
+    termosBusca = menuBusca(db)
+    opcao = termosBusca[0]
+    busca = termosBusca[1]
     print()
     # 1.1 ordem alfabética
-    if opcao_1 in ["1", "3", "4", "34"]:
+    if opcao in ["1", "3", "4", "34"]:
         imprimirListaProdutos("–", busca, 1, "nome")
     # 1.2 ordem alfabética inversa
-    elif opcao_1.lower() in ["-1", "-3", "-4", "-34"]:
+    elif opcao.lower() in ["-1", "-3", "-4", "-34"]:
         imprimirListaProdutos("–", busca, 1, "nome", 1)
     # 2. demais casos (onde ordenação do mongodb basta)
     else:
         imprimirListaProdutos("–", busca)
     print()
-    return novaBusca(db)
+    novaBusca(db)
 
 def main():
-    iniciarBusca("mongodb://127.0.0.1:27017")
+    mongoURL = "mongodb://127.0.0.1:27017"
+
+    if verificarBusca(mongoURL):
+        client = pymongo.MongoClient(mongoURL)
+        with client:
+            db = client.test
+
+        print("Bem vindo à busca de produtos!", end=" ")
+        print("Vamos encontrar o que você precisa:\n")
+        buscarProdutos(db)
+    else:
+        return
 
 if __name__ == "__main__":
     main()
