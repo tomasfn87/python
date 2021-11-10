@@ -222,7 +222,7 @@ def menuBusca(opcoes, db):
                     else:
                         busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
                                     .sort("preco", -1)
-                # Item 56 - Definir preços máximo e mínimo
+                # Item 56 - Definir preços máximo e mínimo, por preço
                 elif opcao_1 in ["56", "-56"]:
                     userInput = " * Digite o preço máximo (ou [V]oltar): "
                     error = "Erro: o preço máximo deve ser inteiro ou decimal: "
@@ -249,13 +249,13 @@ def menuBusca(opcoes, db):
     
 def buscarProdutos(db):
     opcoes = [
-        # Sair
+        # 0 Sair
         ["s", "sair", "exit", "quit", "-"],
-        # Ordem alfabética
+        # 1 Ordem alfabética
         ["1", "3", "4", "34"],
-        # Ordem alfabética inversa
+        # 2 Ordem alfabética inversa
         ["-1", "-3", "-4", "-34"],
-        # Input numérico
+        # 3 Input numérico
         ["2", "-2", "5", "-5", "6", "-6", "56", "-56"]
     ]
 
@@ -267,13 +267,13 @@ def buscarProdutos(db):
     busca = termosBusca[1]
 
     print()
-    # 1.1 Ordem alfabética
+    # 1 Ordem alfabética
     if opcao in opcoes[1]:
         imprimirListaProdutos("–", busca, 1, "nome")
-    # 1.2 Ordem alfabética inversa
+    # 2 Ordem alfabética inversa
     elif opcao.lower() in opcoes[2]:
         imprimirListaProdutos("–", busca, 1, "nome", 1)
-    # 2 Demais casos (onde ordenação do mongodb basta)
+    # * Demais casos: mongoDb já traz ordenado
     else:
         imprimirListaProdutos("–", busca)
     print()
