@@ -269,27 +269,29 @@ def buscarProdutos(db):
 
     m = {
         "menu": 
-'''Escolha uma das opções abaixo para iniciar a Busca:
-   ('-' para ordem inversa. Ex: '-34' ou '34-')
 
-      Exibir    |               Buscar
-================|====================================
-      Todos     |       Tipo       |      Preço
-................|..................:.................
-    1  nome     |    3  tipo       :    5  máximo
-    2  preço    |    4  subtipo    :    6  mínimo
-                |   34  ambos      :   56  ambos''',
-
-        "selecionar": " * Digite uma das opções acima ou [S]air: ",
+'''
+    ./:/:/:/:/:/:/:/:/:|:|:|:|:|:|:\:\:\:\:\:\:\:\:\:\.
+  ./:/:/:/:/:/:/:/:/: A Casa da Busca :\:\:\:\:\:\:\:\:\.
+./:/:/:/:/:/:/:/:/:/|:|:|:|:|:|:|:|:|:|\:\:\:\:\:\:\:\:\:\.
+  |     Exibir     |               Buscar               |
+  |................|....................................|
+  |      Todos     |       Tipo       |       Preço     | 
+  |.... ...........|...  .............:...  ............|
+  |    1. nome     |    3. tipo       :    5. máximo    |
+  |    2. preço    |    4. subtipo    :    6. mínimo    |
+  |                |   34. ambos      :   56. ambos     |
+===========================================================''',
+        "selecionar": "        * Digite uma das opções acima ou [S]air: ",
         "voltar": " (ou [V]oltar)", 
         "tchau": "Obrigado por consultar os produtos, até logo!",
         #inputs {
-        "tipo": " * Digite o tipo",
-        "subtipo": " * Digite o subtipo{}: ",
-        "tipoSubtipo": " * Digite o tipo ou subtipo",
-        "precoMin": " * Digite o preço mínimo",
+        "tipo": "        * Digite o tipo",
+        "subtipo": "        * Digite o subtipo{}: ",
+        "tipoSubtipo": "        * Digite o tipo ou subtipo",
+        "precoMin": "        * Digite o preço mínimo",
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
-        "precoMax": " * Digite o preço máximo",
+        "precoMax": "        * Digite o preço máximo",
         "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
         # }
         "opcaoInvalida": "** ERRO! Opção inválida! **"
