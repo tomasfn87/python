@@ -130,17 +130,29 @@ def novaBusca(db):
         return novaBusca(db)
 
 def voltar(opcao):
-    if str(opcao).lower() in ["v", "voltar"]:
+    if opcao.lower() in ["v", "voltar"]:
         print()
         return True
     return False
-    
+
+def buscar(collection, query1, query2=False, sortBy=False, order=False):
+    if not query2:
+        termos = collection.find(query1)
+    else:
+        termos = collection.find(query1, query2)
+    if sortBy and order:
+        termos = termos.sort(sortBy, order)
+    elif sortBy:
+        termos = termos.sort(sortBy)
+    return termos
+
 def menuBusca(opcoes, m, db):
     print(m["menu"])
     print("\n{}".format(m["selecionar"]), end="")
 
     busca = []
     opcao_1 = input()
+    prod = db.Produtos
 
     for i in opcoes:
         if opcao_1 in i:
@@ -152,47 +164,47 @@ def menuBusca(opcoes, m, db):
             ## Ordem alfabética
             elif opcao_1 in opcoes[1] or opcao_1 in opcoes[2]:
                 # Item 1 - Todos, por nome
-                if opcao_1 == "1":
-                    busca = db.Produtos.find({},{"_id":0}).sort("tipo", 1)
-                elif opcao_1 in ["-1", "1-"]:
-                    busca = db.Produtos.find({},{"_id":0}).sort("tipo", -1)
+                if opcao_1 in ["1", "-1", "1-"]:
+                    busca = buscar(prod, {}, {"_id": 0})
                 # Item 3 - Por tipo Ex: laranja, banana
                 elif opcao_1 in ["3", "-3", "3-"]:
-                    
-                    opcao_tipo = input("{}{}: ".format(m["tipo"], m["voltar"]))
+                    inputUsuario = ("{}{}: ").format(m["tipo"], m["voltar"])
+                    opcao_tipo = input(inputUsuario)
                     if voltar(opcao_tipo):
                         return menuBusca(opcoes, m, db)
-                    busca = db.Produtos.find({"$or": [
+                    busca = buscar(prod, {"$or": [
                         {"tipo": opcao_tipo.lower()}
-                    ]}, {"_id":0})
+                    ]}, {"_id": 0})
                 # Item 4 - Por subtipo Ex: lima, nanica
                 elif opcao_1 in ["4", "-4", "4-"]:
-                    opcao_subtipo = input("{}{}: ".format(m["subtipo"], m["voltar"]))
+                    inputUsuario = ("{}{}: ").format(m["subtipo"], m["voltar"])
+                    opcao_subtipo = input(inputUsuario)
                     if voltar(opcao_subtipo):
                         return menuBusca(opcoes, m, db)
-                    busca = db.Produtos.find({"$or": [
+                    busca = buscar(prod, {"$or": [
                         {"subtipo": opcao_subtipo.lower()},
                         {"subtipo": opcao_subtipo.lower().capitalize()}
-                    ]}, {"_id":0})
+                    ]}, {"_id": 0})
                 # Item 34 - Por tipo e subtipo Ex: pera, verde
                 elif opcao_1 in ["34", "-34", "34-"]:
-                    opcao_2 = input("{}{}: ".format(m["voltar"]))
-                    if voltar(opcao_2):
+                    inputUsuario = ("{}{}: ").format(m["tipoSubtipo"], m["voltar"])
+                    opcao_tipoSubtipo = input(inputUsuario)
+                    if voltar(opcao_tipoSubtipo):
                         return menuBusca(opcoes, m, db)
-                    busca = db.Produtos.find({"$or": [
-                        {"tipo": opcao_2.lower()},
-                        {"subtipo": opcao_2.lower()},
-                        {"subtipo": opcao_2.lower().capitalize()}
-                    ]}, {"_id":0})
+                    busca = buscar(prod, {"$or": [
+                        {"tipo": opcao_tipoSubtipo.lower()},
+                        {"subtipo": opcao_tipoSubtipo.lower()},
+                        {"subtipo": opcao_tipoSubtipo.lower().capitalize()}
+                    ]})
                 return (opcao_1, busca)
 
             ## Ordem numérica
             elif opcao_1 in opcoes[3]:
                 # Item 2 - todos, por preço
                 if opcao_1 == "2":
-                    busca = db.Produtos.find({},{"_id":0}).sort("preco", 1)
+                    busca = buscar(prod, {}, {"_id": 0}, "preco")
                 elif opcao_1 in ["-2", "2-"]:
-                    busca = db.Produtos.find({},{"_id":0}).sort("preco", -1)
+                    busca = buscar(prod, {}, {"_id": 0}, "preco", -1)
                 # Item 5 - definir preço máximo, por preço
                 elif opcao_1 in ["5", "-5", "5-"]:
                     userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
@@ -200,11 +212,11 @@ def menuBusca(opcoes, m, db):
                     if not maximo:
                         return menuBusca(opcoes, m, db)
                     if opcao_1 == "5":
-                        busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
-                                    .sort("preco", 1)
+                        busca = buscar(prod, {"preco": {"$lte": maximo}},\
+                            {"_id": 0}, "preco")
                     else:
-                        busca = db.Produtos.find({"preco": {"$lte": maximo}},{"_id":0})\
-                                    .sort("preco", -1)
+                        busca = buscar(prod, {"preco": {"$lte": maximo}},\
+                            {"_id": 0}, "preco", -1)
                 # Item 6 - definir preço mínimo, por preço
                 elif opcao_1 in ["6", "-6", "6-"]:
                     userInput = "{}{}: ".format(m["precoMin"], m["voltar"])
@@ -212,11 +224,11 @@ def menuBusca(opcoes, m, db):
                     if not minimo:
                         return menuBusca(opcoes, m, db)
                     if opcao_1 == "6":
-                        busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
-                                    .sort("preco", 1)
+                        busca = buscar(prod, {"preco": {"$gte": minimo}},\
+                            {"_id":0}, "preco")
                     else:
-                        busca = db.Produtos.find({"preco": {"$gte": minimo}},{"_id":0})\
-                                    .sort("preco", -1)
+                        busca = buscar(prod, {"preco": {"$gte": minimo}},\
+                            {"_id":0}, "preco", -1)
                 # Item 56 - Definir preços máximo e mínimo, por preço
                 elif opcao_1 in ["56", "-56", "56-"]:
                     userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
@@ -228,18 +240,18 @@ def menuBusca(opcoes, m, db):
                     if not minimo:
                         return menuBusca(opcoes, m, db)
                     if opcao_1 == "56":
-                        busca = db.Produtos.find(
-                            {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
-                        ).sort("preco", 1)
+                        busca = buscar(prod,
+                            {"preco": {"$lte": maximo, "$gte": minimo}},\
+                                {"_id":0}, "preco")
                     else:
-                        busca = db.Produtos.find(
-                            {"preco": {"$lte": maximo, "$gte": minimo}},{"_id":0}\
-                        ).sort("preco", -1)
+                        busca = buscar(prod,
+                            {"preco": {"$lte": maximo, "$gte": minimo}},\
+                                {"_id":0}, "preco", -1)
                 return (opcao_1, busca)
     ## Opção inválida
     print("{}\n".format(m["opcaoInvalida"]))
     return menuBusca(opcoes, m, db)
-    
+
 def buscarProdutos(db):
     opcoes = [
         # 0 Sair
@@ -260,17 +272,18 @@ def buscarProdutos(db):
 '''Escolha uma das opções abaixo para iniciar a Busca:
    ('-' para ordem inversa. Ex: '-34' ou '34-')
 
-      Todos     |           Buscar
+      Exibir    |               Buscar
 ================|====================================
-                |      Tipo        |     Preço        
-----------------|------------------|-----------------
-    1  nome     |    3  tipo       |    5  mínimo
-    2  preço    |    4  subtipo    |    6  máximo
-                |   34  ambos      |   56  ambos''',
+      Todos     |       Tipo       |      Preço
+................|..................:.................
+    1  nome     |    3  tipo       :    5  máximo
+    2  preço    |    4  subtipo    :    6  mínimo
+                |   34  ambos      :   56  ambos''',
 
         "selecionar": " * Digite uma das opções acima ou [S]air: ",
         "voltar": " (ou [V]oltar)", 
         "tchau": "Obrigado por consultar os produtos, até logo!",
+        #inputs {
         "tipo": " * Digite o tipo",
         "subtipo": " * Digite o subtipo{}: ",
         "tipoSubtipo": " * Digite o tipo ou subtipo",
@@ -278,13 +291,14 @@ def buscarProdutos(db):
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
         "precoMax": " * Digite o preço máximo",
         "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
+        # }
         "opcaoInvalida": "** ERRO! Opção inválida! **"
     }
 
     termosBusca = menuBusca(opcoes, m, db)
     if not termosBusca:
         return
-    
+
     opcao = termosBusca[0]
     busca = termosBusca[1]
 
@@ -308,7 +322,6 @@ def main():
         client = pymongo.MongoClient(mongoURL)
         with client:
             db = client.test
-        
         buscarProdutos(db)
     else:
         return
