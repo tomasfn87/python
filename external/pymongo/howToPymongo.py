@@ -148,11 +148,15 @@ def buscar(collection, query1, query2=False, sortBy=False, order=False):
 
 def menuBusca(opcoes, m, db):
     print(m["menu"])
-    print("\n{}".format(m["selecionar"]), end="")
-
+    
     busca = []
-    opcao_1 = input()
     prod = db.Produtos
+    margem = 13
+
+    print("{}{}".format(T.espacar(margem-3), m["comoInverter"]))
+    print("{}{}".format(T.espacar(margem), m["selecionar"]), end="")
+
+    opcao_1 = input()
 
     for i in opcoes:
         if opcao_1 in i:
@@ -168,7 +172,7 @@ def menuBusca(opcoes, m, db):
                     busca = buscar(prod, {}, {"_id": 0})
                 # Item 3 - Por tipo Ex: laranja, banana
                 elif opcao_1 in ["3", "-3", "3-"]:
-                    inputUsuario = ("{}{}: ").format(m["tipo"], m["voltar"])
+                    inputUsuario = ("{}{}{}: ").format(T.espacar(margem), m["tipo"], m["voltar"])
                     opcao_tipo = input(inputUsuario)
                     if voltar(opcao_tipo):
                         return menuBusca(opcoes, m, db)
@@ -177,7 +181,7 @@ def menuBusca(opcoes, m, db):
                     ]}, {"_id": 0})
                 # Item 4 - Por subtipo Ex: lima, nanica
                 elif opcao_1 in ["4", "-4", "4-"]:
-                    inputUsuario = ("{}{}: ").format(m["subtipo"], m["voltar"])
+                    inputUsuario = ("{}{}{}: ").format(T.espacar(margem), m["subtipo"], m["voltar"])
                     opcao_subtipo = input(inputUsuario)
                     if voltar(opcao_subtipo):
                         return menuBusca(opcoes, m, db)
@@ -187,7 +191,7 @@ def menuBusca(opcoes, m, db):
                     ]}, {"_id": 0})
                 # Item 34 - Por tipo e subtipo Ex: pera, verde
                 elif opcao_1 in ["34", "-34", "34-"]:
-                    inputUsuario = ("{}{}: ").format(m["tipoSubtipo"], m["voltar"])
+                    inputUsuario = ("{}{}{}: ").format(T.espacar(margem), m["tipoSubtipo"], m["voltar"])
                     opcao_tipoSubtipo = input(inputUsuario)
                     if voltar(opcao_tipoSubtipo):
                         return menuBusca(opcoes, m, db)
@@ -207,7 +211,7 @@ def menuBusca(opcoes, m, db):
                     busca = buscar(prod, {}, {"_id": 0}, "preco", -1)
                 # Item 5 - definir preço máximo, por preço
                 elif opcao_1 in ["5", "-5", "5-"]:
-                    userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
+                    userInput = "{}{}: ".format(T.espacar(margem), m["precoMax"], m["voltar"])
                     maximo = digitarNumero(userInput, m["precoMaxErr"])
                     if not maximo:
                         return menuBusca(opcoes, m, db)
@@ -219,7 +223,7 @@ def menuBusca(opcoes, m, db):
                             {"_id": 0}, "preco", -1)
                 # Item 6 - definir preço mínimo, por preço
                 elif opcao_1 in ["6", "-6", "6-"]:
-                    userInput = "{}{}: ".format(m["precoMin"], m["voltar"])
+                    userInput = "{}{}: ".format(T.espacar(margem), m["precoMin"], m["voltar"])
                     minimo = digitarNumero(userInput, m["precoMinErr"])
                     if not minimo:
                         return menuBusca(opcoes, m, db)
@@ -231,11 +235,11 @@ def menuBusca(opcoes, m, db):
                             {"_id":0}, "preco", -1)
                 # Item 56 - Definir preços máximo e mínimo, por preço
                 elif opcao_1 in ["56", "-56", "56-"]:
-                    userInput = "{}{}: ".format(m["precoMax"], m["voltar"])
+                    userInput = "{}{}: ".format(T.espacar(margem), m["precoMax"], m["voltar"])
                     maximo = digitarNumero(userInput, m["precoMaxErr"])
                     if not maximo:
                         return menuBusca(opcoes, m, db)
-                    userInput = "{}{}: ".format(m["precoMin"], m["voltar"])
+                    userInput = "{}{}: ".format(T.espacar(margem), m["precoMin"], m["voltar"])
                     minimo = digitarNumero(userInput, m["precoMinErr"])
                     if not minimo:
                         return menuBusca(opcoes, m, db)
@@ -268,30 +272,35 @@ def buscarProdutos(db):
     ]
 
     m = {
-        "menu": 
+        "menu":
+'''                                            .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
+                                              :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
+         __________________________________________|_|__________    :*:.:.*.:.\\.:.| :/:*/:.:*:.:.:
+      ./:/:/:/:/:/:/:/:/:/:/:   Bem vindos à  :\:\:\:\:\:\:\:\:\:\.  :.:*\\.:.\\*:\||.|.:|:/.:*:.:
+    ./:/:/:/:/:/:/:/:/:/:/:/:  Casa da Busca  :\:\:\:\:\:\:\:\:\:\:\. *.:.:\\:\\\\:.||/.:.|.*|.:*:
+  ./:/:/:/:/:/:/:/:/:/:/:/:|:|:|:|:|:|:|:|:|:|:|:\:\:\:\:\:\:\:\:\:\:\. .:\\_\\\\*:.|| :.//:/:*:.
+ =======================================================================     \\\\  ||  //
+        |     Exibir     |               Buscar                |               \\\\| |//
+        |...... .........|....... .................. ..........|                \   /
+        |      Todos     |       Tipo       :       Preço      |                 | |
+        |.... ...........|... ..............:... ..............|                 | |
+        |    1. nome     |    3. tipo       :    5. máximo     |                 | | 
+        |    1. preço    |    4. subtipo    :    6. mínimo     |                 | |    \|    |
+|\\      |                |   34. ambos      :   56. ambos      |         \       | |     |  \/
+/\\|/____|                |                  :                  |_________\\\|____/   \____\__|_______
+''',
 
-'''
-    ./:/:/:/:/:/:/:/:/:|:|:|:|:|:|:\:\:\:\:\:\:\:\:\:\.
-  ./:/:/:/:/:/:/:/:/: A Casa da Busca :\:\:\:\:\:\:\:\:\.
-./:/:/:/:/:/:/:/:/:/|:|:|:|:|:|:|:|:|:|\:\:\:\:\:\:\:\:\:\.
-  |     Exibir     |               Buscar               |
-  |................|....................................|
-  |      Todos     |       Tipo       |       Preço     | 
-  |.... ...........|...  .............:...  ............|
-  |    1. nome     |    3. tipo       :    5. máximo    |
-  |    2. preço    |    4. subtipo    :    6. mínimo    |
-  |                |   34. ambos      :   56. ambos     |
-===========================================================''',
-        "selecionar": "        * Digite uma das opções acima ou [S]air: ",
+        "comoInverter": "(- para exibir na ordem inversa  Ex: -56 ou 56-)",
+        "selecionar": "* Digite uma das opções acima ou [S]air: ",
         "voltar": " (ou [V]oltar)", 
         "tchau": "Obrigado por consultar os produtos, até logo!",
         #inputs {
-        "tipo": "        * Digite o tipo",
-        "subtipo": "        * Digite o subtipo{}: ",
-        "tipoSubtipo": "        * Digite o tipo ou subtipo",
-        "precoMin": "        * Digite o preço mínimo",
+        "tipo": "* Digite o tipo",
+        "subtipo": "* Digite o subtipo{}: ",
+        "tipoSubtipo": "* Digite o tipo ou subtipo",
+        "precoMin": "* Digite o preço mínimo",
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
-        "precoMax": "        * Digite o preço máximo",
+        "precoMax": "* Digite o preço máximo",
         "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
         # }
         "opcaoInvalida": "** ERRO! Opção inválida! **"
