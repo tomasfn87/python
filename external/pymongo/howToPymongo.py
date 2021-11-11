@@ -136,15 +136,8 @@ def voltar(opcao):
     return False
     
 def menuBusca(opcoes, m, db):
-    print(
-'''Escolha uma das opções abaixo (adicione '-' para inverter [Ex: -34 ou 34-])
-    * Exibir todos, ordenados por:
-                - 1) nome    - 2) preço
-    * Buscar por:
-      - Tipo:   - 3) tipo    - 4) subtipo  - 34) ambos
-      - Preço:  - 5) máximo  - 6) mínimo   - 56) ambos'''
-    )
-    print("\n * Digite uma das opções acima ou [S]air: ", end="")
+    print(m["menu"])
+    print("\n{}".format(m["selecionar"]), end="")
 
     busca = []
     opcao_1 = input()
@@ -166,7 +159,7 @@ def menuBusca(opcoes, m, db):
                 # Item 3 - Por tipo Ex: laranja, banana
                 elif opcao_1 in ["3", "-3", "3-"]:
                     
-                    opcao_tipo = input(" * Digite o tipo{}: ".format(m["voltar"]))
+                    opcao_tipo = input("{}{}: ".format(m["tipo"], m["voltar"]))
                     if voltar(opcao_tipo):
                         return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
@@ -174,7 +167,7 @@ def menuBusca(opcoes, m, db):
                     ]}, {"_id":0})
                 # Item 4 - Por subtipo Ex: lima, nanica
                 elif opcao_1 in ["4", "-4", "4-"]:
-                    opcao_subtipo = input(" * Digite o subtipo{}: ".format(m["voltar"]))
+                    opcao_subtipo = input("{}{}: ".format(m["subtipo"], m["voltar"]))
                     if voltar(opcao_subtipo):
                         return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
@@ -183,7 +176,7 @@ def menuBusca(opcoes, m, db):
                     ]}, {"_id":0})
                 # Item 34 - Por tipo e subtipo Ex: pera, verde
                 elif opcao_1 in ["34", "-34", "34-"]:
-                    opcao_2 = input(" * Digite o tipo ou subtipo{}: ".format(m["voltar"]))
+                    opcao_2 = input("{}{}: ".format(m["voltar"]))
                     if voltar(opcao_2):
                         return menuBusca(opcoes, m, db)
                     busca = db.Produtos.find({"$or": [
@@ -263,8 +256,24 @@ def buscarProdutos(db):
     ]
 
     m = {
+        "menu": 
+'''Escolha uma das opções abaixo para iniciar a Busca:
+   ('-' para ordem inversa. Ex: '-34' ou '34-')
+
+      Todos     |           Buscar
+================|====================================
+                |      Tipo        |     Preço        
+----------------|------------------|-----------------
+    1  nome     |    3  tipo       |    5  mínimo
+    2  preço    |    4  subtipo    |    6  máximo
+                |   34  ambos      |   56  ambos''',
+
+        "selecionar": " * Digite uma das opções acima ou [S]air: ",
         "voltar": " (ou [V]oltar)", 
         "tchau": "Obrigado por consultar os produtos, até logo!",
+        "tipo": " * Digite o tipo",
+        "subtipo": " * Digite o subtipo{}: ",
+        "tipoSubtipo": " * Digite o tipo ou subtipo",
         "precoMin": " * Digite o preço mínimo",
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
         "precoMax": " * Digite o preço máximo",
@@ -299,9 +308,7 @@ def main():
         client = pymongo.MongoClient(mongoURL)
         with client:
             db = client.test
-
-        print("Bem vindo à busca de produtos!", end=" ")
-        print("Vamos encontrar o que você precisa:\n")
+        
         buscarProdutos(db)
     else:
         return
