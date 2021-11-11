@@ -146,7 +146,10 @@ def buscar(collection, query1, query2=False, sortBy=False, order=False):
         termos = termos.sort(sortBy)
     return termos
 
-def menuBusca(opcoes, m, db):
+def menuBusca(opcoes, mensagens, db):
+    o = opcoes
+    m = mensagens
+
     print(m["menu"])
     
     busca = []
@@ -161,7 +164,7 @@ def menuBusca(opcoes, m, db):
     for i in opcoes:
         if opcao_1 in i:
             ## Sair
-            if opcao_1 in opcoes[0]:
+            if opcao_1 in o["sair"]:
                 print("\n{}".format(m["tchau"]))
                 return False
 
@@ -171,7 +174,8 @@ def menuBusca(opcoes, m, db):
                 if opcao_1 in ["1", "-1", "1-"]:
                     busca = buscar(prod, {}, {"_id": 0})
                 # Item 3 - Por tipo Ex: laranja, banana
-                elif opcao_1 in ["3", "-3", "3-"]:
+                elif opcao_1 in o or \
+                    opcao_1 in opcoes.ord.alf.tipo.invertida:
                     inputUsuario = ("{}{}{}: ").format(T.espacar(margem), m["tipo"], m["voltar"])
                     opcao_tipo = input(inputUsuario)
                     if voltar(opcao_tipo):
@@ -190,7 +194,7 @@ def menuBusca(opcoes, m, db):
                         {"subtipo": opcao_subtipo.lower().capitalize()}
                     ]}, {"_id": 0})
                 # Item 34 - Por tipo e subtipo Ex: pera, verde
-                elif opcao_1 in ["34", "-34", "34-"]:
+                elif opcao_1 in ["34", "-34", "34-", "43", "-43", "43-"]:
                     inputUsuario = ("{}{}{}: ").format(T.espacar(margem), m["tipoSubtipo"], m["voltar"])
                     opcao_tipoSubtipo = input(inputUsuario)
                     if voltar(opcao_tipoSubtipo):
@@ -257,23 +261,52 @@ def menuBusca(opcoes, m, db):
     return menuBusca(opcoes, m, db)
 
 def buscarProdutos(db):
-    opcoes = [
-        # 0 Sair
-        ["s", "sair", "exit", "quit", "-"],
-        # 1 Ordem alfabética
-        ["1", "3", "4", "34"],
-        # 2 Ordem alfabética inversa
-        ["-1", "1-", "-3", "3-", "-4", "4-","-34", "34-"],
-        # 3 Input numérico
-        [
-            "2", "-2", "2-", "5", "-5", "5-",
-            "6", "-6", "6-", "56", "-56", "56-"
-        ]
-    ]
+    opcoes = {
+        "sair": ["s", "sair", "exit", "quit", "-"],
+        "ord": {
+            "alf": {
+                "todos": {
+                    "normal": ["1"],
+                    "invertida": ["-1", "1-"]
+                },
+                "tipo": {
+                    "normal": ["3"],
+                    "invertida": ["-3", "3-"]
+                },
+                "subtipo": {
+                    "normal": ["4"],
+                    "invertida": ["-4", "4-"]
+                },
+                "tipoSubtipo": {
+                    "normal": ["34", "43"],
+                    "invertida": ["-34", "34-", "3-4", "-43", "43-", "4-3"]
+                }
+            },
+            "num": {
+                "todos": {
+                    "normal": ["2"],
+                    "invertida": ["-2", "2-"]
+                },
+                "precoMax": {
+                    "normal": ["5"],
+                    "invertida": ["-5", "5-"]
+                },
+                "precoMin": {
+                    "normal": ["6"],
+                    "invertida": ["-6", "6-"]
+                },
+                "precoMaxMin": {
+                    "normal": ["56", "65"],
+                    "invertida": ["-56", "56-", "5-6", "-65", "65-", "6-5"]
+                }
+            }
+        }
+    }
 
-    m = {
+    mensagens = {
         "menu":
-'''                                            .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
+'''
+                                            .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
                                               :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
          __________________________________________|_|__________    :*:.:.*.:.\\.:.| :/:*/:.:*:.:.:
       ./:/:/:/:/:/:/:/:/:/:/:   Bem vinda à   :\:\:\:\:\:\:\:\:\:\.  :.:*\\.:.\\*:\||.|.:|:/.:*:.:
@@ -287,7 +320,7 @@ def buscarProdutos(db):
         |    1. nome     |    3. tipo       :    5. máximo     |                 | | 
         |    1. preço    |    4. subtipo    :    6. mínimo     |                 | |    \|    |
 |\\      |                |   34. ambos      :   56. ambos      |         \       | |     |  \/
-/\\|/____|                |                  :                  |_________\\\|____/   \____\__|_______
+/\\|/____|                |                  :                  |_________\\\\|____/   \____\__|_______
 ''',
 
         "comoInverter": "(- para exibir na ordem inversa  Ex: -56 ou 56-)",
@@ -302,11 +335,12 @@ def buscarProdutos(db):
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
         "precoMax": "* Digite o preço máximo",
         "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
+        "precoMaxMinErr": "Erro: o preço mínimo tem que ser menor que o preço máximo: ",
         # }
         "opcaoInvalida": "** ERRO! Opção inválida! **"
     }
 
-    termosBusca = menuBusca(opcoes, m, db)
+    termosBusca = menuBusca(opcoes, mensagens, db)
     if not termosBusca:
         return
 
