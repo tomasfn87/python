@@ -80,15 +80,15 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     maiorItem2 = L.analisarListaDict(listaProdutos, ["preco"])
 
     titulos = ["Nome", "Preço"]
-    
+
     tamanhoSeparacao1 = maiorItem1 - len(titulos[0]) + 1
     tamanhoSeparacao2 = maiorItem2 - len(titulos[1]) - 3
-    
+
     separacao1 = "{} {} ".format(separador, titulos[0])
     for i in range(0, tamanhoSeparacao1 - 2):
         separacao1 += separador
         i += 1
-    
+
     separacao2 = "{}{}{} {} ".format(
         separador, separador, separador, titulos[1]
     )
@@ -101,7 +101,7 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     larguraMinimaCol1 = len(titulos[0])
 
     listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
-    
+
 def digitarNumero(textoInput, textoErro):
     numero = input(textoInput)
     if voltar(numero):
@@ -111,7 +111,7 @@ def digitarNumero(textoInput, textoErro):
         while not numero:
             numero = input(textoErro)
             if voltar(numero):
-                return False 
+                return False
             numero = T.verificar_numero(numero)
     return numero
 
@@ -148,7 +148,7 @@ def buscar(collection, query1, query2=False, sortBy=False, order=False):
 
 def menuBusca(opcoes, mensagens, db):
     m, o, produtos, margem = mensagens, opcoes, db.Produtos, 13
-    
+
     ## Declaração opções de Busca
     # Alfabética
     alf = o["ordem"]["alf"]
@@ -193,10 +193,10 @@ def menuBusca(opcoes, mensagens, db):
 
         # Item 3 - Por tipo Ex: laranja, banana
         elif opcao_1 in L.unirListas([tipo["normal"], tipo["inv"]]):
-            inputUsuario = ("{}{}{}: ").format(
+            userInput = ("{}{}{}: ").format(
                 T.espacar(margem), m["tipo"], m["voltar"]
             )
-            opcao_tipo = input(inputUsuario)
+            opcao_tipo = input(userInput)
             if voltar(opcao_tipo):
                 return menuBusca(o, m, db)
             busca = buscar(produtos, {"$or": [
@@ -205,10 +205,10 @@ def menuBusca(opcoes, mensagens, db):
 
         # Item 4 - Por subtipo Ex: lima, nanica
         elif opcao_1 in L.unirListas([subtipo["normal"], subtipo["inv"]]):
-            inputUsuario = ("{}{}{}: ").format(
+            userInput = ("{}{}{}: ").format(
                 T.espacar(margem), m["subtipo"], m["voltar"]
             )
-            opcao_subtipo = input(inputUsuario)
+            opcao_subtipo = input(userInput)
             if voltar(opcao_subtipo):
                 return menuBusca(o, m, db)
             busca = buscar(produtos, {"$or": [
@@ -351,8 +351,8 @@ def buscarProdutos(db):
         |.... ...........|... ..............:... ..............|                 | |
         |    1. nome     |    3. tipo       :    5. máximo     |                 | | 
         |    2. preço    |    4. subtipo    :    6. mínimo     |                 | |    \|    |
-|\\      |                |   34. ambos      :   56. ambos      |         \       | |     |  \/
-/\\|/____|                |                  :                  |_________\\\\|____/   \____\__|_______
+/|/     |                |   34. ambos      :   56. ambos      |         \       | |     |  \/
+/| /____|                |                  :                  |_________\\\\|____/   \____\__|_______
 ''',
 
         "comoInverter": "(adicione '-' -> ordem inversa  Ex: -2, -43, 5-6 ou 65-)",
@@ -361,7 +361,7 @@ def buscarProdutos(db):
         "tchau": "Obrigado por consultar os produtos, até logo!",
         #inputs {
         "tipo": "* Digite o tipo",
-        "subtipo": "* Digite o subtipo{}: ",
+        "subtipo": "* Digite o subtipo",
         "tipoSubtipo": "* Digite o tipo ou subtipo",
         "precoMin": "* Digite o preço mínimo",
         "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
