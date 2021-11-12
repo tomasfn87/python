@@ -78,3 +78,23 @@ class Listas:
                 maiorItem = tamanhoAtual
             tamanhoAtual = 0
         return maiorItem
+
+    def checarListaListas(listaListas):
+        if type(listaListas) != list:
+            return False
+        if len(listaListas) == 0:
+            return False
+        for i in listaListas:
+            if type(i) !=  list:
+                return False
+        return True
+
+    def unirListas(listaListas):
+        if not Listas.checarListaListas(listaListas):
+            return False
+        elif len(listaListas) ==  1:
+            return listaListas[0]
+        listaUnica = listaListas[0][:]
+        for i in range(1, len(listaListas)):
+            listaUnica.extend(listaListas[i])
+        return listaUnica
