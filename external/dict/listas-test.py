@@ -57,14 +57,14 @@ class TesteListas:
     ])
     def test_obter_valores(self, dicionario, resultado, L):
         assert L.obter_valores(dicionario) == resultado
-    
+
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}])
     ])
     def test_sortDictsByKey_simples(self, dictArr, key, resultado, L):
         assert L.sortDictsByKey(dictArr, key) == resultado
-    
+
     @pytest.mark.parametrize("dictArr, key, inv, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", 0, [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", 0, [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}]),
@@ -73,7 +73,7 @@ class TesteListas:
     ])
     def test_sortDictsByKey_inverso(self, dictArr, key, inv, resultado, L):
         assert L.sortDictsByKey(dictArr, key, inv) == resultado
-    
+
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", True),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", True),
@@ -84,17 +84,40 @@ class TesteListas:
     ])
     def test_dictsHaveKey(self, dictArr, key, resultado, L):
         assert L.dictsHaveKey(dictArr, key) == resultado
-    
+
     @pytest.mark.parametrize("lista, resultado", [
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], 16),
         ([{"nome": "Ana Carolina", "cabelo": "ruivo"},{"nome": "Maria Aparecida", "cabelo": "castanho"},{"nome": "Maria Eduarda", "cabelo": "preto"}], 23)
     ])
     def test_analisarListaDict_simples(self, lista, resultado, L):
         assert L.analisarListaDict(lista) == resultado
-    
+
     @pytest.mark.parametrize("lista, chaves, resultado", [
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome", "cabelo"], 16),
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome"], 8)
     ])
     def test_analisarListaDict_completo(self, lista, chaves, resultado, L):
         assert L.analisarListaDict(lista, chaves) == resultado
+
+    @pytest.mark.parametrize("listaListas, resultado", [
+        ( {}, False ),
+        ( "", False ),
+        ( (), False ),
+        ( [], False ),
+        ( [[],[]], True )
+    ])
+    def test_checarListaListas(self, listaListas, resultado, L):
+        assert L.checarListaListas(listaListas) == resultado
+
+    @pytest.mark.parametrize("listaListas, resultado", [
+        ( {}, False ),
+        ( "", False ),
+        ( (), False ),
+        ( [], False ),
+        ( [[],[]], []),
+        ( [["a", "b"], ["c", "d"]], ["a", "b", "c", "d"] ),
+        ( [[1, 2], [3, 4]], [1, 2, 3, 4] ),
+        ( [[[], []], [[], []]], [[], [], [], []] )
+    ])
+    def test_unirListas(self, listaListas, resultado, L):
+        assert L.unirListas(listaListas) == resultado
