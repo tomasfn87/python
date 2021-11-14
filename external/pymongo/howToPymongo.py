@@ -44,7 +44,7 @@ def criarListaProdutos(lista, ord=False, key="", inv=0):
             lista[i]["tipo"].capitalize(), lista[i]["subtipo"]
         )
         listaProdutos[i]["preco"] = lista[i]["preco"]
-    if ord == True:
+    if ord:
         return L.sortDictsByKey(listaProdutos, key, inv)
     return listaProdutos
 
@@ -71,7 +71,7 @@ def imprimirListaProdutos(separador, lista, ord=False, key="", inv=0):
     assert len(separador) == 1
     listaProdutos = criarListaProdutos(lista, ord, key, inv)
 
-    if listaProdutos == False:
+    if not listaProdutos:
         return print("Nenhum resultado.")
     else:
         print("Itens encontrados: {}\n".format(len(listaProdutos)))
@@ -337,7 +337,7 @@ def buscarProdutos(db):
 
     mensagens = {
         "menu":
-'''
+'''\
                                             .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
                                               :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
          __________________________________________|_|__________    :*:.:.*.:.\\.:.| :/:*/:.:*:.:.:
