@@ -318,7 +318,7 @@ class Busca:
             return
         opcao, busca = termosBusca[0], termosBusca[1]
 
-        print()
+        
 
         alf = opcoes["ordem"]["alf"]
 
@@ -330,6 +330,7 @@ class Busca:
             alf["subtipo"]["inv"], alf["tipoAmbos"]["inv"]
         ]
 
+        print()
         resultado = Lista(busca)
 
         # 1 Ordem alfabética
