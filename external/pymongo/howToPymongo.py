@@ -195,7 +195,7 @@ class Busca:
                 minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
                 if not minimo:
                     return Busca.menuBusca(self, o, m)
-                if opcao_1 == precoMin["normal"]:
+                if opcao_1 in precoMin["normal"]:
                     busca = Busca.buscar(
                         produtos, {"preco": {"$gte": minimo}}, {"_id":0},
                         "preco"
