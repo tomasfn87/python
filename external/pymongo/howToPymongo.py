@@ -22,7 +22,8 @@ class Dados:
             return True
         except:
             print("ERRO: Conexão ao mongoDb recusada.")
-            print("Por favor inicie o mongodDb ou verifique o endereço do MongoClient.")
+            print("Por favor inicie o mongodDb ou", end=" ")
+            print("verifique o endereço do MongoClient.")
             print("Tentar novamente?", end=" ")
             return False
 
@@ -254,39 +255,21 @@ class Busca:
             "sair": ["s", "sair", "exit", "quit", "-"],
             "ordem": {
                 "alf": {
-                    "todos": {
-                        "normal": ["1"],
-                        "inv": ["-1", "1-"]
-                    },
-                    "tipo": {
-                        "normal": ["3"],
-                        "inv": ["-3", "3-"]
-                    },
-                    "subtipo": {
-                        "normal": ["4"],
-                        "inv": ["-4", "4-"]
-                    },
-                    "tipoAmbos": {
-                        "normal": ["34", "43"],
-                        "inv": ["-34", "34-", "3-4", "-43", "43-", "4-3"]
+                    "todos": { "normal": ["1"], "inv": ["-1", "1-"] },
+                    "tipo": { "normal": ["3"], "inv": ["-3", "3-"] },
+                    "subtipo": { "normal": ["4"], "inv": ["-4", "4-"] },
+                    "tipoAmbos": { "normal": ["34", "43"], "inv": [
+                        "-34", "34-", "3-4", "-43", "43-", "4-3"
+                        ]
                     }
                 },
                 "num": {
-                    "todos": {
-                        "normal": ["2"],
-                        "inv": ["-2", "2-"]
-                    },
-                    "precoMax": {
-                        "normal": ["5"],
-                        "inv": ["-5", "5-"]
-                    },
-                    "precoMin": {
-                        "normal": ["6"],
-                        "inv": ["-6", "6-"]
-                    },
-                    "precoAmbos": {
-                        "normal": ["56", "65"],
-                        "inv": ["-56", "56-", "5-6", "-65", "65-", "6-5"]
+                    "todos": { "normal": ["2"], "inv": ["-2", "2-"] },
+                    "precoMax": { "normal": ["5"], "inv": ["-5", "5-"] },
+                    "precoMin": { "normal": ["6"], "inv": ["-6", "6-"] },
+                    "precoAmbos": { "normal": ["56", "65"], "inv": [
+                        "-56", "56-", "5-6", "-65", "65-", "6-5"
+                        ]
                     }
                 }
             }
@@ -312,19 +295,20 @@ class Busca:
     /| /____|                |                  :                  |_________\\\\|____/   \____\__|_______
     ''',
 
-            "comoInverter": "(adicione '-' -> ordem inversa  Ex: -2, -43, 5-6 ou 65-)",
+            "comoInverter": 
+                "(adicione '-' -> ordem inversa  Ex: -2, -43, 5-6 ou 65-)",
             "selecionar": "* Digite uma das opções acima ou [S]air: ",
-            "voltar": " (ou [V]oltar)", 
+            "voltar": " (ou [V]oltar)",
             "tchau": "Obrigado por consultar os produtos, até logo!",
             #inputs {
-            "tipo": "* Digite o tipo",
-            "subtipo": "* Digite o subtipo",
+            "tipo": "* Digite o tipo", "subtipo": "* Digite o subtipo",
             "tipoSubtipo": "* Digite o tipo ou subtipo",
             "precoMin": "* Digite o preço mínimo",
-            "precoMinErr": "Erro: o preço mínimo deve ser inteiro ou decimal: ",
+            "precoMinErr": 
+                "Erro: preço mínimo = inteiro ou decimal: ",
             "precoMax": "* Digite o preço máximo",
-            "precoMaxErr": "Erro: o preço máximo deve ser inteiro ou decimal: ",
-            "precoMaxMinErr": "Erro: o preço mínimo tem que ser menor que o preço máximo: ",
+            "precoMaxErr": "Erro: preço máximo = inteiro ou decimal: ",
+            "precoMaxMinErr": "Erro: preço mínimo < preço máximo: ",
             # }
             "opcaoInvalida": "** ERRO! Opção inválida! **"
         }
