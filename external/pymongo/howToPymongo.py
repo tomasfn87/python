@@ -31,7 +31,9 @@ class Dados:
         if retry in ["s",  "sim", "y", "yes"]:
             return Dados.verificarBusca(self)
         elif retry in ["n", "não", "nao", "no", "non", "nein"]:
-            print("A busca funciona em um banco de dados cujos itens possuem as chaves 'tipo', 'subtipo' e 'preco'. Configure o seu mongoDb e tente novamente.")
+            print("A busca funciona em um banco de dados cujos itens", end=" ")
+            print("possuem as chaves 'tipo', 'subtipo' e 'preco'.")
+            print("Configure o seu mongoDb e tente novamente.")
             return False
         else:
             print("Opção inválida, digite [S]im ou [N]ão:", end=" ")
@@ -40,6 +42,216 @@ class Dados:
 class Busca:
     def __init__(self, db):
         self.db = db
+
+    def digitarNumero(textoInput, textoErro):
+        numero = input(textoInput)
+        if Busca.voltar(numero):
+            numero = False
+        else:
+            numero = T.verificar_numero(numero)
+            while not numero:
+                numero = input(textoErro)
+                if Busca.voltar(numero):
+                    return False
+                numero = T.verificar_numero(numero)
+        return numero
+
+    def voltar(opcao):
+        if opcao.lower() in ["v", "voltar"]:
+            print()
+            return True
+        return False
+
+    def novaBusca(self):
+        print("Escolha uma das opções abaixo: ")
+        print(" - 1) Nova busca  [S]air")
+        print(" * Digite sua opção e aperte ENTER: ", end="")
+        repetir = input()
+        if repetir == "1":
+            print()
+            return Busca.buscarProdutos(self)
+        elif repetir.lower() in ["s", "sair", "exit", "quit", "-"]:
+            return print("\nSaindo... até a próxima busca!")
+        else:
+            print("** ERRO! Opção inválida! **\n")
+            return Busca.novaBusca(self)
+
+    def menuBusca(self, opcoes, mensagens):
+        o, m, produtos, margem = opcoes, mensagens, self.db.Produtos, 13
+
+        ## Declaração opções de Busca
+        # Alfabética
+        alf = o["ordem"]["alf"]
+        alfTodos = alf["todos"]
+        tipo = alf["tipo"]
+        subtipo = alf["subtipo"]
+        tipoAmbos = alf["tipoAmbos"]
+
+        # Numérica
+        num = o["ordem"]["num"]
+        numTodos = num["todos"]
+        precoMax = num["precoMax"]
+        precoMin = num["precoMin"]
+        precoAmbos = num["precoAmbos"]
+
+        opcoesBusca = [
+            alfTodos["normal"], alfTodos["inv"], tipo["normal"], tipo["inv"],
+            subtipo["normal"], subtipo["inv"], tipoAmbos["normal"], 
+            tipoAmbos["inv"], numTodos["normal"], numTodos["inv"], 
+            precoMax["normal"], precoMax["inv"], precoMin["normal"],
+            precoMin["inv"], precoAmbos["normal"], precoAmbos["inv"]
+        ]
+
+        # Menu principal
+        print(m["menu"])
+        print("{}{}".format(T.espacar(margem-3), m["comoInverter"]))
+        print("{}{}".format(T.espacar(margem), m["selecionar"]), end="")
+
+        busca, opcao_1 = [], input()
+
+        ## Sair
+        if opcao_1 in opcoes["sair"]:
+            print("\n{}".format(m["tchau"]))
+            return False
+
+        # Opções de Busca
+        elif opcao_1 in L.unirListas(opcoesBusca):
+            ## Ordem alfabética
+            # Todos
+            if opcao_1 in L.unirListas([alfTodos["normal"],\
+                alfTodos["inv"]]):
+                busca = Busca.buscar(produtos, {}, {"_id": 0})
+
+            # Item 3 - Por tipo Ex: laranja, banana
+            elif opcao_1 in L.unirListas([tipo["normal"], tipo["inv"]]):
+                userInput = ("{}{}{}: ").format(
+                    T.espacar(margem), m["tipo"], m["voltar"]
+                )
+                opcao_tipo = input(userInput)
+                if Busca.voltar(opcao_tipo):
+                    return Busca.menuBusca(self, o, m)
+                busca = Busca.buscar(produtos, {"$or": [
+                    {"tipo": opcao_tipo.lower()}
+                ]}, {"_id": 0})
+
+            # Item 4 - Por subtipo Ex: lima, nanica
+            elif opcao_1 in L.unirListas([subtipo["normal"],\
+                subtipo["inv"]]):
+                userInput = ("{}{}{}: ").format(
+                    T.espacar(margem), m["subtipo"], m["voltar"]
+                )
+                opcao_subtipo = input(userInput)
+                if Busca.voltar(opcao_subtipo):
+                    return Busca.menuBusca(self, o, m)
+                busca = Busca.buscar(produtos, {"$or": [
+                    {"subtipo": opcao_subtipo.lower()},
+                    {"subtipo": opcao_subtipo.lower().capitalize()}
+                ]}, {"_id": 0})
+
+            # Item 34 - Por tipo e subtipo Ex: pera, maçã
+            elif opcao_1 in L.unirListas([tipoAmbos["normal"],\
+                tipoAmbos["inv"]]):
+                userInput = ("{}{}{}: ").format(
+                    T.espacar(margem), m["tipoSubtipo"], m["voltar"]
+                )
+                opcao_tipoAmbos = input(userInput)
+                if Busca.voltar(opcao_tipoAmbos):
+                    return Busca.menuBusca(self, o, m)
+                busca = Busca.buscar(produtos, {"$or": [
+                    {"tipo": opcao_tipoAmbos.lower()},
+                    {"subtipo": opcao_tipoAmbos.lower()},
+                    {"subtipo": opcao_tipoAmbos.lower().capitalize()}
+                ]})
+
+            ## Ordem numérica
+            # Item 2 - todos, por preço
+            elif opcao_1 in numTodos["normal"]:
+                busca = Busca.buscar(produtos, {}, {"_id": 0}, "preco")
+            elif opcao_1 in numTodos["inv"]:
+                busca = Busca.buscar(produtos, {}, {"_id": 0}, "preco", -1)
+
+            # Item 5 - definir preço máximo, por preço
+            elif opcao_1 in L.unirListas([num["precoMax"]["normal"],\
+                num["precoMax"]["inv"]]):
+                userInput = "{}{}{}: ".format(
+                    T.espacar(margem), m["precoMax"], m["voltar"]
+                )
+                maximo = Busca.digitarNumero(userInput, m["precoMaxErr"])
+                if not maximo:
+                    return Busca.menuBusca(self, o, m)
+                if opcao_1 == "5":
+                    busca = Busca.buscar(produtos,
+                    {"preco": {"$lte": maximo}},\
+                        {"_id": 0}, "preco")
+                else:
+                    busca = Busca.buscar(produtos, {"preco": {"$lte": maximo}},\
+                        {"_id": 0}, "preco", -1)
+
+            # Item 6 - definir preço mínimo, por preço
+            elif opcao_1 in L.unirListas([precoMin["normal"], precoMin["inv"]]):
+                userInput = "{}{}{}: ".format(
+                    T.espacar(margem), m["precoMin"], m["voltar"]
+                )
+                minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
+                if not minimo:
+                    return Busca.menuBusca(self, o, m)
+                if opcao_1 == precoMin["normal"]:
+                    busca = Busca.buscar(
+                        produtos, {"preco": {"$gte": minimo}}, {"_id":0},
+                        "preco"
+                    )
+                else:
+                    busca = Busca.buscar(produtos, {"preco": {"$gte": minimo}},\
+                                {"_id":0}, "preco", -1)
+
+            # Item 56 - Definir preços máximo e mínimo, por preço
+            elif opcao_1 in L.unirListas([precoAmbos["normal"], precoAmbos["inv"]]):
+                userInput = "{}{}{}: ".format(
+                    T.espacar(margem), m["precoMax"], m["voltar"]
+                )
+                maximo = Busca.digitarNumero(userInput, m["precoMaxErr"])
+                if not maximo:
+                    return Busca.menuBusca(self, o, m)
+                userInput = "{}{}{}: ".format(
+                    T.espacar(margem), m["precoMin"], m["voltar"]
+                )
+                minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
+                if not minimo:
+                    return Busca.menuBusca(self, o, m)
+                while maximo <= minimo:
+                    print("{}{}".format(
+                        T.espacar(margem), m["precoMaxMinErr"]
+                    ))
+                    minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
+                    if not minimo:
+                        return Busca.menuBusca(self, o, m)
+                if opcao_1 in precoAmbos["normal"]:
+                    busca = Busca.buscar(produtos,
+                        {"preco": {"$lte": maximo, "$gte": minimo}},\
+                            {"_id":0}, "preco")
+                else:
+                    busca = Busca.buscar(produtos,
+                        {"preco": {"$lte": maximo, "$gte": minimo}},\
+                            {"_id":0}, "preco", -1)
+
+            return (opcao_1, busca)
+
+        else:
+            ## Opção inválida
+            print("{}\n".format(m["opcaoInvalida"]))
+
+        return Busca.menuBusca(self, o, m)
+
+    def buscar(collection, query1, query2=False, sortBy=False, order=False):
+        if not query2:
+            termos = collection.find(query1)
+        else:
+            termos = collection.find(query1, query2)
+        if sortBy and order:
+            termos = termos.sort(sortBy, order)
+        elif sortBy:
+            termos = termos.sort(sortBy)
+        return termos
 
     def buscarProdutos(self):
         opcoes = {
@@ -159,199 +371,7 @@ class Busca:
             resultado.imprimirListaProdutos("–")
         print()
         Busca.novaBusca(self)
-
-    def menuBusca(self, opcoes, mensagens):
-        o, m, produtos, margem = opcoes, mensagens, self.db.Produtos, 13
-
-        ## Declaração opções de Busca
-        # Alfabética
-        alf = o["ordem"]["alf"]
-        alfTodos = alf["todos"]
-        tipo = alf["tipo"]
-        subtipo = alf["subtipo"]
-        tipoAmbos = alf["tipoAmbos"]
-
-        # Numérica
-        num = o["ordem"]["num"]
-        numTodos = num["todos"]
-        precoMax = num["precoMax"]
-        precoMin = num["precoMin"]
-        precoAmbos = num["precoAmbos"]
-
-        opcoesBusca = [
-            alfTodos["normal"], alfTodos["inv"], tipo["normal"], tipo["inv"],
-            subtipo["normal"], subtipo["inv"], tipoAmbos["normal"], 
-            tipoAmbos["inv"], numTodos["normal"], numTodos["inv"], 
-            precoMax["normal"], precoMax["inv"], precoMin["normal"],
-            precoMin["inv"], precoAmbos["normal"], precoAmbos["inv"]
-        ]
-
-        # Menu principal
-        print(m["menu"])
-        print("{}{}".format(T.espacar(margem-3), m["comoInverter"]))
-        print("{}{}".format(T.espacar(margem), m["selecionar"]), end="")
-
-        busca, opcao_1 = [], input()
-
-        ## Sair
-        if opcao_1 in opcoes["sair"]:
-            print("\n{}".format(m["tchau"]))
-            return False
-
-        # Opções de Busca
-        elif opcao_1 in L.unirListas(opcoesBusca):
-            ## Ordem alfabética
-            # Todos
-            if opcao_1 in L.unirListas([alfTodos["normal"], alfTodos["inv"]]):
-                busca = Busca.buscar(produtos, {}, {"_id": 0})
-
-            # Item 3 - Por tipo Ex: laranja, banana
-            elif opcao_1 in L.unirListas([tipo["normal"], tipo["inv"]]):
-                userInput = ("{}{}{}: ").format(
-                    T.espacar(margem), m["tipo"], m["voltar"]
-                )
-                opcao_tipo = input(userInput)
-                if Busca.voltar(opcao_tipo):
-                    return Busca.menuBusca(self, o, m)
-                busca = Busca.buscar(produtos, {"$or": [
-                    {"tipo": opcao_tipo.lower()}
-                ]}, {"_id": 0})
-
-            # Item 4 - Por subtipo Ex: lima, nanica
-            elif opcao_1 in L.unirListas([subtipo["normal"], subtipo["inv"]]):
-                userInput = ("{}{}{}: ").format(
-                    T.espacar(margem), m["subtipo"], m["voltar"]
-                )
-                opcao_subtipo = input(userInput)
-                if Busca.voltar(opcao_subtipo):
-                    return Busca.menuBusca(self, o, m)
-                busca = Busca.buscar(produtos, {"$or": [
-                    {"subtipo": opcao_subtipo.lower()},
-                    {"subtipo": opcao_subtipo.lower().capitalize()}
-                ]}, {"_id": 0})
-
-            # Item 34 - Por tipo e subtipo Ex: pera, maçã
-            elif opcao_1 in L.unirListas([tipoAmbos["normal"], tipoAmbos["inv"]]):
-                userInput = ("{}{}{}: ").format(
-                    T.espacar(margem), m["tipoSubtipo"], m["voltar"]
-                )
-                opcao_tipoAmbos = input(userInput)
-                if Busca.voltar(opcao_tipoAmbos):
-                    return Busca.menuBusca(self, o, m)
-                busca = Busca.buscar(produtos, {"$or": [
-                    {"tipo": opcao_tipoAmbos.lower()},
-                    {"subtipo": opcao_tipoAmbos.lower()},
-                    {"subtipo": opcao_tipoAmbos.lower().capitalize()}
-                ]})
-
-            ## Ordem numérica
-            # Item 2 - todos, por preço
-            elif opcao_1 in numTodos["normal"]:
-                busca = Busca.buscar(produtos, {}, {"_id": 0}, "preco")
-            elif opcao_1 in numTodos["inv"]:
-                busca = Busca.buscar(produtos, {}, {"_id": 0}, "preco", -1)
-
-            # Item 5 - definir preço máximo, por preço
-            elif opcao_1 in L.unirListas([num["precoMax"]["normal"], num["precoMax"]["inv"]]):
-                userInput = "{}{}{}: ".format(T.espacar(margem), m["precoMax"], m["voltar"])
-                maximo = Busca.digitarNumero(userInput, m["precoMaxErr"])
-                if not maximo:
-                    return Busca.menuBusca(self, o, m)
-                if opcao_1 == "5":
-                    busca = Busca.buscar(produtos, {"preco": {"$lte": maximo}},\
-                        {"_id": 0}, "preco")
-                else:
-                    busca = Busca.buscar(produtos, {"preco": {"$lte": maximo}},\
-                        {"_id": 0}, "preco", -1)
-
-            # Item 6 - definir preço mínimo, por preço
-            elif opcao_1 in L.unirListas([precoMin["normal"], precoMin["inv"]]):
-                userInput = "{}{}{}: ".format(
-                    T.espacar(margem), m["precoMin"], m["voltar"]
-                )
-                minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
-                if not minimo:
-                    return Busca.menuBusca(self, o, m)
-                if opcao_1 == precoMin["normal"]:
-                    busca = Busca.buscar(
-                        produtos, {"preco": {"$gte": minimo}}, {"_id":0},
-                        "preco"
-                    )
-                else:
-                    busca = Busca.buscar(produtos, {"preco": {"$gte": minimo}},\
-                                {"_id":0}, "preco", -1)
-
-            # Item 56 - Definir preços máximo e mínimo, por preço
-            elif opcao_1 in L.unirListas([precoAmbos["normal"], precoAmbos["inv"]]):
-                userInput = "{}{}{}: ".format(T.espacar(margem), m["precoMax"], m["voltar"])
-                maximo = Busca.digitarNumero(userInput, m["precoMaxErr"])
-                if not maximo:
-                    return Busca.menuBusca(self, o, m)
-                userInput = "{}{}{}: ".format(T.espacar(margem), m["precoMin"], m["voltar"])
-                minimo = Busca.digitarNumero(userInput, m["precoMinErr"])
-                if not minimo:
-                    return Busca.menuBusca(self, o, m)
-                if opcao_1 in precoAmbos["normal"]:
-                    busca = Busca.buscar(produtos,
-                        {"preco": {"$lte": maximo, "$gte": minimo}},\
-                            {"_id":0}, "preco")
-                else:
-                    busca = Busca.buscar(produtos,
-                        {"preco": {"$lte": maximo, "$gte": minimo}},\
-                            {"_id":0}, "preco", -1)
-
-            return (opcao_1, busca)
-
-        else:
-            ## Opção inválida
-            print("{}\n".format(m["opcaoInvalida"]))
-
-        return Busca.menuBusca(self, o, m)
-
-    def digitarNumero(textoInput, textoErro):
-        numero = input(textoInput)
-        if Busca.voltar(numero):
-            numero = False
-        else:
-            numero = T.verificar_numero(numero)
-            while not numero:
-                numero = input(textoErro)
-                if Busca.voltar(numero):
-                    return False
-                numero = T.verificar_numero(numero)
-        return numero
-
-    def novaBusca(self):
-        print("Escolha uma das opções abaixo: ")
-        print(" - 1) Nova busca  [S]air")
-        print(" * Digite sua opção e aperte ENTER: ", end="")
-        repetir = input()
-        if repetir == "1":
-            print()
-            return Busca.buscarProdutos(self)
-        elif repetir.lower() in ["s", "sair", "exit", "quit", "-"]:
-            return print("\nSaindo... até a próxima busca!")
-        else:
-            print("** ERRO! Opção inválida! **\n")
-            return Busca.novaBusca(self)
-
-    def voltar(opcao):
-        if opcao.lower() in ["v", "voltar"]:
-            print()
-            return True
-        return False
-
-    def buscar(collection, query1, query2=False, sortBy=False, order=False):
-        if not query2:
-            termos = collection.find(query1)
-        else:
-            termos = collection.find(query1, query2)
-        if sortBy and order:
-            termos = termos.sort(sortBy, order)
-        elif sortBy:
-            termos = termos.sort(sortBy)
-        return termos
-
+    
 class Lista:
     def __init__(self, lista):
         self.lista = lista
