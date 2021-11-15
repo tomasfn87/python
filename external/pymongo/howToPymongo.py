@@ -82,17 +82,13 @@ class Busca:
         ## Declaração opções de Busca
         # Alfabética
         alf = o["ordem"]["alf"]
-        alfTodos = alf["todos"]
-        tipo = alf["tipo"]
-        subtipo = alf["subtipo"]
-        tipoAmbos = alf["tipoAmbos"]
+        alfTodos, tipo = alf["todos"], alf["tipo"]
+        subtipo, tipoAmbos = alf["subtipo"], alf["tipoAmbos"]
 
         # Numérica
         num = o["ordem"]["num"]
-        numTodos = num["todos"]
-        precoMax = num["precoMax"]
-        precoMin = num["precoMin"]
-        precoAmbos = num["precoAmbos"]
+        numTodos, precoMax = num["todos"], num["precoMax"]
+        precoMin, precoAmbos = num["precoMin"], num["precoAmbos"]
 
         opcoesBusca = [
             alfTodos["normal"], alfTodos["inv"], tipo["normal"], tipo["inv"],
@@ -300,7 +296,7 @@ class Busca:
             "menu":
     '''\
                                                 .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
-                                                :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
+                                                 :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
             __________________________________________|_|__________    :*:.:.*.:.\\.:.| :/:*/:.:*:.:.:
         ./:/:/:/:/:/:/:/:/:/:/:   Bem vinda à   :\:\:\:\:\:\:\:\:\:\.  :.:*\\.:.\\*:\||.|.:|:/.:*:.:
       ./:/:/:/:/:/:/:/:/:/:/:/:  Casa da Busca  :\:\:\:\:\:\:\:\:\:\:\. *.:.:\\:\\\\:.||/.:.|.*|.:*:
@@ -336,26 +332,18 @@ class Busca:
         termosBusca = Busca.menuBusca(self, opcoes, mensagens)
         if not termosBusca:
             return
-
-        opcao = termosBusca[0]
-        busca = termosBusca[1]
+        opcao, busca = termosBusca[0], termosBusca[1]
 
         print()
 
         alf = opcoes["ordem"]["alf"]
 
-        alfabeticaNormal = [
-            alf["todos"]["normal"],
-            alf["tipo"]["normal"],
-            alf["subtipo"]["normal"],
-            alf["tipoAmbos"]["normal"]
-        ]
-
-        alfabeticaInversa = [
-            alf["todos"]["inv"],
-            alf["tipo"]["inv"],
-            alf["subtipo"]["inv"],
-            alf["tipoAmbos"]["inv"]
+        alfabeticaNormal, alfabeticaInversa = [
+            alf["todos"]["normal"], alf["tipo"]["normal"],
+            alf["subtipo"]["normal"], alf["tipoAmbos"]["normal"]
+        ], [
+            alf["todos"]["inv"], alf["tipo"]["inv"],
+            alf["subtipo"]["inv"], alf["tipoAmbos"]["inv"]
         ]
 
         resultado = Lista(busca)
@@ -423,9 +411,10 @@ class Lista:
         maiorItem2 = L.analisarListaDict(listaProdutos, ["preco"])
 
         titulos = ["Nome", "Preço"]
+        larguraMinimaCol1 = len(titulos[0])
 
-        tamanhoSeparacao1 = maiorItem1 - len(titulos[0]) + 1
-        tamanhoSeparacao2 = maiorItem2 - len(titulos[1]) - 3
+        tamanhoSeparacao1, tamanhoSeparacao2 = \
+            maiorItem1 - len(titulos[0]) + 1, maiorItem2 - len(titulos[1]) - 3
 
         separacao1 = "{} {} ".format(separador, titulos[0])
         for i in range(0, tamanhoSeparacao1 - 2):
@@ -441,15 +430,13 @@ class Lista:
 
         print("{}|{}".format(separacao1, separacao2))
 
-        larguraMinimaCol1 = len(titulos[0])
-
         Lista.listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
 
 def main():
     mongoURL = "mongodb://127.0.0.1:27017"
 
-    dadosFrutas = Dados(mongoURL)
-    if dadosFrutas.verificarBusca():
+    dados = Dados(mongoURL)
+    if dados.verificarBusca():
         client = pymongo.MongoClient(mongoURL)
         with client:
             db = client.test
