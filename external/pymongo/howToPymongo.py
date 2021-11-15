@@ -64,7 +64,6 @@ class Busca:
         return False
 
     def novaBusca(self):
-        print("Escolha uma das opções abaixo: ")
         print(" - 1) Nova busca  [S]air")
         print(" * Digite sua opção e aperte ENTER: ", end="")
         repetir = input()
@@ -318,10 +317,7 @@ class Busca:
             return
         opcao, busca = termosBusca[0], termosBusca[1]
 
-        
-
         alf = opcoes["ordem"]["alf"]
-
         alfabeticaNormal, alfabeticaInversa = [
             alf["todos"]["normal"], alf["tipo"]["normal"],
             alf["subtipo"]["normal"], alf["tipoAmbos"]["normal"]
