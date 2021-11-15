@@ -438,12 +438,13 @@ def main():
     dados = Dados(mongoURL)
     if dados.verificarBusca():
         client = pymongo.MongoClient(mongoURL)
-        with client:
-            db = client.test
-        buscaFrutas = Busca(db)
-        buscaFrutas.buscarProdutos()
     else:
         return
+    
+    with client:
+        db = client.test
+    buscaFrutas = Busca(db)
+    buscaFrutas.buscarProdutos()
 
 if __name__ == "__main__":
     main()
