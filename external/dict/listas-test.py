@@ -73,6 +73,13 @@ class TesteListas:
     ])
     def test_sortDictsByKey_inverso(self, dictArr, key, inv, resultado, L):
         assert L.sortDictsByKey(dictArr, key, inv) == resultado
+    
+    @pytest.mark.parametrize("dictArr, key, inv, noCase, resultado", [
+        ([{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'AB'}, {'chave1': 'aa'}, {'chave1': 'BB'}, {'chave1': 'ba'}], "chave1", 0, 1, [{'chave1': 'aa'}, {'chave1': 'AB'}, {'chave1': 'ba'}, {'chave1': 'BB'}, {'chave1': 'ca'}, {'chave1': 'CB'}]),
+        ([{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'AB'}, {'chave1': 'aa'}, {'chave1': 'BB'}, {'chave1': 'ba'}], "chave1", 1, 1, [{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'BB'}, {'chave1': 'ba'}, {'chave1': 'AB'}, {'chave1': 'aa'}])
+    ])
+    def test_sortDictsByKey_noCase(self, dictArr, key, inv, noCase, resultado, L):
+        assert L.sortDictsByKey(dictArr, key, inv, noCase) == resultado
 
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", True),
