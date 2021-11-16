@@ -306,7 +306,7 @@ class Busca:
                 "Erro: preço mínimo = inteiro ou decimal: ",
             "precoMax": "* Digite o preço máximo",
             "precoMaxErr": "Erro: preço máximo = inteiro ou decimal: ",
-            "precoMaxMinErr": "Erro: preço mínimo < preço máximo: ",
+            "precoMaxMinErr": "Erro: preço mínimo >= preço máximo: ",
             # }
             "opcaoInvalida": "** ERRO! Opção inválida! **"
         }
