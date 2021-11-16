@@ -328,15 +328,16 @@ class Busca:
         print()
         resultado = Lista(busca)
 
+        separador = "_"
         # 1 Ordem alfabética
         if opcao in alfabeticaNormal:
-            resultado.imprimirListaProdutos("–", 1, "nome", 0, 1)
+            resultado.imprimirListaProdutos(separador, 1, "nome", 0, 1)
         # 2 Ordem alfabética inversa
         elif opcao.lower() in alfabeticaInversa:
-            resultado.imprimirListaProdutos("–", 1, "nome", 1, 1)
+            resultado.imprimirListaProdutos(separador, 1, "nome", 1, 1)
         # * Demais casos: mongoDb já traz ordenado
         else:
-            resultado.imprimirListaProdutos("–")
+            resultado.imprimirListaProdutos(separador)
         print()
         Busca.novaBusca(self)
     
