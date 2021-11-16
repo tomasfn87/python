@@ -33,14 +33,18 @@ class Listas:
             lista_valores.append(dicionario[i])
         return lista_valores
     
-    def sortDictsByKey(dict_arr, key, inv=False):
+    def sortDictsByKey(dict_arr, key, inv=False, noCase=False):
         # receives an array containing dictionaries that contain the informed key
-        if Listas.dictsHaveKey(dict_arr, key) == False:
+        if not Listas.dictsHaveKey(dict_arr, key):
             return False
         sortedDictArr = dict_arr[:]
         values = []
-        for d in dict_arr:
-            values.append(d[key])
+        if noCase:
+            for d in dict_arr:
+                values.append(d[key].lower())    
+        else:
+            for d in dict_arr:
+                values.append(d[key])
         for i in range(1, len(values)):
             for j in range(0, len(values) - i):
                 if inv:
