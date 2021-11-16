@@ -32,8 +32,8 @@ class Dados:
         if retry in ["s",  "sim", "y", "yes"]:
             return Dados.verificarBusca(self)
         elif retry in ["n", "não", "nao", "no", "non", "nein"]:
-            print("A busca funciona em um banco de dados cujos itens", end=" ")
-            print("possuem as chaves 'tipo', 'subtipo' e 'preco'.")
+            print("A busca funciona em um banco de dados cujos itens", end="")
+            print(" possuem as chaves 'tipo', 'subtipo' e 'preco'.")
             print("Configure o seu mongoDb e tente novamente.")
             return False
         else:
@@ -280,21 +280,20 @@ class Busca:
                                                 .:.:.:.                     :.:.:*:.:.:.:.:.:.*.:.:
                                                  :. :.___               :.:*:.:.:.:*:.:.*.:.:.:.:.*.:
             __________________________________________|_|__________    :*:.:.*.:.\\.:.| :/:*/:.:*:.:.:
-        ./:/:/:/:/:/:/:/:/:/:/:   Bem vinda à   :\:\:\:\:\:\:\:\:\:\.  :.:*\\.:.\\*:\||.|.:|:/.:*:.:
-      ./:/:/:/:/:/:/:/:/:/:/:/:  Casa da Busca  :\:\:\:\:\:\:\:\:\:\:\. *.:.:\\:\\\\:.||/.:.|.*|.:*:
-    ./:/:/:/:/:/:/:/:/:/:/:/:|:|:|:|:|:|:|:|:|:|:|:\:\:\:\:\:\:\:\:\:\:\. .:\\_\\\\*:.|| :.//:/:*:.
-    =======================================================================     \\\\  ||  //
+         ./:/:/:/:/:/:/:/:/:/:/:   Bem vinda à   :\:\:\:\:\:\:\:\:\:\.   :.:*\\.:.\\*:\||.|.:|:/.:*:.:
+       ./:/:/:/:/:/:/:/:/:/:/:/:  Casa da Busca  :\:\:\:\:\:\:\:\:\:\:\.  *.:.:\\:\\\\:.||/.:.|.*|.:*:
+     ./:/:/:/:/:/:/:/:/:/:/:/:|:|:|:|:|:|:|:|:|:|:|:\:\:\:\:\:\:\:\:\:\:\.  .:\\_\\\\*:.|| :.//:/:*:.
+    =======================================================================       \\\\ ||  //
             |     Exibir     |               Buscar                |               \\\\| |//
             |...... .........|....... .................. ..........|                \   /
             |      Todos     |       Tipo       :       Preço      |                 | |
             |.... ...........|... ..............:... ..............|                 | |
-            |    1. nome     |    3. tipo       :    5. máximo     |                 | | 
+            |    1. nome     |    3. tipo       :    5. máximo     |                 | |
             |    2. preço    |    4. subtipo    :    6. mínimo     |                 | |    \|    |
     /|/     |                |   34. ambos      :   56. ambos      |         \       | |     |  \/
     /| /____|                |                  :                  |_________\\\\|____/   \____\__|_______
     ''',
-
-            "comoInverter": 
+            "comoInverter":
                 "(adicione '-' -> ordem inversa  Ex: -2, -43, 5-6 ou 65-)",
             "selecionar": "* Digite uma das opções acima ou [S]air: ",
             "voltar": " (ou [V]oltar)",
