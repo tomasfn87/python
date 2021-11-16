@@ -317,23 +317,23 @@ class Busca:
         opcao, busca = termosBusca[0], termosBusca[1]
 
         alf = opcoes["ordem"]["alf"]
-        alfabeticaNormal, alfabeticaInversa = [
+        alfabeticaNormal, alfabeticaInversa = L.unirListas([
             alf["todos"]["normal"], alf["tipo"]["normal"],
             alf["subtipo"]["normal"], alf["tipoAmbos"]["normal"]
-        ], [
+        ]), L.unirListas([
             alf["todos"]["inv"], alf["tipo"]["inv"],
             alf["subtipo"]["inv"], alf["tipoAmbos"]["inv"]
-        ]
+        ])
 
         print()
         resultado = Lista(busca)
 
         # 1 Ordem alfabética
-        if opcao in L.unirListas(alfabeticaNormal):
-            resultado.imprimirListaProdutos("–", 1, "nome")
+        if opcao in alfabeticaNormal:
+            resultado.imprimirListaProdutos("–", 1, "nome", 0, 1)
         # 2 Ordem alfabética inversa
-        elif opcao.lower() in L.unirListas(alfabeticaInversa):
-            resultado.imprimirListaProdutos("–", 1, "nome", 1)
+        elif opcao.lower() in alfabeticaInversa:
+            resultado.imprimirListaProdutos("–", 1, "nome", 1, 1)
         # * Demais casos: mongoDb já traz ordenado
         else:
             resultado.imprimirListaProdutos("–")
@@ -344,7 +344,7 @@ class Lista:
     def __init__(self, lista):
         self.lista = lista
 
-    def criarListaProdutos(self, ord=False, key="", inv=0):
+    def criarListaProdutos(self, ord=False, key="", inv=0, noCase=0):
         lista = list(self.lista)
         if len(lista) == 0:
             return False
@@ -356,7 +356,7 @@ class Lista:
             )
             listaProdutos[i]["preco"] = lista[i]["preco"]
         if ord:
-            return L.sortDictsByKey(listaProdutos, key, inv)
+            return L.sortDictsByKey(listaProdutos, key, inv, noCase)
         return listaProdutos
 
     def listarProdutos(listaProdutos, maiorItem, larguraMinimaCol1):
@@ -378,9 +378,11 @@ class Lista:
                     )
                 )
 
-    def imprimirListaProdutos(self, separador, ord=False, key="", inv=0):
+    def imprimirListaProdutos(self, separador, ord=False, key="", inv=0, \
+        noCase=0):
+
         assert len(separador) == 1
-        listaProdutos = Lista.criarListaProdutos(self, ord, key, inv)
+        listaProdutos = Lista.criarListaProdutos(self, ord, key, inv, noCase)
 
         if not listaProdutos:
             return print("Nenhum resultado.")
