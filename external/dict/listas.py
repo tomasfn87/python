@@ -61,7 +61,7 @@ class Listas:
         return sortedDictArr
     
     def dictsHaveKey(dict_arr, key):
-        # checks if all items in array containing dictionaries contrain the informed key
+        # checks if all items in array containing dictionaries contain the informed key
         for d in dict_arr:
             if key not in d.keys():
                 return False
