@@ -57,6 +57,15 @@ class TesteListas:
     ])
     def test_obter_valores(self, dicionario, resultado, L):
         assert L.obter_valores(dicionario) == resultado
+    
+    @pytest.mark.parametrize("lista, inv, noCase, resultado", [
+        (["B", "C", "A"], 0, 0, ["A", "B", "C"]),
+        (["B", "C", "A"], 1, 0, ["C", "B", "A"]),
+        (["AB", "aa", "AA", "Ab", "Aa", "ab"], 0, 1, ["AA", "Aa", "aa", "AB", "Ab", "ab"]),
+        (["Aa", "aa", "AA", "Ab", "ab", "AB"], 1, 1, ["ab", "Ab", "AB", "aa", "Aa", "AA"])
+    ])
+    def test_sortArrCaseIns(self, lista, inv, noCase, resultado, L):
+        assert L.sortArrCaseIns(lista, inv, noCase) == resultado
 
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
