@@ -40,19 +40,23 @@ class Listas:
                 if noCase:
                     if sortedArr[j].lower() == sortedArr[j+1].lower()\
                         and sortedArr[j] > sortedArr[j+1]:
-                        sortedArr[j], sortedArr[j+1] = sortedArr[j+1], sortedArr[j]
+                        sortedArr[j], sortedArr[j+1] =\
+                            sortedArr[j+1],sortedArr[j]
                     elif sortedArr[j].lower() > sortedArr[j+1].lower():
-                        sortedArr[j], sortedArr[j+1] = sortedArr[j+1], sortedArr[j]
+                        sortedArr[j], sortedArr[j+1] =\
+                            sortedArr[j+1], sortedArr[j]
                 else:
                     if sortedArr[j] > sortedArr[j+1]:
-                        sortedArr[j], sortedArr[j+1] = sortedArr[j+1], sortedArr[j]
+                        sortedArr[j], sortedArr[j+1] =\
+                            sortedArr[j+1], sortedArr[j]
             i += 1
         if inv:
             sortedArr.reverse()
         return sortedArr
 
     def sortDictsByKey(dictArr, key, inv=0, noCase=0):
-        # receives an array containing dictionaries that contain the informed key
+        # receives an array containing dictionaries that contain the
+        # informed key
         if not Listas.dictsHaveKey(dictArr, key):
             return False
         sortedDictArr = dictArr[:]
@@ -62,23 +66,28 @@ class Listas:
         for i in range(1, len(values)):
             for j in range(0, len(values) - i):
                 if noCase:
-                    if values[j].lower() == values[j+1].lower() and values[j] > values[j+1]:
+                    if values[j].lower() == values[j+1].lower()\
+                        and values[j] > values[j+1]:
                         values[j], values[j+1] = values[j+1], values[j]
-                        sortedDictArr[j], sortedDictArr[j+1] = sortedDictArr[j+1], sortedDictArr[j]
+                        sortedDictArr[j], sortedDictArr[j+1] =\
+                            sortedDictArr[j+1], sortedDictArr[j]
                     elif values[j].lower() > values[j+1].lower():
                         values[j], values[j+1] = values[j+1], values[j]
-                        sortedDictArr[j], sortedDictArr[j+1] = sortedDictArr[j+1], sortedDictArr[j]
+                        sortedDictArr[j], sortedDictArr[j+1] =\
+                            sortedDictArr[j+1], sortedDictArr[j]
                 else:
                     if values[j] > values[j+1]:
                         values[j], values[j+1] = values[j+1], values[j]
-                        sortedDictArr[j], sortedDictArr[j+1] = sortedDictArr[j+1], sortedDictArr[j]
+                        sortedDictArr[j], sortedDictArr[j+1] =\
+                            sortedDictArr[j+1], sortedDictArr[j]
             i += 1
         if inv:
             sortedDictArr.reverse()
         return sortedDictArr
 
     def dictsHaveKey(dictArr, key):
-        # checks if all items in array containing dictionaries contain the informed key
+        # checks if all items in array containing dictionaries contain
+        # the informed key
         for d in dictArr:
             if key not in d.keys():
                 return False
