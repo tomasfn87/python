@@ -382,7 +382,7 @@ class Lista:
     def imprimirListaProdutos(self, separador, ord=False, key="", inv=0, \
         noCase=0):
 
-        assert len(separador) == 1
+        assert len(separador) == 1 and type(separador) == str
         listaProdutos = Lista.criarListaProdutos(self, ord, key, inv, noCase)
 
         if not listaProdutos:
