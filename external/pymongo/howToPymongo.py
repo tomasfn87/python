@@ -404,8 +404,8 @@ class Lista:
             separacao1 += separador
             i += 1
 
-        separacao2 = "{}{}{} {} ".format(
-            separador, separador, separador, titulos[1]
+        separacao2 = "{0}{0}{0} {1} ".format(
+            separador, titulos[1]
         )
         for i in range(0, tamanhoSeparacao2 + 5):
             separacao2 += separador
