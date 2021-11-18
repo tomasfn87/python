@@ -64,17 +64,35 @@ class TesteListas:
         (["AB", "aa", "AA", "Ab", "Aa", "ab"], 0, 1, ["AA", "Aa", "aa", "AB", "Ab", "ab"]),
         (["Aa", "aa", "AA", "Ab", "ab", "AB"], 1, 1, ["ab", "Ab", "AB", "aa", "Aa", "AA"])
     ])
-    def test_sortArrCaseIns(self, lista, inv, noCase, resultado, L):
+    def test_sortArrCaseIns_self(self, lista, inv, noCase, resultado, L):
         assert L.sortArrCaseIns(lista, inv, noCase) == resultado
+    
+    @pytest.mark.parametrize("lista, inv, noCase, targetArr, resultado", [
+        (["B", "C", "A"], 0, 0, [2, 3, 1], [1, 2, 3]),
+        (["B", "C", "A"], 1, 0, [2, 3, 1], [3, 2, 1]),
+        (["BA", "aa", "AA", "Aa"], 0, 1, [4, 3, 1, 2], [1, 2, 3, 4]),
+        (["BA", "aa", "AA", "Aa"], 1, 1, [4, 3, 1, 2], [4, 3, 2, 1])
+    ])
+    def test_sortArrCaseIns_target(self, lista, inv, noCase, targetArr, resultado, L):
+        assert L.sortArrCaseIns(lista, inv, noCase, targetArr) == resultado
     
     @pytest.mark.parametrize("arrList, inv, noCase, resultado", [
         ([["b", "C", "a"],["B", "c", "A"]], 0, 0, [["C", "a", "b"],["A", "B", "c"]]),
         ([["b", "C", "a"],["B", "c", "A"]], 1, 0, [["b", "a", "C"],["c", "B", "A"]]),
         ([["b", "C", "a"],["B", "c", "A"]], 0, 1, [["a", "b", "C"],["A", "B", "c"]]),
-        ([["b", "C", "a"],["B", "c", "A"]], 1, 1, [["C", "b", "a"],["c", "B", "A"]])
+        ([["b", "C", "a"],["B", "c", "A"]], 1, 1, [["C", "b", "a"],["c", "B", "A"]])        
     ])
-    def test_sortArrListCaseIns(self, arrList, inv, noCase, resultado, L):
+    def test_sortArrListCaseIns_self(self, arrList, inv, noCase, resultado, L):
         assert L.sortArrListCaseIns(arrList, inv, noCase) == resultado
+    
+    @pytest.mark.parametrize("arrList, inv, noCase, targetArrList, resultado", [
+        ([["b", "C", "a"],["B", "c", "A"]], 0, 0,  [[3, 1, 2],[2, 3, 1]], [[1, 2, 3], [1, 2, 3]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 1, 0,  [[3, 1, 2],[2, 3, 1]], [[3, 2, 1], [3, 2, 1]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 0, 1,  [[2, 3, 1],[2, 3, 1]], [[1, 2, 3], [1, 2, 3]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 1, 1,  [[2, 3, 1],[2, 3, 1]], [[3, 2, 1], [3, 2, 1]])
+    ])
+    def test_sortArrListCaseIns_target(self, arrList, inv, noCase, targetArrList, resultado, L):
+        assert L.sortArrListCaseIns(arrList, inv, noCase, targetArrList) == resultado
 
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
