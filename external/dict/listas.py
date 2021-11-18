@@ -33,20 +33,58 @@ class Listas:
             lista_valores.append(dicionario[i])
         return lista_valores
 
-    def sortArrCaseIns(arr, inv=0, noCase=0):
-        sortedArr = arr[:]
-        for i in range(1, len(sortedArr)):
-            for j in range(0, len(sortedArr) - i):
+    def sortArrCaseIns(arr, inv=0, noCase=0, targetArr=[]):
+        '''This function uses Bubble Sort to sort a list ("arr"):
+
+        * if inv receives True, the sorting will be reversed;
+
+        * if noCase receives True, the sorting will group letters 
+            ignoring upper and lower cases in a first moment, and
+            then take it into account again to group the same letters:
+            first upper case letters and the lower case letters.
+            Example: "AbCa" returns "AabC"
+            (list.sort() would return "ACab")
+        
+        * if "targetArr" receives a valid argument, the function will
+        check if it's a list and if its length is the same as "arr": 
+        if the result is True, the function will sort the second list
+        based on the first list, returning a copy of the second list,
+        that may even end up unordered, depending on the correlation 
+        between "arr" and "target". This functionality was designed to
+        be used directly by "Listas.sortArrListCaseIns()", which does
+        basically the same thing, but instead of receiving two arrays 
+        ("arr", "targetArr"), it receives two list of arrays
+        ("arrList", "targetArrList").
+
+        * "Listas.sortArrListCaseIns()" itself was designed to take
+        advantage of "Listas.sortArrCaseIns()"'s "targetArr" parameter
+        and remove the Bubble Sort algorithm from "Listas.sortDictsByKey()"
+        '''
+        if targetArr:
+            if type(targetArr) != list or len(arr) != len(targetArr):
+                return False
+            sortedArr = targetArr[:]
+        else:
+            sortedArr = arr[:]
+        refArr = arr[:]
+        for i in range(1, len(arr)):
+            for j in range(0, len(arr) - i):
                 if noCase:
-                    if sortedArr[j].lower() == sortedArr[j+1].lower()\
-                        and sortedArr[j] > sortedArr[j+1]:
+                    if refArr[j].lower() == refArr[j+1].lower()\
+                        and refArr[j] > refArr[j+1]:
+                        refArr[j], refArr[j+1] =\
+                            refArr[j+1], refArr[j]
                         sortedArr[j], sortedArr[j+1] =\
                             sortedArr[j+1],sortedArr[j]
-                    elif sortedArr[j].lower() > sortedArr[j+1].lower():
+                    elif refArr[j].lower() > refArr[j+1].lower():
+                        refArr[j], refArr[j+1] =\
+                            refArr[j+1], refArr[j]
                         sortedArr[j], sortedArr[j+1] =\
                             sortedArr[j+1], sortedArr[j]
                 else:
-                    if sortedArr[j] > sortedArr[j+1]:
+                    if refArr[j] > refArr[j+1]:
+                        refArr[j], refArr[j+1] =\
+                            refArr[j+1], refArr[j]
                         sortedArr[j], sortedArr[j+1] =\
                             sortedArr[j+1], sortedArr[j]
             i += 1
@@ -54,7 +92,23 @@ class Listas:
             sortedArr.reverse()
         return sortedArr
 
-    def sortDictsByKey(dictArr, key, inv=0, noCase=0):
+    def sortArrListCaseIns(arrListEntry, inv=0, noCase=0, targetArrList=0):
+        if not Listas.checarListaListas(arrListEntry):
+            return False
+        arrList = []
+        if targetArrList:
+            if len(arrListEntry) != len(targetArrList):
+                return False
+            for i in range(0, len(arrListEntry)):
+                arrList.append(
+                    Listas.sortArrCaseIns(arrListEntry[i], inv, noCase, targetArrList[i])
+                )
+        else:
+            for a in arrListEntry:
+                arrList.append(Listas.sortArrCaseIns(a, inv, noCase))
+        return arrList
+
+    def sortDictArrByKey(dictArr, key, inv=0, noCase=0):
         # receives an array containing dictionaries that contain the
         # informed key
         if not Listas.dictsHaveKey(dictArr, key):
@@ -93,7 +147,7 @@ class Listas:
                 return False
         return True
 
-    def analisarListaDict(lista, chaves=[]):
+    def analyseLongestValueInDictList(lista, chaves=[]):
         maiorItem = 0
         tamanhoAtual = 0
         for i in lista:
