@@ -357,7 +357,7 @@ class Lista:
             )
             listaProdutos[i]["preco"] = lista[i]["preco"]
         if ord:
-            return L.sortDictsByKey(listaProdutos, key, inv, noCase)
+            return L.sortDictArrByKey(listaProdutos, key, inv, noCase)
         return listaProdutos
 
     def listarProdutos(listaProdutos, maiorItem, larguraMinimaCol1):
@@ -390,8 +390,8 @@ class Lista:
         else:
             print("Itens encontrados: {}\n".format(len(listaProdutos)))
 
-        maiorItem1 = L.analisarListaDict(listaProdutos, ["nome"])
-        maiorItem2 = L.analisarListaDict(listaProdutos, ["preco"])
+        maiorItem1 = L.analyseLongestValueInDictList(listaProdutos, ["nome"])
+        maiorItem2 = L.analyseLongestValueInDictList(listaProdutos, ["preco"])
 
         titulos = ["Nome", "Preço"]
         larguraMinimaCol1 = len(titulos[0])
