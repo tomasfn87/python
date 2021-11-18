@@ -66,13 +66,22 @@ class TesteListas:
     ])
     def test_sortArrCaseIns(self, lista, inv, noCase, resultado, L):
         assert L.sortArrCaseIns(lista, inv, noCase) == resultado
+    
+    @pytest.mark.parametrize("arrList, inv, noCase, resultado", [
+        ([["b", "C", "a"],["B", "c", "A"]], 0, 0, [["C", "a", "b"],["A", "B", "c"]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 1, 0, [["b", "a", "C"],["c", "B", "A"]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 0, 1, [["a", "b", "C"],["A", "B", "c"]]),
+        ([["b", "C", "a"],["B", "c", "A"]], 1, 1, [["C", "b", "a"],["c", "B", "A"]])
+    ])
+    def test_sortArrListCaseIns(self, arrList, inv, noCase, resultado, L):
+        assert L.sortArrListCaseIns(arrList, inv, noCase) == resultado
 
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}, {'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}])
     ])
-    def test_sortDictsByKey_simples(self, dictArr, key, resultado, L):
-        assert L.sortDictsByKey(dictArr, key) == resultado
+    def test_sortDictArrByKey_simples(self, dictArr, key, resultado, L):
+        assert L.sortDictArrByKey(dictArr, key) == resultado
 
     @pytest.mark.parametrize("dictArr, key, inv, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", 0, [{'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}]),
@@ -80,15 +89,15 @@ class TesteListas:
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", 1, [{'chave1': 'Ac'}, {'chave1': 'Ab'}, {'chave1': 'Aa'}]),
         ([{'chave1': 'Ba'}, {'chave1': 'Bb'}, {'chave1': 'Bc'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}, {'chave1': 'Ac'}], "chave1", 1, [{'chave1': 'Bc'}, {'chave1': 'Bb'}, {'chave1': 'Ba'}, {'chave1': 'Ac'}, {'chave1': 'Ab'}, {'chave1': 'Aa'}])
     ])
-    def test_sortDictsByKey_inverso(self, dictArr, key, inv, resultado, L):
-        assert L.sortDictsByKey(dictArr, key, inv) == resultado
+    def test_sortDictArrByKey_inverso(self, dictArr, key, inv, resultado, L):
+        assert L.sortDictArrByKey(dictArr, key, inv) == resultado
     
     @pytest.mark.parametrize("dictArr, key, inv, noCase, resultado", [
         ([{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'AB'}, {'chave1': 'aa'}, {'chave1': 'BB'}, {'chave1': 'ba'}], "chave1", 0, 1, [{'chave1': 'aa'}, {'chave1': 'AB'}, {'chave1': 'ba'}, {'chave1': 'BB'}, {'chave1': 'ca'}, {'chave1': 'CB'}]),
         ([{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'AB'}, {'chave1': 'aa'}, {'chave1': 'BB'}, {'chave1': 'ba'}], "chave1", 1, 1, [{'chave1': 'CB'}, {'chave1': 'ca'}, {'chave1': 'BB'}, {'chave1': 'ba'}, {'chave1': 'AB'}, {'chave1': 'aa'}])
     ])
-    def test_sortDictsByKey_noCase(self, dictArr, key, inv, noCase, resultado, L):
-        assert L.sortDictsByKey(dictArr, key, inv, noCase) == resultado
+    def test_sortDictArrByKey_noCase(self, dictArr, key, inv, noCase, resultado, L):
+        assert L.sortDictArrByKey(dictArr, key, inv, noCase) == resultado
 
     @pytest.mark.parametrize("dictArr, key, resultado", [
         ([{'chave1': 'Ac'}, {'chave1': 'Aa'}, {'chave1': 'Ab'}], "chave1", True),
@@ -105,15 +114,15 @@ class TesteListas:
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], 16),
         ([{"nome": "Ana Carolina", "cabelo": "ruivo"},{"nome": "Maria Aparecida", "cabelo": "castanho"},{"nome": "Maria Eduarda", "cabelo": "preto"}], 23)
     ])
-    def test_analisarListaDict_simples(self, lista, resultado, L):
-        assert L.analisarListaDict(lista) == resultado
+    def test_analyseLongestValueInDictList_simples(self, lista, resultado, L):
+        assert L.analyseLongestValueInDictList(lista) == resultado
 
     @pytest.mark.parametrize("lista, chaves, resultado", [
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome", "cabelo"], 16),
         ([{"nome": "Fernanda", "cabelo": "castanho"},{"nome": "Alice", "cabelo": "loiro"},{"nome": "Ana", "cabelo": "preto"}], ["nome"], 8)
     ])
-    def test_analisarListaDict_completo(self, lista, chaves, resultado, L):
-        assert L.analisarListaDict(lista, chaves) == resultado
+    def test_analyseLongestValueInDictList(self, lista, chaves, resultado, L):
+        assert L.analyseLongestValueInDictList(lista, chaves) == resultado
 
     @pytest.mark.parametrize("listaListas, resultado", [
         ( {}, False ),
