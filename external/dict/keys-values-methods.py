@@ -25,5 +25,7 @@ for i in range (0, len(values)):
 print()
 
 for key in dicionario:
-    print(key.capitalize(), end=": ")
-    print(dicionario[key])
+    print("{}: {}".format(
+        key.capitalize(),
+        dicionario[key]
+    ))
