@@ -2,8 +2,8 @@ import pymongo
 import sys
 sys.path.append("/home/morbi/filtering")
 sys.path.append("/home/morbi/python/external/dict")
-from texto import Texto as T
-from listas import Listas as L
+from texto import Texto as T # https://github.com/tomasfn87/filtering/blob/main/texto.py
+from listas import Listas as L # https://github.com/tomasfn87/python/blob/main/external/dict/listas.py
 
 class Dados:
     def __init__(self, mongoURL):
