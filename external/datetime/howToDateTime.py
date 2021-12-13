@@ -18,6 +18,7 @@ def toStr(number):
     return number
 
 def todaysDate(todays_date):
+    assert len(todays_date) == 3 and type(todays_date) == tuple
     month, day, year = todays_date[0], todays_date[1], todays_date[2]
     month, day, year = toStr(month), toStr(day), toStr(year)
 
