@@ -20,13 +20,20 @@ for month_name in month_names_dict:
 month.capitalize()
 
 if day in ["1", "01"]:
-    day += "st"
+    # Superscript st
+    day += chr(738)
+    day += chr(7511)
 elif day in ["2", "02"]:
-    day += "nd"
+    # Superscript nd
+    day += chr(8319)
+    day += chr(7496)
 elif day in ["3", "03"]:
-    day += "rd"
+    # Superscript rd
+    day += chr(691)
+    day += chr(7496)
 else:
-    day += "th"
+    day += chr(7511)
+    day += chr(688)
 
 print(f"Today's {month} {day} {year}.", end = " ")
 if month == "december":
