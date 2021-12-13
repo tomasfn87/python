@@ -1,4 +1,6 @@
-import datetime
+import datetime, sys
+sys.path.append("/home/morbi/filtering")
+from texto import Texto as T # https://github.com/tomasfn87/filtering/blob/main/texto.py
 
 months = {
     "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
@@ -17,26 +19,12 @@ month_names_dict = months.keys()
 for month_name in month_names_dict:
     if month == str(months[month_name]):
         month = month_name
-month.capitalize()
 
-if day in ["1", "01"]:
-    # Superscript st
-    day += chr(738)
-    day += chr(7511)
-elif day in ["2", "02"]:
-    # Superscript nd
-    day += chr(8319)
-    day += chr(7496)
-elif day in ["3", "03"]:
-    # Superscript rd
-    day += chr(691)
-    day += chr(7496)
-else:
-    day += chr(7511)
-    day += chr(688)
+day = T.turnIntoEnglishOrdinalNumber(day)
+month = month.capitalize()
 
 print(f"Today's {month} {day} {year}.", end = " ")
-if month == "december":
+if month == "December":
     print("Merry Christmas and a Happy New Year!")
 else:
     print("Have a good day!")
