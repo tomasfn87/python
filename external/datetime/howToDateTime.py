@@ -17,6 +17,7 @@ month_names_dict = months.keys()
 for month_name in month_names_dict:
     if month == str(months[month_name]):
         month = month_name
+month.capitalize()
 
 if day in ["1", "01"]:
     day += "st"
