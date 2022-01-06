@@ -416,13 +416,13 @@ class Lista:
         Lista.listarProdutos(listaProdutos, maiorItem1, larguraMinimaCol1)
 
 def main():
-    mongoURL = "mongodb://127.0.0.1:27017"
+    mongoURL = "mongodb://localhost:27017"
 
     dados = Dados(mongoURL)
-    if dados.verificarBusca():
-        client = pymongo.MongoClient(mongoURL)
-    else:
+    if not dados.verificarBusca():
         return
+    
+    client = pymongo.MongoClient(mongoURL)
     
     with client:
         db = client.test
@@ -431,3 +431,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
