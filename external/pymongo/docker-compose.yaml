@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  mongo:
+    container_name: mongo
+    build: .
+    volumes:
+      - /home/morbi/filtering/texto.py:/home/morbi/filtering/texto.py
+      - /home/morbi/python/external/dict/listas.py:/home/morbi/python/external/dict/listas.py
+    ports:
+      - '27017:27017'
