@@ -5,6 +5,7 @@ services:
     container_name: mongo
     build: .
     volumes:
+      - ./data/db:/data/db
       - /home/morbi/filtering/texto.py:/home/morbi/filtering/texto.py
       - /home/morbi/python/external/dict/listas.py:/home/morbi/python/external/dict/listas.py
     ports:
