@@ -12,3 +12,6 @@ int_py_pt2/04-OOP/__pycache__/triangulo.cpython-38.pyc
 int_py_pt2/05-testable_code/__pycache__/Bhaskara.cpython-38.pyc
 int_py_pt2/06-busca-ordenacao/__pycache__/ordenar.cpython-38.pyc
 py-face-detection/
+external/pymongo/data/db/
+external/pymongo/.vscode
+external/pymongo/__pycache__/
