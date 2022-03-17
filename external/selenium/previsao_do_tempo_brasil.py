@@ -44,7 +44,7 @@ def capitalize_all(text:  str, exclude: list):
             capitalized_text += " "
     return capitalized_text
 
-def condicao_tempo_accuweather(cidade: str, estado: str):
+def start_chrome():
     options = webdriver.ChromeOptions()
     # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
@@ -53,10 +53,10 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
     options.add_experimental_option('useAutomationExtension', False)
     prefs = {"profile.managed_default_content_settings.images": 2}
     options.add_experimental_option("prefs", prefs)
-    
-    browser = webdriver.Chrome(options=options)
-    #browser = webdriver.Chrome()
+    return webdriver.Chrome(options=options)
 
+def condicao_tempo_accuweather(cidade: str, estado: str):
+    browser = start_chrome()
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
@@ -87,7 +87,6 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
     print(fill_with_times('-', len(title)))
 
     # not all localities have the same kind of data available, so it needs to be wrapped in a try block
-    
     try:
         data = browser.find_element(By.CSS_SELECTOR, 'div[class="current-weather-card card-module content-module non-ad"]').text.split("\n")
         condicao = data[3]
@@ -111,19 +110,7 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
     print(f" Cobertura de nuvens: {cobertura_nuvens}")
     
 def previsao_tempo_climatempo(cidade: str, estado: str):
-    
-    options = webdriver.ChromeOptions()
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    prefs = {"profile.managed_default_content_settings.images": 2}
-    options.add_experimental_option("prefs", prefs)
-    
-    browser = webdriver.Chrome(options=options)
-    # browser = webdriver.Chrome()
-
+    browser = start_chrome()
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
         .send_keys(f"climatempo {cidade} {estado} brasil", Keys.ENTER)
@@ -219,9 +206,9 @@ if __name__ == "__main__":
     inputs = sys.argv
 
     if len(inputs) < 3:
-        print("ERRO: é necessário digitar cidade e estado.\n\nExemplo: python3 previsao_do_tempo_brasil.py manaus am")
+        print("ERRO: é necessário digitar cidade e estado.\nExemplo:\n\tpython3 previsao_do_tempo_brasil.py manaus am")
     elif len(inputs) > 3:
-        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\nse o nome da cidade possuir mais de uma palavra ou utilize\na barra invertida (\\) para cancelar um espaço em branco como\nseparador de argumentos.\n\nExemplo 1: python3 previsao_do_tempo_brasil.py \"são paulo\" sp \nExemplo 2: python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
+        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\nse o nome da cidade possuir mais de uma palavra ou utilize\na barra invertida (\\) para cancelar um espaço em branco como\nseparador de argumentos.\nExemplo 1:\n\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp \nExemplo 2:\n\tpython3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
     else:
         cidade = inputs[1].strip()
         estado = inputs[2].strip()
