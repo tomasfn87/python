@@ -4,8 +4,8 @@ import datetime as dt
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
 
 def remove_empty_elements(arr):
     clean_arr = []
@@ -24,11 +24,15 @@ def fill_with_times(char, times):
         fill += char
     return fill
 
-def capitalize_all(text, exclude):
+def capitalize_all(text:  str, exclude: list):
     words = text.split(" ")
+    
+    for w in words:
+        w = w.lower()
+        
     capitalized_words = []
     for w in words:
-        if w in exclude:
+        if w in exclude or w[0:2] == "d'":
             capitalized_words.append(w)
         else:
             capitalized_words.append(w.capitalize())
@@ -40,7 +44,7 @@ def capitalize_all(text, exclude):
             capitalized_text += " "
     return capitalized_text
 
-def condicao_tempo_accuweather(cidade, estado):
+def condicao_tempo_accuweather(cidade: str, estado: str):
     options = webdriver.ChromeOptions()
     # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
@@ -58,16 +62,23 @@ def condicao_tempo_accuweather(cidade, estado):
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
 
     url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
-    url = url.replace('/en/', '/pt/')
+    pt_url = url.replace('/en/', '/pt/')
 
-    current_weather_replacemets = ['/weather-forecast/', '/daily-weather-forecast/', '/winter-weather-forecast/', '/satellite/']
+    wrong_paths = [
+        '/weather-forecast/',
+        '/daily-weather-forecast/',
+        '/winter-weather-forecast/',
+        '/satellite/',
+        '/hiking-weather/',
+        '/hourly-weather-forecast/'
+    ]
     correct_path = '/current-weather/'
-    for wrong_path in current_weather_replacemets:
-        url = url.replace(wrong_path, correct_path)
+    for wrong_path in wrong_paths:
+        pt_url = pt_url.replace(wrong_path, correct_path)
 
-    browser.get(url)
+    browser.get(pt_url)
 
-    t.sleep(5)
+    t.sleep(4)
     browser.implicitly_wait(3)
 
     exclude = ["de", "da", "do", "dos", "das"]
@@ -79,28 +90,27 @@ def condicao_tempo_accuweather(cidade, estado):
     
     try:
         data = browser.find_element(By.CSS_SELECTOR, 'div[class="current-weather-card card-module content-module non-ad"]').text.split("\n")
-        # print(data)
         condicao = data[3]
         temperatura_atual = data[2]
         sensacao_termica = f"{data[4].split(' ')[1]}C"
         sensacao = data[5]
-        humidade = data[11]
-        cobertura_nuvens = data[17]
+        umidade = data[-11]
+        cobertura_nuvens = data[-5]
     except:
         print("Informações indisponíveis. Tente novamente.")
         browser.quit()
         return
-    finally:
-        browser.quit()
+    
+    browser.quit()
     
     print(f"               Tempo: {condicao}")
     print(f"         Temperatura: {temperatura_atual}")
     print(f"    Sensação Térmica: {sensacao_termica}")
     print(f"            Sensação: {sensacao}")
-    print(f"            Humidade: {humidade}")
+    print(f"             Umidade: {umidade}")
     print(f" Cobertura de nuvens: {cobertura_nuvens}")
     
-def previsao_tempo_climatempo(cidade, estado):
+def previsao_tempo_climatempo(cidade: str, estado: str):
     
     options = webdriver.ChromeOptions()
     # options.add_argument('--headless')
@@ -133,8 +143,9 @@ def previsao_tempo_climatempo(cidade, estado):
         option = 1
     except:
         try:
-            data = remove_empty_elements(browser.find_element(By.XPATH, '//*[@id="first-block-of-days"]/div[4]/section[1]').text.split("\n"))
+            data = browser.find_element(By.XPATH, '//*[@id="first-block-of-days"]/div[4]/section[1]')
             option = 2
+            data = remove_empty_elements(data.text.split("\n"))
         except:
             print("Informações indisponíveis. Tente novamente.")
             browser.quit()
@@ -161,7 +172,7 @@ def previsao_tempo_climatempo(cidade, estado):
         print(f"        Pluviosidade: {pluviosidade}")
         print(f"      Umidade mínima: {umidade_min}")
         print(f"      Umidade máxima: {umidade_max}")
-        if len(nascer_por_sol) > 0:
+        if nascer_por_sol:
             print(f"   Nascer/pôr do sol: {nascer_por_sol.replace(' ', ' / ')}")
 
     elif option == 2:
@@ -207,11 +218,10 @@ def condicao_previsao_do_tempo(cidade, estado):
 if __name__ == "__main__":
     inputs = sys.argv
 
-    execute = False
     if len(inputs) < 3:
-        print("É necessário digitar cidade e estado.")
+        print("ERRO: é necessário digitar cidade e estado.\n\nExemplo: python3 previsao_do_tempo_brasil.py manaus am")
     elif len(inputs) > 3:
-        print("Digite apenas cidade e estado; coloque aspas simples ou duplas se o nome da cidade possuir mais de uma palavra")
+        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\nse o nome da cidade possuir mais de uma palavra ou utilize\na barra invertida (\\) para cancelar um espaço em branco como\nseparador de argumentos.\n\nExemplo 1: python3 previsao_do_tempo_brasil.py \"são paulo\" sp \nExemplo 2: python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
     else:
         cidade = inputs[1].strip()
         estado = inputs[2].strip()
