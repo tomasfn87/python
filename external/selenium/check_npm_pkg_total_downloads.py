@@ -5,37 +5,40 @@ from selenium.webdriver.common.keys import Keys # keyboard
 from selenium.webdriver.common.by import By # access HTML elements
 
 class NpmPackage:
-    def __init__(self, package_name, publication_date):
+    def __init__(self, package_name, publication_dateDMY):
         # '@organization/name' or 'name'
         self.pname = package_name
         
         # DD-MM-YYYY
-        self.pdate = publication_date
+        self.pdateDMY = publication_dateDMY
     
     def show_total_downloads(self, show=True):
         # YYYY-MM-DD -> DD-MM-YYYY
-        today = str(dt.date.today())
-        today = f"{today[8:10]}-{today[5:7]}-{today[0:4]}"
+        todayYMD = str(dt.date.today())
+        todayDMY = f"{todayYMD[8:10]}-{todayYMD[5:7]}-{todayYMD[0:4]}"
         
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
 
         browser = webdriver.Chrome(options=options)
 
-        # search for 'npm-stat'
-        browser.get("https://www.duckduckgo.com/")
-        browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]').send_keys("npm-stat", Keys.ENTER)
-        # enter 'https://npm-stat.com/'
-        browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').click()
+        package_info = self.pname.split("/")
+        organization = package_info[0]
+        package_name = package_info[1]
+        
+        # DD-MM-YYYY -> YYYY-MM-DD
+        pdateDMY = self.pdateDMY.split("-")
+        pdateYMD = f"{pdateDMY[2]}-{pdateDMY[1]}-{pdateDMY[0]}"
 
-        # reach search fields and enter package name, publication date and today's date
-        browser.find_element(By.XPATH, '//*[@id="name"]').send_keys(
-                self.pname, Keys.TAB, self.pdate.replace("-", ""), Keys.TAB, today.replace("-", ""), Keys.ENTER)
+        # format 'npm-stat' package search from publication date to today
+        npm_stat_url = f"https://npm-stat.com/charts.html?package={organization}%2F{package_name}&from={pdateYMD}&to={todayYMD}"
 
-        t.sleep(2)
-        browser.implicitly_wait(2)
+        browser.get(npm_stat_url)
 
-        # get total downloads from <body>
+        t.sleep(1)
+        browser.implicitly_wait(1)
+
+        # get total downloads from <td>
         td_list = browser.find_elements(By.TAG_NAME, 'td')
         total_downloads = td_list[-1].text
 
@@ -43,11 +46,11 @@ class NpmPackage:
 
         if show == True:
             print(f"package {self.pname}'s")
-            print(f"Total downloads from {self.pdate.replace('-', '/')}")
-            print(f"                  to {today.replace('-', '/')}: {total_downloads}")
+            print(f"Total downloads from {self.pdateDMY.replace('-', '/')}")
+            print(f"                  to {todayDMY.replace('-', '/')}: {total_downloads}")
         else:
             return(int(total_downloads.replace(",", "")))
 
-pkg = NpmPackage(package_name="@nighly/sort-object-array-by-property", publication_date="02-02-2022")
+pkg = NpmPackage(package_name="@nighly/sort-object-array-by-property", publication_dateDMY="02-02-2022")
 
 pkg.show_total_downloads()
