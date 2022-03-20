@@ -17,14 +17,7 @@ def condicao_previsao_do_tempo(cidade, estado):
     previsao_tempo_climatempo(cidade, estado)
 
 def fill_with_times(char: str, times: int):
-    if len(char) == 0:
-        char = "-"
-    else:
-        char = char[0]
-    fill = ""
-    for i in range(0, times):
-        fill += char
-    return fill
+    return times * char[0]
 
 def condicao_tempo_accuweather(cidade: str, estado: str):
     browser = start_chrome()
@@ -98,7 +91,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str):
         previsao = data[1]
         temp_min = data[7]
         temp_max = data[8]
-        pluviosidade = data[10]
+        precipitacao = data[10]
         umidade_min = data[14]
         umidade_max = data[15]
         nascer_por_sol = ""
@@ -111,7 +104,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str):
         print(f"        Temp. máxima: {temp_max}C")
         print(f"          Comparação: {comparacao}.")
         print(f"            Previsão: {previsao}")
-        print(f"        Pluviosidade: {pluviosidade}")
+        print(f"        Precipitação: {precipitacao}")
         print(f"      Umidade mínima: {umidade_min}")
         print(f"      Umidade máxima: {umidade_max}")
         if nascer_por_sol:
