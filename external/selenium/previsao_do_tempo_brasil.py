@@ -7,14 +7,14 @@ from selenium.webdriver.common.keys import Keys
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions as EC
 
-def remove_empty_elements(arr):
+def remove_empty_elements(arr: list):
     clean_arr = []
     for i in arr:
         if i != "":
             clean_arr.append(i)
     return clean_arr
 
-def fill_with_times(char, times):
+def fill_with_times(char: str, times: int):
     if len(char) == 0:
         char = "-"
     else:
@@ -24,12 +24,13 @@ def fill_with_times(char, times):
         fill += char
     return fill
 
-def capitalize_all(text:  str, exclude: list):
+def capitalize_all(text:  str):
+    exclude = ["de", "da", "do", "dos", "das"]
     words = text.split(" ")
-    
+
     for w in words:
         w = w.lower()
-        
+
     capitalized_words = []
     for w in words:
         if w in exclude or w[0:2] == "d'":
@@ -44,9 +45,10 @@ def capitalize_all(text:  str, exclude: list):
             capitalized_text += " "
     return capitalized_text
 
-def start_chrome():
+def start_chrome(headless=False):
     options = webdriver.ChromeOptions()
-    # options.add_argument('--headless')
+    if headless == True:
+        options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -62,27 +64,24 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
 
     url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
-    pt_url = url.replace('/en/', '/pt/')
+    url_components = url.split("/")
 
-    wrong_paths = [
-        '/weather-forecast/',
-        '/daily-weather-forecast/',
-        '/winter-weather-forecast/',
-        '/satellite/',
-        '/hiking-weather/',
-        '/hourly-weather-forecast/'
-    ]
-    correct_path = '/current-weather/'
-    for wrong_path in wrong_paths:
-        pt_url = pt_url.replace(wrong_path, correct_path)
+    query_url = ""
+    for i in range(0, len(url_components)):
+        if i == 3:
+            query_url += 'pt'
+        elif i == 7:
+            query_url += "current-weather"
+        else:
+            query_url += url_components[i]
+        if i != len(url_components) - 1:
+            query_url += "/"
 
-    browser.get(pt_url)
-
+    browser.get(query_url)
     t.sleep(4)
     browser.implicitly_wait(3)
 
-    exclude = ["de", "da", "do", "dos", "das"]
-    title = f"Condições meteorológicas em {capitalize_all(cidade, exclude)}/{estado.upper()}, Brasil"
+    title = f"Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
     print(fill_with_times('-', len(title)))
 
@@ -120,8 +119,8 @@ def previsao_tempo_climatempo(cidade: str, estado: str):
     browser.implicitly_wait(4)
 
     data, option = [], 0
-    exclude = ["de", "do", "da", "dos", "das"]
-    title = f"Previsão do tempo em {capitalize_all(cidade, exclude)}/{estado.upper()}, Brasil"
+
+    title = f"Previsão do tempo em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
     print(fill_with_times('-', len(title)))
 
