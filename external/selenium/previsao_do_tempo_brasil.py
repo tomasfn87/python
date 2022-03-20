@@ -7,12 +7,14 @@ from selenium.webdriver.common.keys import Keys
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions as EC
 
-def remove_empty_elements(arr: list):
-    clean_arr = []
-    for i in arr:
-        if i != "":
-            clean_arr.append(i)
-    return clean_arr
+def condicao_previsao_do_tempo(cidade, estado):
+    data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
+    print(data_hora)
+    print(fill_with_times('-', len(data_hora)))
+    print()
+    condicao_tempo_accuweather(cidade, estado)
+    print()
+    previsao_tempo_climatempo(cidade, estado)
 
 def fill_with_times(char: str, times: int):
     if len(char) == 0:
@@ -24,52 +26,6 @@ def fill_with_times(char: str, times: int):
         fill += char
     return fill
 
-def capitalize_all(text:  str):
-    exclude = ["de", "da", "do", "dos", "das"]
-    words = text.split(" ")
-
-    for w in words:
-        w = w.lower()
-
-    capitalized_words = []
-    for w in words:
-        if w in exclude or w[0:2] == "d'":
-            capitalized_words.append(w)
-        else:
-            capitalized_words.append(w.capitalize())
-
-    capitalized_text = ""
-    for i in range(0, len(words)):
-        capitalized_text += capitalized_words[i]
-        if i != len(words)-1:
-            capitalized_text += " "
-    return capitalized_text
-
-def start_chrome(headless=False):
-    options = webdriver.ChromeOptions()
-    if headless == True:
-        options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    prefs = {"profile.managed_default_content_settings.images": 2}
-    options.add_experimental_option("prefs", prefs)
-    return webdriver.Chrome(options=options)
-
-def format_accuweather_url(url_components: list):
-    query_url = ""
-    for i in range(0, len(url_components)):
-        if i == 3:
-            query_url += 'pt'
-        elif i == 7:
-            query_url += "current-weather"
-        else:
-            query_url += url_components[i]
-        if i != len(url_components) - 1:
-            query_url += "/"
-    return query_url
-
 def condicao_tempo_accuweather(cidade: str, estado: str):
     browser = start_chrome()
     browser.get("https://www.duckduckgo.com")
@@ -77,13 +33,9 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
 
     url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
-    url_components = url.split("/")
-
-    query_url = format_accuweather_url(url_components)
-
-    browser.get(query_url)
-    t.sleep(4)
-    browser.implicitly_wait(3)
+    browser.get(format_accuweather_url(url))
+    t.sleep(2)
+    browser.implicitly_wait(2)
 
     title = f"Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
@@ -102,16 +54,16 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
         print("Informações indisponíveis. Tente novamente.")
         browser.quit()
         return
-    
+
     browser.quit()
-    
+
     print(f"               Tempo: {condicao}")
     print(f"         Temperatura: {temperatura_atual}")
     print(f"    Sensação Térmica: {sensacao_termica}")
     print(f"            Sensação: {sensacao}")
     print(f"             Umidade: {umidade}")
     print(f" Cobertura de nuvens: {cobertura_nuvens}")
-    
+
 def previsao_tempo_climatempo(cidade: str, estado: str):
     browser = start_chrome()
     browser.get("https://www.duckduckgo.com")
@@ -119,8 +71,8 @@ def previsao_tempo_climatempo(cidade: str, estado: str):
         .send_keys(f"climatempo {cidade} {estado} brasil", Keys.ENTER)
     browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').click()
 
-    t.sleep(6)
-    browser.implicitly_wait(4)
+    t.sleep(2)
+    browser.implicitly_wait(2)
 
     data, option = [], 0
 
@@ -196,14 +148,59 @@ def previsao_tempo_climatempo(cidade: str, estado: str):
         print(f"   Nascer/pôr do sol: {nascer_por_sol.replace(' - ', ' / ')}")
         print(f"                 Lua: {lua}")
 
-def condicao_previsao_do_tempo(cidade, estado):
-    data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
-    print(data_hora)
-    print(fill_with_times('-', len(data_hora)))
-    print()
-    condicao_tempo_accuweather(cidade, estado)
-    print()
-    previsao_tempo_climatempo(cidade, estado)
+def start_chrome(headless=False):
+    options = webdriver.ChromeOptions()
+    if headless == True:
+        options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    prefs = {"profile.managed_default_content_settings.images": 2}
+    options.add_experimental_option("prefs", prefs)
+    return webdriver.Chrome(options=options)
+
+def format_accuweather_url(url: str):
+    url_components = url.split("/")
+    query_url = ""
+    for i in range(0, len(url_components)):
+        if i == 3:
+            query_url += "pt"
+        elif i == 7:
+            query_url += "current-weather"
+        else:
+            query_url += url_components[i]
+        if i != len(url_components) - 1:
+            query_url += "/"
+    return query_url
+
+def capitalize_all(text:  str):
+    exclude = ["de", "da", "do", "dos", "das"]
+    words = text.split(" ")
+
+    for w in words:
+        w = w.lower()
+
+    capitalized_words = []
+    for w in words:
+        if w in exclude or w[0:2] == "d'":
+            capitalized_words.append(w)
+        else:
+            capitalized_words.append(w.capitalize())
+
+    capitalized_text = ""
+    for i in range(0, len(words)):
+        capitalized_text += capitalized_words[i]
+        if i != len(words)-1:
+            capitalized_text += " "
+    return capitalized_text
+
+def remove_empty_elements(arr: list):
+    clean_arr = []
+    for i in arr:
+        if i != "":
+            clean_arr.append(i)
+    return clean_arr
 
 if __name__ == "__main__":
     inputs = sys.argv
