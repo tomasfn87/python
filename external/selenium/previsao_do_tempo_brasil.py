@@ -57,15 +57,7 @@ def start_chrome(headless=False):
     options.add_experimental_option("prefs", prefs)
     return webdriver.Chrome(options=options)
 
-def condicao_tempo_accuweather(cidade: str, estado: str):
-    browser = start_chrome()
-    browser.get("https://www.duckduckgo.com")
-    browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
-        .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
-
-    url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
-    url_components = url.split("/")
-
+def format_accuweather_url(url_components: list):
     query_url = ""
     for i in range(0, len(url_components)):
         if i == 3:
@@ -76,6 +68,18 @@ def condicao_tempo_accuweather(cidade: str, estado: str):
             query_url += url_components[i]
         if i != len(url_components) - 1:
             query_url += "/"
+    return query_url
+
+def condicao_tempo_accuweather(cidade: str, estado: str):
+    browser = start_chrome()
+    browser.get("https://www.duckduckgo.com")
+    browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
+        .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
+
+    url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
+    url_components = url.split("/")
+
+    query_url = format_accuweather_url(url_components)
 
     browser.get(query_url)
     t.sleep(4)
