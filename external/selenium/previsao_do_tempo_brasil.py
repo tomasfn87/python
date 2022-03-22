@@ -199,9 +199,18 @@ if __name__ == "__main__":
     inputs = sys.argv
 
     if len(inputs) < 3:
-        print("ERRO: é necessário digitar cidade e estado.\nExemplo:\n\tpython3 previsao_do_tempo_brasil.py manaus am")
+        print("ERRO: é necessário digitar cidade e estado.\
+            \nExemplo:\
+                \n\tpython3 previsao_do_tempo_brasil.py manaus am")
     elif len(inputs) > 3:
-        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\nse o nome da cidade possuir mais de uma palavra ou utilize\na barra invertida (\\) para cancelar um espaço em branco como\nseparador de argumentos.\nExemplo 1:\n\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp \nExemplo 2:\n\tpython3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
+        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\
+            \nse o nome da cidade possuir mais de uma palavra ou utilize\
+            \na barra invertida (\\) para cancelar um espaço em branco como\
+            \nseparador de argumentos.\
+            \nExemplo 1:\
+                \n\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp\
+            \nExemplo 2:\
+                \n\tpython3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
     else:
         cidade = inputs[1].strip()
         estado = inputs[2].strip()
