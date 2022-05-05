@@ -22,16 +22,21 @@ class NpmPackage:
 
         pdateYMD = self.pdateDMY.split("-")
         pdateYMD = f"{pdateYMD[2]}-{pdateYMD[1]}-{pdateYMD[0]}"
+        
+        #print(f"Publication Date DMY: {self.pdateDMY}")
+        #print(f"Publication Date YMD: {pdateYMD}")
 
         npm_stat_url = "https://npm-stat.com/charts.html?package="
         if organization:
-            npm_stat_url += f"{organization}%2F"
+            npm_stat_url += f"{organization.replace('@', '%40')}%2F"
         npm_stat_url += f"{package_name}&from={pdateYMD}&to={todayYMD}"
 
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         browser = webdriver.Chrome(options=options)
+        #browser = webdriver.Chrome()
         browser.get(npm_stat_url)
+        
         t.sleep(1)
         browser.implicitly_wait(1)
         total_downloads = browser.find_elements(By.TAG_NAME, 'td')[-1].text
