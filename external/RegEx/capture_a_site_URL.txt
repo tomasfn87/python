@@ -1,6 +1,6 @@
 RegEx:
 ======
-(https?:(\\{2}|/{2}))?(w{3})?(\.?)([^ "'\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
+(https?:(\\?\\|//?))?(w{3})?(\.?)([^ "'\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
 
 
 Test:
@@ -10,7 +10,7 @@ Test:
 ;~.ll    a1.aa    1a.11    a1.11    b2.b1    url.parse('alqaeda.ak47.gun.shop')
 www.example.com    example.com    help.example.com    -&.aa
 {subsite.site.com.br/produtos}    "example.net"    aa.aa    
-(http:\\www.example12.net)    https://contact.example55.net
+(http:/www.example12.net)    https:\contact.example55.net
 store.steampowered.com    buy.some-thing.for.me
 'gmail.com'    www.saopaulo.sp.gov.br    [bit.ly/1asd7a6]
 https://stackoverflow.com/questions/47637545/domain-names-that-start-with-a-number
