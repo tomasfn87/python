@@ -1,6 +1,6 @@
 RegEx:
 ======
-(https?:(\\?\\|//?))?(w{3})?(\.?)([^ "'\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
+(https?:(\\?\\|//?)*)?[^ \\/](w{3})?(\.?)([^ "'\\/\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
 
 
 Test:
@@ -18,7 +18,8 @@ https://auth.udacity.com/sign-in?next=https%3A%2F%2Fclassroom.udacity.com%2Fauth
 https://www.postgresql.org/docs/9.1/sql-altertable.html
 Digita duckduckgo.com no Safari e procura o nome da loja.
 O endereço completo é https://www.mozilla.org
-Ou só mozilla.org já dá certo
+Ou só mozilla.org já dá certo    C:\User\Documents\outlook.com
 A loja está aberta. Eu não sei o que tem pra vender hoje.
 google .com    google ponto con    Entra no gugol
 A promoção é válida até sexta-feira 14/02 até as 23h39.
+https://onlinegdb.com/5hoybMfGy   /usr/local/google.com
