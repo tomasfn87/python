@@ -1,13 +1,13 @@
 RegEx:
 ======
-(https?:(\\?\\|//?)*)?[^ \\/](w{3})?(\.?)([^ "'\\/\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
+(https?:(\\?\\|/?/)*)?[^ \\/"'\\/\(\)\[\]\{\}]?(w{3})?(\.?)([^ "'\\/\(\)\[\]\{\}]?([A-Z])(\w|\d|-)+\.)([A-Z]([^ "'\(\)\[\]\{\}])+\.?)+
 
 
 Test:
 -----
 
-1.123    1123.123    a.aa    bobmartin.co.uk    bobmartin.com
-;~.ll    a1.aa    1a.11    a1.11    b2.b1    url.parse('alqaeda.ak47.gun.shop')
+url.parse('alqaeda.ak47.gun.shop')    a.aa    1123.123    bobmartin.com
+;~.ll    a1.aa    1a.11    a1.11    b2.b1     1.123    bobmartin.co.uk
 www.example.com    example.com    help.example.com    -&.aa
 {subsite.site.com.br/produtos}    "example.net"    aa.aa    
 (http:/www.example12.net)    https:\contact.example55.net
@@ -17,9 +17,9 @@ https://stackoverflow.com/questions/47637545/domain-names-that-start-with-a-numb
 https://auth.udacity.com/sign-in?next=https%3A%2F%2Fclassroom.udacity.com%2Fauthenticated
 https://www.postgresql.org/docs/9.1/sql-altertable.html
 Digita duckduckgo.com no Safari e procura o nome da loja.
-O endereço completo é https://www.mozilla.org
+O endereço completo é https://www.mozilla.org    D:\photo.png
 Ou só mozilla.org já dá certo    C:\User\Documents\outlook.com
 A loja está aberta. Eu não sei o que tem pra vender hoje.
 google .com    google ponto con    Entra no gugol
 A promoção é válida até sexta-feira 14/02 até as 23h39.
-https://onlinegdb.com/5hoybMfGy   /usr/local/google.com
+https://onlinegdb.com/5hoybMfGy    /usr/local/google.com
