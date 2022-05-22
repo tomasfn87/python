@@ -5,7 +5,12 @@ class Funcionario:
         self.salario = salario
 
     def aumento_salario(self, aumento):
+        aumento_de_salario = self.salario * (aumento/100)
+        aumento_de_salario = Funcionario.formatar_valor_monetario(self, aumento_de_salario)
         self.salario *= (1 + (aumento / 100))
+        salario_aumentado = Funcionario.formatar_valor_monetario(self, self.salario)
+        print(f'Aumento de salário para {self.nome}: {aumento_de_salario} ({aumento}%)')
+        print(f'Novo salário: {salario_aumentado}')
 
     def formatar_data_admissao_dmy(self):
         dia = self.data_admissao_ymd[6:8]
@@ -24,13 +29,13 @@ class Gerente(Funcionario):
     def __init__(self, nome, data_admissao_ymd, salario, bonus):
         super().__init__(nome, data_admissao_ymd, salario)
         self.bonus = bonus
-        
+
     def calcular_bonus(self):
         return self.salario * (self.bonus / 100)
-    
+
     def ver_bonus(self):
         bonus = Funcionario.formatar_valor_monetario(self, Gerente.calcular_bonus(self))
-        return f'Bônus: {bonus}'
+        return f'Bônus sobre o salário de {self.nome}: {bonus} ({self.bonus}%)'
 
     def ver_salario_com_bonus(self):
         salario_com_bonus = Funcionario.formatar_valor_monetario(self, (self.salario + Gerente.calcular_bonus(self)))
@@ -41,10 +46,12 @@ print(funcionario1)
 print()
 
 funcionario1.aumento_salario(5)
+print()
 print(funcionario1)
 print()
 
 gerente1 = Gerente('Kleber', '20120422', 3000, 10)
 print(gerente1)
+print()
 print(gerente1.ver_bonus())
 print(gerente1.ver_salario_com_bonus())
