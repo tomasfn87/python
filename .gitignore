@@ -16,3 +16,5 @@ external/pymongo/data/db/
 external/pymongo/.vscode
 external/pymongo/__pycache__/
 external/pymongo/data/
+*.jpg
+*.png
