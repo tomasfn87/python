@@ -1,0 +1,7 @@
+Soma 1 1 1 1 1
+Soma 1 2 1 2 1
+Subtração 10 5 1
+Soma 10 25 15 5 5
+Subtração 100 50 25
+Subtração 30 2 1
+Soma 1 9 9 1
