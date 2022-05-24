@@ -3,6 +3,9 @@ class Funcionario:
         self.nome = nome
         self.data_admissao_ymd = data_admissao_ymd
         self.salario = salario
+        
+    def __repr__(self):
+        return f'Nome: {self.nome}\nData de admissão: {Funcionario.formatar_data_admissao_dmy(self)}\nSalário: {Funcionario.formatar_valor_monetario(self, self.salario)}'
 
     def aumento_salario(self, aumento):
         aumento_de_salario = self.salario * (aumento/100)
@@ -19,11 +22,24 @@ class Funcionario:
         return f'{dia}/{mes}/{ano}'
 
     def formatar_valor_monetario(self, valor):
-        valor_formatado = 'R${:.2f}'.format(valor)
-        return valor_formatado.replace('.', ',')
+        valor = '{:.2f}'.format(valor)
+        valor = valor.split('.')
+        reais = valor[0]
+        centavos = valor[1]
+        valor_formatado = f'R${Funcionario.marcar_numero(self, reais)},{centavos}'
+        return valor_formatado
 
-    def __repr__(self):
-        return f'Nome: {self.nome}\nData de admissão: {Funcionario.formatar_data_admissao_dmy(self)}\nSalário: {Funcionario.formatar_valor_monetario(self, self.salario)}'
+    def marcar_numero(self, numero, marcador='.'):
+        numero_marcado = ''
+        if type(numero) != str:
+            numero = str(numero)
+        contador = 0
+        for i in range(len(numero)-1, -1, -1):
+            contador += 1
+            numero_marcado = numero[i] + numero_marcado
+            if contador % 3 == 0 and i != 0:
+                numero_marcado = marcador + numero_marcado
+        return numero_marcado
 
 class Gerente(Funcionario):
     def __init__(self, nome, data_admissao_ymd, salario, bonus):
