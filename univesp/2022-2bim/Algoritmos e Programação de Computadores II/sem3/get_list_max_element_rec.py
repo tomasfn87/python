@@ -18,5 +18,4 @@ print(f'Encontrar o maior elemento usando minha função recursiva leva {time.ti
 print()
 inicio = time.time()
 print(max(l1))
-print(time.time() - inicio)
 print(f'Encontrar o maior elemento usando a função nativa "max()" leva {time.time() - inicio} segundos')

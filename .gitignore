@@ -18,3 +18,4 @@ external/pymongo/__pycache__/
 external/pymongo/data/
 *.jpg
 *.png
+/home/morbi/python/univesp/2022-2bim/Algoritmos e Programação de Computadores II/sem3/__pycache__

@@ -17,5 +17,4 @@ print(f'Minha função recursiva que soma os elementos de uma lista leva {time.t
 print()
 inicio = time.time()
 print(sum(l1))
-print(time.time() - inicio)
 print(f'A função nativa "sum()" leva {time.time() - inicio} segundos')
