@@ -1,19 +1,19 @@
 import sys
 
-def fixed_fibonacci(n):
+def fixed_fibonacci_rec(n):
     if type(n) == str:
         n = int(eval(n))
     elif type(n) == float:
         n = int(n)
     if n < 0:
         n *= -1
-    return fib(n)
+    return fib_rec(n)
 
-def fib(n):
+def fib_rec(n):
     if n < 2:
         return n
     else:
-        return fib(n - 1) + fib(n - 2)
+        return fib_rec(n - 1) + fib_rec(n - 2)
 
 if __name__ == '__main__':
     input = sys.argv
@@ -21,6 +21,6 @@ if __name__ == '__main__':
         n = int(eval(input[1]))
         if n < 0:
             n *= -1
-        print(f'Soma da sequência de Fibonacci de {n}: {fixed_fibonacci(n)}')
+        print(f'Elemento {n} da sequência de Fibonacci: {fixed_fibonacci_rec(n)}')
     else:
         print('Escreva um número n inteiro após o nome do arquivo; se n for negativo, o sinal será removido.')
