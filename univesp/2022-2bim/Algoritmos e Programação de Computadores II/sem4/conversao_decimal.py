@@ -1,3 +1,5 @@
+import sys
+
 from pilha import Pilha
 
 class Dec(Pilha):
@@ -55,9 +57,19 @@ class Dec(Pilha):
                 result += str(hexadecimal[i])
         return result
 
-print(f'({Dec(2047).hexadecimal()})16\t\t\t({Dec(2047).decimal()})10')
-print(f'({Dec(2047).octal()})8\t\t\t({Dec(2047).decimal()})10')
-print(f'({Dec(2047).binary()})2\t\t({Dec(2047).decimal()})10')
-print(f'({Dec(4095).binary()})2\t\t({Dec(4095).decimal()})10')
-print(f'({Dec(4095).octal()})8\t\t\t({Dec(4095).decimal()})10')
-print(f'({Dec(4095).hexadecimal()})16\t\t\t({Dec(4095).decimal()})10')
+if __name__ == '__main__':
+    if len(sys.argv) > 2:
+        inputs = sys.argv
+    decimal = inputs[1]
+    conversao = inputs[2]
+    decimal = int(decimal)
+    if conversao.strip() in ['2', '8', '16']:
+        n=Dec(decimal)
+        if conversao == '2':
+            print(n.binary())
+        elif conversao == '8':
+            print(n.octal())
+        else:
+            print(n.hexadecimal())
+    else:
+        print('Digite o número decimal e a conversão desejada: 2, 8, ou 16')
