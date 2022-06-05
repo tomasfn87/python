@@ -15,7 +15,7 @@ class FilaPreferencial(Fila):
 
     def push(self, pessoa):
         if not isinstance(pessoa, Pessoa):
-            print('Só podem ser adicionadas instâncias da classe Pessoa  a uma instância da classe FilaPreferencial.')
+            print('Só podem ser adicionadas instâncias da classe Pessoa a uma instância da classe FilaPreferencial.')
             return
         if pessoa.ano_nasc > self.yr():
             print(f'O ano de nascimento não pode ser maior que {self.yr()}.')
@@ -40,6 +40,8 @@ class FilaPreferencial(Fila):
                 print(f' - {pessoa.nome},  {self.yr()-pessoa.ano_nasc} anos')
         else:
             print('Não há ninguém na lista de chamada comum.')
+        if self.size()+len(self.preferencial) > 0:
+            print(f'A fila tem {self.size()+len(self.preferencial)} pessoas.')
 
     def chamar(self):
         if len(self.preferencial) == 0 and len(self.data) == 0:
