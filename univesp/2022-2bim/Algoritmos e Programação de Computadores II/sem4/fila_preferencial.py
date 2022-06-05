@@ -101,7 +101,3 @@ print("\n * Vamos então chamar a segunda pessoa, executando a função 'chamar'
 fp.chamar()
 print("\n * Agora vamos chamar o resto da fila de uma vez, executando a função 'chamar_todos':")
 fp.chamar_todos()
-
-print('\n * Muito bom, nosso programa funciona muito bem:')
-print(' * observe como ele chama 2 pessoas da fila preferencial para cada pessoa da fila comum,')
-print(' * a menos que a fila preferencial esteja vazia.')
