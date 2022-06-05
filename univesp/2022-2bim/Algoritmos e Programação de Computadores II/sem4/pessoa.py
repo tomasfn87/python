@@ -7,4 +7,4 @@ class Pessoa:
 
     def __repr__(self):
         yr = int(dt.date.today().strftime('%Y'))
-        return f'Nome: {self.nome} | Idade: {yr - self.ano_nasc}'
+        return f'{self.nome}; {yr - self.ano_nasc} anos'
