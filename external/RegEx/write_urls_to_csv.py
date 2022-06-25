@@ -52,8 +52,10 @@ data = [
 if __name__ == '__main__':
     inputs = sys.argv
     if len(inputs) > 1:
-        output_file = sys.argv[1]
-
-        with open(output_file, 'w') as fh:
-            for i in data:
-                fh.write(f'{i}\n')
+        outputFile = sys.argv[1]
+        if outputFile[-3:len(outputFile)] != 'csv':
+            print("Output file must have '.csv' extension.")
+        else:
+            with open(outputFile, 'w') as fh:
+                for i in data:
+                    fh.write(f'{i}\n')
