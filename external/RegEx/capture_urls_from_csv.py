@@ -11,7 +11,7 @@ if __name__ == '__main__':
         with open(input_file, 'r') as fh:
             data = fh.read()
 
-        csv_lines = data.split(',\n')
+        csv_lines = data.split('\n')
         matches = []
         re_possible_website_url = r"(?i)((ht{1,2}ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]+\.)+([a-z][a-z0-9-]+)((\/|\\)[^\'\"\s\[\]\(\)\{\}]*)*\/?)"
         
