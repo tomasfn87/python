@@ -56,4 +56,4 @@ if __name__ == '__main__':
 
         with open(output_file, 'w') as fh:
             for i in data:
-                fh.write(f'{i},\n')
+                fh.write(f'{i}\n')
