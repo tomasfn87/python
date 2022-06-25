@@ -5,7 +5,7 @@ data = [
     'a.aa',
     '1123.123',
     'bobmartin.com',
-    ';~.ll',
+    '&~.ll',
     'a1.aa',
     '1a.11',
     'a1.11',
@@ -51,8 +51,9 @@ data = [
 
 if __name__ == '__main__':
     inputs = sys.argv
-    output_file = sys.argv[1]
+    if len(inputs) > 1:
+        output_file = sys.argv[1]
 
-    with open(output_file, 'w') as fh:
-        for i in data:
-            fh.write(f'{i},\n')
+        with open(output_file, 'w') as fh:
+            for i in data:
+                fh.write(f'{i},\n')
