@@ -13,7 +13,7 @@ data = [
     '1.123',
     'bobmartin.co.uk',
     'www.example.com',
-    'example.com',
+    '(example.com)',
     'help.example.com',
     '-&.aa',
     '{subsite.site.com.br/produtos}',
@@ -47,6 +47,8 @@ data = [
     'https://idpcafe.usp.br/idp/profile/SAML2/Redirect/SSO?execution=e1s1#inbox',
     'https://mail.google.com/mail/u/0/?zx=ley03zxch2dl#inbox',
     'https://www.mercadolivre.com.br/c/calcados-roupas-e-bolsas#DEAL_ID=MLB9079&S=landingHubfashion-trends-jun&V=0&T=MainSliderItem-normal&L=FT_20.06_TENDENCIAS_INVERNO&deal_print_id=bbf80ce0-f41c-11ec-a285-b5055f67c13a&c_id=mainslideritem-normal&c_element_order=1&c_campaign=FT_20.06_TENDENCIAS_INVERNO&c_uid=bbf80ce0-f41c-11ec-a285-b5055f67c13a',
+    'http://a.b.c.d.e.f.g.h.i.j.k.l.m.n.oo.pp.qqq.rrrr.ssssss.tttttttt.uuuuuuuuuuu.vvvvvvvvvvvvvvv.wwwwwwwwwwwwwwwwwwwwww.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.me/',
+    'https://integrada.minhabiblioteca.com.br/reader/books/9788521633303/epubcfi/6/40[%3Bvnd.vst.idref%3Dchapter09]!/4'
 ]
 
 if __name__ == '__main__':
