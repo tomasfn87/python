@@ -1,27 +1,29 @@
-import sys
 import re
-
+import sys
 
 if __name__ == '__main__':
     inputs = sys.argv
 
     if len(inputs) > 1:
-        input_file = sys.argv[1]
+        inputFile = sys.argv[1]
 
-        with open(input_file, 'r') as fh:
+        with open(inputFile, 'r') as fh:
             data = fh.read()
 
-        csv_lines = data.split('\n')
-        matches = []
-        re_possible_website_url = r"(?i)((ht{1,2}ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]+\.)+([a-z][a-z0-9-]+)((\/|\\)[^\'\"\s\[\]\(\)\{\}]*)*\/?)"
+        csvLines = data.split('\n')
+        rePossibleWebsiteUrl = r"(?i)((ht{1,2}ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]+\.)+([a-z][a-z0-9-]+)((\/|\\)[^\'\"\s\[\]\(\)\{\}]*)*\/?)"
+        urls = []
         
-        for line in csv_lines:
-            if re.findall(re_possible_website_url, line):
-                for i in re.findall(re_possible_website_url, line):
-                    matches.append(i[0])
+        for i in range(0, len(csvLines)-1):
+            if re.findall(rePossibleWebsiteUrl, csvLines[i]):
+                for j in re.findall(rePossibleWebsiteUrl, csvLines[i]):
+                    urls.append({
+                        'url': j[0],
+                        'line': i+1
+                    })
                     
-        n_match_length = len(str(len(matches)))
+        numDigitsMatchNumber = len(str(len(urls)))
 
-        print('Total matches:', len(matches))
-        for i in range(0, len(matches)):
-            print(f'- {str(i+1).rjust(n_match_length, "0")} - {matches[i]}')
+        print(f'Matches ({len(urls)}):')
+        for i in range(0, len(urls)):
+            print(f'* {str(i+1).rjust(numDigitsMatchNumber, " ")} - {urls[i]["url"]} ({urls[i]["line"]})')
