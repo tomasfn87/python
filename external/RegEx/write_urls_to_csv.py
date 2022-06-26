@@ -29,6 +29,8 @@ data = [
     'https://stackoverflow.com/questions/47637545/domain-names-that-start-with-a-number',
     'https://auth.udacity.com/sign-in?next=https%3A%2F%2Fclassroom.udacity.com%2Fauthenticated',
     'https://www.postgresql.org/docs/9.1/sql-altertable.html',
+    'ftps://postgresql.org/docs/intro_to_sql_dbms.pdf',
+    'ftp://postgresql.org/docs/intro_to_sql_dbms.pdf',
     'Digita duckduckgo.com no Safari e procura o nome da loja.',
     'O endereço completo é https://www.mozilla.org', 
     'D:\photo.png',
