@@ -7,7 +7,7 @@ def getURLsFromCsvFile(csvFile, showUnmatched='no'):
         data = fh.read()
     csvLines = data.split('\n')
 
-    rePossibleWebsiteUrl = r"(?i)(([fh]t{1,2}ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]*)(\.[a-z][a-z0-9-]*)+((\/|\\)[^\\\/\s]+)*\S?\b[\\\/]?)"
+    rePossibleWebsiteUrl = r"(?i)(((s?ft|ht{2})ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]*)(\.[a-z][a-z0-9-]*)+((\/|\\)[^\\\/\s]+)*\S?\b[\\\/]?)"
     urls, unmatchedLines, numLinesThatMatched = [], [], 0
 
     for i in range(0, len(csvLines)):
