@@ -7,7 +7,7 @@ def getURLsFromCsvFile(csvFile, showUnmatched='no'):
         data = fh.read()
     csvLines = data.split('\n')
 
-    rePossibleWebsiteUrl = r"(?i)(((s?ft|ht{2})ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]*)(\.[a-z][a-z0-9-]*)+((\/|\\)[^\\\/\s]+)*\S?\b[\\\/]?)"
+    rePossibleWebsiteUrl = r"(?i)(((s?ft|ht{2})ps?:(\/{1,2}|\\{1,2}))?(w{3}\.)?([a-z][a-z0-9-]{0,62})(\.[a-z][a-z0-9-]{0,62})*(\.[a-z][a-z0-9-]{1,25})([\\\/][^\\\/\s]+)*\S?\b[\\\/]?)"
     urls, unmatchedLines, numLinesThatMatched = [], [], 0
 
     for i in range(0, len(csvLines)):
@@ -33,7 +33,7 @@ def getURLsFromCsvFile(csvFile, showUnmatched='no'):
     print(f'Matched lines ({numLinesThatMatched}/{len(csvLines)})  |  Total matches ({len(urls)}):')
     for i in range(0, len(urls)):
         print(f'* {str(i+1).rjust(numDigitsMatchNumber, " ")} - {urls[i]["url"]} ({urls[i]["line"]})')
-    
+
     numDigitsUnmatchedLinesNumber = len(str(len(unmatchedLines)))
     if showUnmatched == 'showUnmatched':
         print(f"\nUnmatched lines ({len(unmatchedLines)}/{len(csvLines)}):")
