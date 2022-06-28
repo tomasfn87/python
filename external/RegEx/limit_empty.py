@@ -9,4 +9,4 @@ def limit_empty(string):
         else:
             string_limpa += i
             espaco = True
-    return string_limpa.strip()   
+    return string_limpa.strip()
