@@ -9,6 +9,7 @@ class Html:
     
     reHtml = r"(?si)(\<)([a-z][a-z0-9]*\b)(\s*[^>]*)(\>)(.*?)(<\/)\2(\>)"
     reSimpleHtml = r"\<\/?([a-z][a-z0-9]*\b)\s*[^>]*\s*\>"
+    reTextAndTags = r"(?i)([^<]*?)(\<.*\>)(.*)(<\/\2\>)?([^>]*?)"
     reEmptySpacesBetweenTags = r"\>\s*\<"
     
     def cleanHtml(html_string):
@@ -53,8 +54,6 @@ class Html:
             tagName = tag[1]
             cleanTag = Html.cleanHtml((tag[0]))
             return { 'name': tagName, 'content':  cleanTag }
-        # else:
-        #     return { 'content': self.html_string }
 
     def isHtmlTag(self):
         self.html_string = Html.cleanHtml(self.html_string)
@@ -88,6 +87,15 @@ class Html:
             if html or simpleHtml:
                 return True
         return False
+    
+    def doesStringContainsTextAndTags(self):
+        if not self.html_string:
+            return False
+        else:
+            textAndHtml = re.match(Html.reTextAndTags, self.html_string)
+            if textAndHtml:
+                return True
+            return False
 
     def checkForMultipleTags(self):
         if self.isSimpleHtmlTag():
@@ -99,17 +107,23 @@ class Html:
             tags.append(self.extractHtmlTagAsDict())
             if self.doesTagContainOtherTags():
                 tags.append(Html(self.extractTagInnerHtml()).extractHtmlTagAsDict())
-        elif self.doesStringContainTags():
+        elif self.doesStringContainsTextAndTags():
             while self.html_string:
                 html = re.match(Html.reHtml, self.html_string)
                 simpleHtml = re.match(Html.reSimpleHtml, self.html_string)
-                if html or simpleHtml:
-                    if html:
-                        tags.append(Html(html[0]).extractHtmlTagAsDict())
-                        self.html_string = self.html_string[len(html[0]):]
-                    else:
-                        tags.append(Html(simpleHtml[0]).extractHtmlTagAsDict())
-                        self.html_string = self.html_string[len(simpleHtml[0]):]
+                textAndTags = re.match(Html.reTextAndTags, self.html_string)
+                if html:
+                    tag = Html.cleanHtml(html[0]).strip()
+                    tags.append(Html(tag).extractHtmlTagAsDict())
+                    self.html_string = self.html_string.replace(tag, '', 1)
+                elif simpleHtml:
+                    tag = Html.cleanHtml(simpleHtml[0]).strip()
+                    tags.append(Html(tag).extractHtmlTagAsDict())
+                    self.html_string = self.html_string.replace(tag, '', 1)
+                elif textAndTags:
+                    tag = self.html_string.split('<')[0]
+                    tags.append(tag)
+                    self.html_string = self.html_string.replace(tag, '', 1)
                 else:
                     break
         return tags
@@ -145,20 +159,19 @@ t9 = Html('Text and tag: <br>')
 t10 = Html('Only text')
 t11 = Html('<body onload="myFunction"><div><h1>*** Hello</h1><p>World! ***</p></div><footer><p></p></footer></body>')
 
-print(t11.extractTagInnerHtml())
 
-print()
-print(' * Get HTML Tags')
-print('1', t1.getHtmlTags())
-print('2', t2.getHtmlTags())
-print('3', t3.getHtmlTags())
+# print(' * Get HTML Tags')
+# print('1', t1.getHtmlTags())
+# print('2', t2.getHtmlTags())
+# print('3', t3.getHtmlTags())
 print('4', t4.getHtmlTags())
-print('5', t5.getHtmlTags())
-print('6', t6.getHtmlTags())
-print('7', t7.getHtmlTags())
-print('8', t8.getHtmlTags())
-print('9', t9.getHtmlTags())
-print('10', t10.getHtmlTags())
+# print('5', t5.getHtmlTags())
+# print('6', t6.getHtmlTags())
+# print('7', t7.getHtmlTags())
+# print('8', t8.getHtmlTags())
+# print('9', t9.getHtmlTags())
+# print('10', t10.getHtmlTags())
+# print('11', t11.getHtmlTags())
 
 # print()
 # print(' * Extract HTML Tags As Dict')
@@ -237,3 +250,16 @@ print('10', t10.getHtmlTags())
 # print('8', t8.doesStringContainTags())
 # print('9', t9.doesStringContainTags())
 # print('10', t10.doesStringContainTags())
+
+# print()
+# print(' * Does string contain text and tags')
+# print('1', t1.doesStringContainsTextAndTags())
+# print('2', t2.doesStringContainsTextAndTags())
+# print('3', t3.doesStringContainsTextAndTags())
+# print('4', t4.doesStringContainsTextAndTags())
+# print('5', t5.doesStringContainsTextAndTags())
+# print('6', t6.doesStringContainsTextAndTags())
+# print('7', t7.doesStringContainsTextAndTags())
+# print('8', t8.doesStringContainsTextAndTags())
+# print('9', t9.doesStringContainsTextAndTags())
+# print('10', t10.doesStringContainsTextAndTags())
