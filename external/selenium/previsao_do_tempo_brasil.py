@@ -23,10 +23,10 @@ def fill_with_times(char: str, times: int):
 def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
-    browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
+    browser.find_element(By.CSS_SELECTOR, '#search_form_input_homepage')\
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
 
-    url = browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').get_attribute("href")
+    url = browser.find_element(By.CSS_SELECTOR, '#r1-0 > div> h2 a:nth-of-type(1)').get_attribute("href")
     browser.get(format_accuweather_url(url))
     t.sleep(2)
     browser.implicitly_wait(2)
@@ -36,35 +36,59 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     print(fill_with_times('-', len(title)))
 
     #print(browser.find_element(By.CSS_SELECTOR, 'body').text.split("\n"))
+    TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .card-header h1').text.capitalize()
+    tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .display-temp').text
+    tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .phrase').text
+    tempoAtualExtraRealFeelData = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-extra').text.split('\n')
+    tempoAtualExtraRealFeelTitulo = tempoAtualExtraRealFeelData[0].split(' ')[0]
+    tempoAtualExtraRealFeelValor = tempoAtualExtraRealFeelData[0].split(' ')[1]
+    tempoAtualExtraRealFeelSensacao = tempoAtualExtraRealFeelData[1]
+    tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[2].split(' ')[0]+tempoAtualExtraRealFeelData[2].split(' ')[1]
+    tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[2].split(' ')[2]
+    tempoAtualExtraRealFeelShadeSensacao = tempoAtualExtraRealFeelData[3]
+    left = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .left').text.split('\n')
+    right = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .right').text.split('\n')
+
+    print(f"{TempoAtual.rjust(20)}: {tempoAtual} ({tempoAtualSensacao})")
+    print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C ({tempoAtualExtraRealFeelSensacao})")
+    print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C ({tempoAtualExtraRealFeelShadeSensacao})")
+
+    for i in range(len(left)):
+        if i % 2 == 0:
+            print(f'{left[i].rjust(20)}: {left[i+1]}')
+    for i in range(len(right)):
+        if i % 2 == 0:
+            print(f'{right[i].rjust(20)}: {right[i+1]}')
+
     # not all localities have the same kind of data available, so it needs to be wrapped in a try block
-    try:
-        data = browser.find_element(By.CSS_SELECTOR, 'div[class="current-weather-card card-module content-module non-ad"]').text.split("\n")
-        condicao = data[3]
-        temperatura_atual = data[2]
-        sensacao_termica = f"{data[4].split(' ')[1]}C"
-        sensacao = data[5]
-        umidade = data[-11]
-        cobertura_nuvens = data[-5]
-    except:
-        print("Informações indisponíveis. Tente novamente.")
-        browser.quit()
-        return
+    # try:
+    #     data = browser.find_element(By.CSS_SELECTOR, '.current-weather-card').text.split("\n")
+    #     condicao = data[5]
+    #     temperatura_atual = data[4]
+    #     sensacao_termica = f"{data[6].split(' ')[1]}C"
+    #     sensacao = data[7]
+    #     umidade = data[-11]
+    #     cobertura_nuvens = data[-2]
+    # except:
+    #     print("Informações indisponíveis. Tente novamente.")
+    #     browser.quit()
+    #     return
 
     browser.quit()
 
-    print(f"               Tempo: {condicao}")
-    print(f"         Temperatura: {temperatura_atual}")
-    print(f"    Sensação Térmica: {sensacao_termica}")
-    print(f"            Sensação: {sensacao}")
-    print(f"             Umidade: {umidade}")
-    print(f" Cobertura de nuvens: {cobertura_nuvens}")
+    # print(f"               Tempo: {condicao}")
+    # print(f"         Temperatura: {temperatura_atual}")
+    # print(f"    Sensação Térmica: {sensacao_termica}")
+    # print(f"            Sensação: {sensacao}")
+    # print(f"             Umidade: {umidade}")
+    # print(f" Cobertura de nuvens: {cobertura_nuvens}")
 
 def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
-    browser.find_element(By.XPATH, '//*[@id="search_form_input_homepage"]')\
+    browser.find_element(By.CSS_SELECTOR, "#search_form_input_homepage")\
         .send_keys(f"climatempo {cidade} {estado} brasil", Keys.ENTER)
-    browser.find_element(By.XPATH, '//*[@id="r1-0"]/div/h2/a[1]').click()
+    browser.find_element(By.CSS_SELECTOR, "#r1-0 > div > h2 > a:nth-of-type(1)").click()
 
     t.sleep(2)
     browser.implicitly_wait(2)
@@ -80,7 +104,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         option = 1
     except:
         try:
-            data = browser.find_element(By.XPATH, '//*[@id="first-block-of-days"]/div[4]/section[1]')
+            data = browser.find_element(By.CSS_SELECTOR, "#first-block-of-days > div:nth-of-type(4) > section:nth-of-type(1)")
             option = 2
             data = remove_empty_elements(data.text.split("\n"))
         except:
@@ -102,15 +126,15 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
             if data[i] == 'Sol':
                 nascer_por_sol = data[i+1].replace('h', '')
 
-        print(f"        Temp. mínima: {temp_min}C")
-        print(f"        Temp. máxima: {temp_max}C")
-        print(f"          Comparação: {comparacao}.")
-        print(f"            Previsão: {previsao}")
-        print(f"        Precipitação: {precipitacao}")
-        print(f"      Umidade mínima: {umidade_min}")
-        print(f"      Umidade máxima: {umidade_max}")
+        print("Temp. mínima: ".rjust(22)+f"{temp_min}C")
+        print("Temp. máxima: ".rjust(22)+f"{temp_max}C")
+        print("Comparação: ".rjust(22)+comparacao)
+        print("Previsão: ".rjust(22)+previsao)
+        print("Precipitação: ".rjust(22)+precipitacao)
+        print("Umidade mínima: ".rjust(22)+umidade_min)
+        print("Umidade máxima: ".rjust(22)+umidade_max)
         if nascer_por_sol:
-            print(f"   Nascer/pôr do sol: {nascer_por_sol.replace(' ', ' / ')}")
+            print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' ', ' / '))
 
     elif option == 2:
         temp_min = data[2]
@@ -135,13 +159,13 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
 
         browser.quit()
 
-        print(f"        Temp. mínima: {temp_min}C")
-        print(f"        Temp. máxima: {temp_max}C")
-        print(f"            Previsão: {previsao}")
-        print(f"        Pluviosidade: {pluviosidade}")
-        print(f"             Umidade: {umidade}")
-        print(f"   Nascer/pôr do sol: {nascer_por_sol.replace(' - ', ' / ')}")
-        print(f"                 Lua: {lua}")
+        print("Temp. mínima: ".rjust(22)+f"{temp_min}C")
+        print("Temp. máxima: ".rjust(22)+f"{temp_max}C")
+        print("Previsão: ".rjust(22)+previsao)
+        print("Pluviosidade: ".rjust(22)+pluviosidade)
+        print("Umidade: ".rjust(22)+umidade)
+        print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' - ', ' / '))
+        print("Lua: ".rjust(22)+lua)
 
 def start_chrome(headless=False):
     options = webdriver.ChromeOptions()
