@@ -43,15 +43,17 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     tempoAtualExtraRealFeelTitulo = tempoAtualExtraRealFeelData[0].split(' ')[0]
     tempoAtualExtraRealFeelValor = tempoAtualExtraRealFeelData[0].split(' ')[1]
     tempoAtualExtraRealFeelSensacao = tempoAtualExtraRealFeelData[1]
-    tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[2].split(' ')[0]+tempoAtualExtraRealFeelData[2].split(' ')[1]
-    tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[2].split(' ')[2]
-    tempoAtualExtraRealFeelShadeSensacao = tempoAtualExtraRealFeelData[3]
+    if len(tempoAtualExtraRealFeelData) > 2:
+        tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[2].split(' ')[0]+tempoAtualExtraRealFeelData[2].split(' ')[1]
+        tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[2].split(' ')[2]
+        tempoAtualExtraRealFeelShadeSensacao = tempoAtualExtraRealFeelData[3]
     left = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .left').text.split('\n')
     right = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .right').text.split('\n')
 
     print(f"{TempoAtual.rjust(20)}: {tempoAtual} ({tempoAtualSensacao})")
     print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C ({tempoAtualExtraRealFeelSensacao})")
-    print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C ({tempoAtualExtraRealFeelShadeSensacao})")
+    if len(tempoAtualExtraRealFeelData) > 2:
+        print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C ({tempoAtualExtraRealFeelShadeSensacao})")
 
     for i in range(len(left)):
         if i % 2 == 0:
@@ -131,8 +133,8 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         print("Comparação: ".rjust(22)+comparacao)
         print("Previsão: ".rjust(22)+previsao)
         print("Precipitação: ".rjust(22)+precipitacao)
-        print("Umidade mínima: ".rjust(22)+umidade_min)
-        print("Umidade máxima: ".rjust(22)+umidade_max)
+        print("Humidade mínima: ".rjust(22)+umidade_min)
+        print("Humidade máxima: ".rjust(22)+umidade_max)
         if nascer_por_sol:
             print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' ', ' / '))
 
