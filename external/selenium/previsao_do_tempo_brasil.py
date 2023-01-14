@@ -5,8 +5,6 @@ import datetime as dt
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
 
 def condicao_previsao_do_tempo(cidade, estado, headless=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
@@ -25,21 +23,17 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, '#search_form_input_homepage')\
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
-
     url = browser.find_element(By.CSS_SELECTOR, '#r1-0 > div> h2 a:nth-of-type(1)').get_attribute("href")
     browser.get(format_accuweather_url(url))
     t.sleep(2)
     browser.implicitly_wait(2)
-
     title = f"Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
     print(fill_with_times('-', len(title)))
-
-    #print(browser.find_element(By.CSS_SELECTOR, 'body').text.split("\n"))
-    TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .card-header h1').text.capitalize()
-    tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .display-temp').text
-    tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .phrase').text
-    tempoAtualExtraRealFeelData = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-extra').text.split('\n')
+    TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card h1').text
+    tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-info div.temp').text
+    tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.phrase').text
+    tempoAtualExtraRealFeelData = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-extra.no-realfeel-phrase').text.split('\n')
     tempoAtualExtraRealFeelTitulo = tempoAtualExtraRealFeelData[0].split(' ')[0]
     tempoAtualExtraRealFeelValor = tempoAtualExtraRealFeelData[0].split(' ')[1]
     tempoAtualExtraRealFeelSensacao = tempoAtualExtraRealFeelData[1]
@@ -47,43 +41,15 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
         tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[2].split(' ')[0]+tempoAtualExtraRealFeelData[2].split(' ')[1]
         tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[2].split(' ')[2]
         tempoAtualExtraRealFeelShadeSensacao = tempoAtualExtraRealFeelData[3]
-    left = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .left').text.split('\n')
-    right = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details .right').text.split('\n')
-
+    weather_details = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details').text.split('\n')
     print(f"{TempoAtual.rjust(20)}: {tempoAtual} ({tempoAtualSensacao})")
     print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C ({tempoAtualExtraRealFeelSensacao})")
     if len(tempoAtualExtraRealFeelData) > 2:
         print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C ({tempoAtualExtraRealFeelShadeSensacao})")
-
-    for i in range(len(left)):
+    for i in range(len(weather_details[1:])):
         if i % 2 == 0:
-            print(f'{left[i].rjust(20)}: {left[i+1]}')
-    for i in range(len(right)):
-        if i % 2 == 0:
-            print(f'{right[i].rjust(20)}: {right[i+1]}')
-
-    # not all localities have the same kind of data available, so it needs to be wrapped in a try block
-    # try:
-    #     data = browser.find_element(By.CSS_SELECTOR, '.current-weather-card').text.split("\n")
-    #     condicao = data[5]
-    #     temperatura_atual = data[4]
-    #     sensacao_termica = f"{data[6].split(' ')[1]}C"
-    #     sensacao = data[7]
-    #     umidade = data[-11]
-    #     cobertura_nuvens = data[-2]
-    # except:
-    #     print("Informações indisponíveis. Tente novamente.")
-    #     browser.quit()
-    #     return
-
+            print(f'{weather_details[i].rjust(20)}: {weather_details[i+1]}')
     browser.quit()
-
-    # print(f"               Tempo: {condicao}")
-    # print(f"         Temperatura: {temperatura_atual}")
-    # print(f"    Sensação Térmica: {sensacao_termica}")
-    # print(f"            Sensação: {sensacao}")
-    # print(f"             Umidade: {umidade}")
-    # print(f" Cobertura de nuvens: {cobertura_nuvens}")
 
 def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
@@ -185,33 +151,19 @@ def start_chrome(headless=False):
     return webdriver.Chrome(options=options)
 
 def format_accuweather_url(url: str):
-    url_components = url.split("/")
-    query_url = ""
-    for i in range(0, len(url_components)):
-        if i == 3:
-            query_url += "pt"
-        elif i == 7:
-            query_url += "current-weather"
-        else:
-            query_url += url_components[i]
-        if i != len(url_components) - 1:
-            query_url += "/"
-    return query_url
+    return url.replace('en', 'pt').replace('weather-forecast', 'current-weather')
 
 def capitalize_all(text:  str):
     exclude = ["de", "da", "do", "dos", "das"]
     words = text.split(" ")
-
     for w in words:
         w = w.lower()
-
     capitalized_words = []
     for w in words:
         if w in exclude or w[0:2] == "d'":
             capitalized_words.append(w)
         else:
             capitalized_words.append(w.capitalize())
-
     capitalized_text = ""
     for i in range(0, len(words)):
         capitalized_text += capitalized_words[i]
