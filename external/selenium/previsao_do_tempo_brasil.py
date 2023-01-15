@@ -33,20 +33,20 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card h1').text
     tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-info div.temp').text
     tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.phrase').text
-    tempoAtualExtraRealFeelData = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-extra.no-realfeel-phrase').text.split('\n')
+    tempoAtualExtraRealFeelData = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-extra').text.split('\n')
+    tempoAtualExtraRealFeelTitulo = ''
+    tempoAtualExtraRealFeelValor = ''
     tempoAtualExtraRealFeelTitulo = tempoAtualExtraRealFeelData[0].split(' ')[0]
     tempoAtualExtraRealFeelValor = tempoAtualExtraRealFeelData[0].split(' ')[1]
-    tempoAtualExtraRealFeelSensacao = tempoAtualExtraRealFeelData[1]
-    if len(tempoAtualExtraRealFeelData) > 2:
-        tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[2].split(' ')[0]+tempoAtualExtraRealFeelData[2].split(' ')[1]
-        tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[2].split(' ')[2]
-        tempoAtualExtraRealFeelShadeSensacao = tempoAtualExtraRealFeelData[3]
-    weather_details = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details').text.split('\n')
+    if len(tempoAtualExtraRealFeelData) == 2:
+        tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[1].split(' ')[0]+tempoAtualExtraRealFeelData[1].split(' ')[1]
+        tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[1].split(' ')[2]
     print(f"{TempoAtual.rjust(20)}: {tempoAtual} ({tempoAtualSensacao})")
-    print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C ({tempoAtualExtraRealFeelSensacao})")
-    if len(tempoAtualExtraRealFeelData) > 2:
-        print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C ({tempoAtualExtraRealFeelShadeSensacao})")
-    for i in range(len(weather_details[1:])):
+    print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C")
+    if len(tempoAtualExtraRealFeelData) == 2:
+        print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C")
+    weather_details = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details').text.split('\n')
+    for i in range(len(weather_details)):
         if i % 2 == 0:
             print(f'{weather_details[i].rjust(20)}: {weather_details[i+1]}')
     browser.quit()
