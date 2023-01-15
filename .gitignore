@@ -8,3 +8,4 @@ external/pymongo/data/
 external/RegEx/data.csv
 *.jpg
 *.png
+*.tool-versions
