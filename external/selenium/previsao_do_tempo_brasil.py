@@ -48,7 +48,7 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     weather_details = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details').text.split('\n')
     for i in range(len(weather_details)):
         if i % 2 == 0:
-            print(f'{weather_details[i].rjust(20)}: {weather_details[i+1]}')
+            print(f'{weather_details[i].rjust(20)}: {weather_details[i+1].replace("° C", "°C")}')
     browser.quit()
 
 def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
