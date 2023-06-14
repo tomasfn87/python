@@ -72,7 +72,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         option = 1
     except:
         try:
-            data = browser.find_element(By.CSS_SELECTOR, "#first-block-of-days > div:nth-of-type(4) > section:nth-of-type(1)")
+            data = browser.find_element(By.CSS_SELECTOR, "#first-block-of-days section")
             option = 2
             data = remove_empty_elements(data.text.split("\n"))
         except:
