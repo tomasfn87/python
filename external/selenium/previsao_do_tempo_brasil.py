@@ -18,6 +18,9 @@ def condicao_previsao_do_tempo(cidade, estado, headless=False):
 def fill_with_times(char: str, times: int):
     return times * char[0]
 
+def limit_empty_spaces(text: str):
+    return re.sub(r"\s{2,}", " ", text, 0)
+
 def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
@@ -82,7 +85,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
 
     if option == 1:
         comparacao = data[0]
-        previsao = data[1]
+        previsao = limit_empty_spaces(data[1])
         temp_min = data[7]
         temp_max = data[8]
         precipitacao = data[10]
@@ -97,7 +100,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         print("Temp. mínima: ".rjust(22)+f"{temp_min}C")
         print("Temp. máxima: ".rjust(22)+f"{temp_max}C")
         print("Comparação: ".rjust(22)+comparacao)
-        print("Previsão: ".rjust(22)+previsao)
+        print("Previsão: ".rjust(22)+limit_empty_spaces(previsao))
         print("Precipitação: ".rjust(22)+precipitacao)
         print("Humidade mínima: ".rjust(22)+umidade_min)
         print("Humidade máxima: ".rjust(22)+umidade_max)
@@ -108,7 +111,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         temp_min = data[2]
         temp_max = data[3]
         pluviosidade = data[4]
-        previsao = data[5]
+        previsao = limit_empty_spaces(data[5])
         umidade = ""
         lua = ""
         nascer_por_sol = ""
