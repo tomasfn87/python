@@ -26,7 +26,7 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, '#search_form_input_homepage')\
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
-    url = browser.find_element(By.CSS_SELECTOR, '#r1-0 > div> h2 a:nth-of-type(1)').get_attribute("href")
+    url = browser.find_element(By.CSS_SELECTOR, '#r1-0 h2 a').get_attribute("href")
     browser.get(format_accuweather_url(url))
     t.sleep(2)
     browser.implicitly_wait(2)
