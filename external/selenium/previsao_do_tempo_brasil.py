@@ -59,7 +59,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, "#search_form_input_homepage")\
         .send_keys(f"climatempo {cidade} {estado} brasil", Keys.ENTER)
-    browser.find_element(By.CSS_SELECTOR, "#r1-0 > div > h2 > a:nth-of-type(1)").click()
+    browser.find_element(By.CSS_SELECTOR, "#r1-0 h2 a").click()
 
     t.sleep(2)
     browser.implicitly_wait(2)
