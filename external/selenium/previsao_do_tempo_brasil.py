@@ -24,7 +24,7 @@ def limit_empty_spaces(text: str):
 def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
-    browser.find_element(By.CSS_SELECTOR, '#search_form_input_homepage')\
+    browser.find_element(By.CSS_SELECTOR, 'input[type=text]')\
         .send_keys(f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
     url = browser.find_element(By.CSS_SELECTOR, '#r1-0 h2 a').get_attribute("href")
     browser.get(format_accuweather_url(url))
@@ -57,7 +57,7 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
 def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
-    browser.find_element(By.CSS_SELECTOR, "#search_form_input_homepage")\
+    browser.find_element(By.CSS_SELECTOR, "input[type=text]")\
         .send_keys(f"climatempo {cidade} {estado} brasil", Keys.ENTER)
     browser.find_element(By.CSS_SELECTOR, "#r1-0 h2 a").click()
 
