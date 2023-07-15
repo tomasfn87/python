@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-def condicao_previsao_do_tempo(cidade, estado, headless=False):
+def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
     print(data_hora)
     print(fill_with_times('-', len(data_hora)))
@@ -21,7 +21,7 @@ def fill_with_times(char: str, times: int):
 def limit_empty_spaces(text: str):
     return re.sub(r"\s{2,}", " ", text, 0)
 
-def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
+def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, 'input[type=text]')\
@@ -54,7 +54,7 @@ def condicao_tempo_accuweather(cidade: str, estado: str, headless=False):
             print(f'{weather_details[i].rjust(20)}: {weather_details[i+1].replace("° C", "°C")}')
     browser.quit()
 
-def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
+def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, "input[type=text]")\
@@ -138,7 +138,7 @@ def previsao_tempo_climatempo(cidade: str, estado: str, headless=False):
         print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' - ', ' / '))
         print("Lua: ".rjust(22)+lua)
 
-def start_chrome(headless=False):
+def start_chrome(headless:bool=False):
     options = webdriver.ChromeOptions()
     headless and options.add_argument('--headless')
     options.add_argument('--disable-extensions')
@@ -153,10 +153,10 @@ def start_chrome(headless=False):
     options.add_experimental_option("prefs", prefs)
     return webdriver.Chrome(options=options)
 
-def format_accuweather_url(url: str):
+def format_accuweather_url(url:str):
     return url.replace('en', 'pt').replace('weather-forecast', 'current-weather')
 
-def capitalize_all(text:  str):
+def capitalize_all(text:str):
     exclude = ["de", "da", "do", "dos", "das"]
     words = text.split(" ")
     for w in words:
@@ -174,7 +174,7 @@ def capitalize_all(text:  str):
             capitalized_text += " "
     return capitalized_text
 
-def remove_empty_elements(arr: list):
+def remove_empty_elements(arr:list):
     clean_arr = []
     for i in arr:
         if i != "":
