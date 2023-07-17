@@ -30,7 +30,7 @@ def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     browser.get(format_accuweather_url(url))
     t.sleep(2)
     browser.implicitly_wait(2)
-    title = f"Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
+    title = f"[AccuWeather] Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
     print(fill_with_times('-', len(title)))
     TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card h1').text
@@ -66,7 +66,7 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
 
     data, option = [], 0
 
-    title = f"Previsão do tempo em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
+    title = f"[ClimaTempo] Previsão do tempo em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
     print(fill_with_times('-', len(title)))
 
