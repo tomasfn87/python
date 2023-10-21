@@ -7,17 +7,105 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from typing import Any, Dict, List, Union
 
+def main():
+    inputs = sys.argv
+
+    if len(inputs) < 3:
+        print("ERRO: é necessário digitar cidade e estado.")
+        print_examples()
+        return
+    elif len(inputs) > 4:
+        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas")
+        print("  se o nome da cidade possuir mais de uma palavra ou utilize")
+        print(r"  a barra invertida (\) para cancelar um espaço em branco como")
+        print("  separador de argumentos.")
+        print_examples()
+        return
+    else:
+        cidade = inputs[1]
+        estado = inputs[2]
+
+    if not isStringAValidFixedLengthAcronym(s=estado, length=2, acronym_list=estados_brasileiros):
+        print("ERRO: o segundo argumento deve ser uma sigla válida de estado brasileiro (UF).")
+        print("\n - Siglas válidas: {}".format(
+            conectar(getBrazilianStatesAcronymsList(lista_estados=estados_brasileiros), ' ou ')))
+    elif len(inputs) == 4:
+        headless = inputs[3]
+        if re.match('(?i)true|false', headless):
+            if re.match('(?i)true', headless):
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=True)
+            if re.match('(?i)false', headless):
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=False)
+    else:
+        condicao_previsao_do_tempo(cidade=cidade, estado=estado)
+
+def print_examples():
+    print("\n - Exemplo 1:")
+    print("\tpython3 previsao_do_tempo_brasil.py Brasília DF")
+    print("\n - Exemplo 2:")
+    print("\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp")
+    print("\n - Exemplo 3:")
+    print("\t", end="")
+    print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
+
+def isStringAValidFixedLengthAcronym(s:str, length:int, acronym_list:List[Dict[str, str]]):
+    if len(s.strip()) != length:
+        return False
+    return any(item['acronym'] == s.strip().upper() for item in acronym_list)
+
+def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
+    return [estado['acronym'] for estado in estados_brasileiros]
+
+def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espacador_2:str=", "):
+        assert type(espacador_1) == str \
+            and  type(espacador_2) == str
+        texto = ""
+        for i in range(0, len(lista_de_itens)):
+            texto += str(lista_de_itens[i])
+            if i == len(lista_de_itens) - 1:
+                return texto
+            elif i == len(lista_de_itens) - 2:
+                texto += espacador_1
+            else:
+                texto += espacador_2
+
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
-    print(data_hora)
-    print('-' * len(data_hora))
+    print(f"{data_hora}\n{'-' * len(data_hora)}")
     print()
     condicao_tempo_accuweather(cidade=cidade, estado=estado, headless=headless)
     print()
     previsao_tempo_climatempo(cidade=cidade, estado=estado, headless=headless)
 
-def limit_empty_spaces(text: str):
-    return re.sub(r"\s{2,}", " ", text, 0)
+estados_brasileiros = [
+    {"acronym": "AC", "name": "Acre"},
+    {"acronym": "AL", "name": "Alagoas"},
+    {"acronym": "AP", "name": "Amapá"},
+    {"acronym": "AM", "name": "Amazonas"},
+    {"acronym": "BA", "name": "Bahia"},
+    {"acronym": "CE", "name": "Ceará"},
+    {"acronym": "DF", "name": "Distrito Federal"},
+    {"acronym": "ES", "name": "Espírito Santo"},
+    {"acronym": "GO", "name": "Goiás"},
+    {"acronym": "MA", "name": "Maranhão"},
+    {"acronym": "MT", "name": "Mato Grosso"},
+    {"acronym": "MS", "name": "Mato Grosso do Sul"},
+    {"acronym": "MG", "name": "Minas Gerais"},
+    {"acronym": "PA", "name": "Pará"},
+    {"acronym": "PB", "name": "Paraíba"},
+    {"acronym": "PR", "name": "Paraná"},
+    {"acronym": "PE", "name": "Pernambuco"},
+    {"acronym": "PI", "name": "Piauí"},
+    {"acronym": "RJ", "name": "Rio de Janeiro"},
+    {"acronym": "RN", "name": "Rio Grande do Norte"},
+    {"acronym": "RS", "name": "Rio Grande do Sul"},
+    {"acronym": "RO", "name": "Rondônia"},
+    {"acronym": "RR", "name": "Roraima"},
+    {"acronym": "SC", "name": "Santa Catarina"},
+    {"acronym": "SP", "name": "São Paulo"},
+    {"acronym": "SE", "name": "Sergipe"},
+    {"acronym": "TO", "name": "Tocantins"},
+]
 
 def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     browser = start_chrome(headless)
@@ -29,8 +117,7 @@ def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     t.sleep(2)
     browser.implicitly_wait(2)
     title = f"[AccuWeather] Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    print(title)
-    print('-' * len(title))
+    print(f"{title}\n{'-' * len(title)}")
     TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card h1').text
     tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-info div.temp').text
     tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.phrase').text
@@ -65,8 +152,7 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
     data, option = [], 0
 
     title = f"[ClimaTempo] Previsão do tempo em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    print(title)
-    print('-' * len(title))
+    print(f"{title}\n{'-' * len(title)}")
 
     try:
         data = browser.find_element(By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text.split("\n")
@@ -179,97 +265,8 @@ def remove_empty_elements(arr:List[str]):
             clean_arr.append(i)
     return clean_arr
 
-estados_brasileiros = [
-    {"acronym": "AC", "name": "Acre"},
-    {"acronym": "AL", "name": "Alagoas"},
-    {"acronym": "AP", "name": "Amapá"},
-    {"acronym": "AM", "name": "Amazonas"},
-    {"acronym": "BA", "name": "Bahia"},
-    {"acronym": "CE", "name": "Ceará"},
-    {"acronym": "DF", "name": "Distrito Federal"},
-    {"acronym": "ES", "name": "Espírito Santo"},
-    {"acronym": "GO", "name": "Goiás"},
-    {"acronym": "MA", "name": "Maranhão"},
-    {"acronym": "MT", "name": "Mato Grosso"},
-    {"acronym": "MS", "name": "Mato Grosso do Sul"},
-    {"acronym": "MG", "name": "Minas Gerais"},
-    {"acronym": "PA", "name": "Pará"},
-    {"acronym": "PB", "name": "Paraíba"},
-    {"acronym": "PR", "name": "Paraná"},
-    {"acronym": "PE", "name": "Pernambuco"},
-    {"acronym": "PI", "name": "Piauí"},
-    {"acronym": "RJ", "name": "Rio de Janeiro"},
-    {"acronym": "RN", "name": "Rio Grande do Norte"},
-    {"acronym": "RS", "name": "Rio Grande do Sul"},
-    {"acronym": "RO", "name": "Rondônia"},
-    {"acronym": "RR", "name": "Roraima"},
-    {"acronym": "SC", "name": "Santa Catarina"},
-    {"acronym": "SP", "name": "São Paulo"},
-    {"acronym": "SE", "name": "Sergipe"},
-    {"acronym": "TO", "name": "Tocantins"}
-]
-
-def isStringAValidFixedLengthAcronym(s:str, length:int, acronym_list:List[Dict[str, str]]):
-    if len(s.strip()) != length:
-        return False
-    return any(estado['acronym'] == s.strip().upper() for estado in estados_brasileiros)
-
-def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
-    return [estado['acronym'] for estado in estados_brasileiros]
-
-def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espacador_2:str=", "):
-        assert type(espacador_1) == str \
-            and  type(espacador_2) == str
-        texto = ""
-        for i in range(0, len(lista_de_itens)):
-            texto += str(lista_de_itens[i])
-            if i == len(lista_de_itens) - 1:
-                return texto
-            elif i == len(lista_de_itens) - 2:
-                texto += espacador_1
-            else:
-                texto += espacador_2
-
-def print_examples():
-    print("\n - Exemplo 1:")
-    print("\tpython3 previsao_do_tempo_brasil.py Brasília DF")
-    print("\n - Exemplo 2:")
-    print("\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp")
-    print("\n - Exemplo 3:")
-    print("\t", end="")
-    print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
-
-def main():
-    inputs = sys.argv
-
-    if len(inputs) < 3:
-        print("ERRO: é necessário digitar cidade e estado.")
-        print_examples()
-        return
-    elif len(inputs) > 4:
-        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas")
-        print("  se o nome da cidade possuir mais de uma palavra ou utilize")
-        print(r"  a barra invertida (\) para cancelar um espaço em branco como")
-        print("  separador de argumentos.")
-        print_examples()
-        return
-    else:
-        cidade = inputs[1]
-        estado = inputs[2]
-
-    if not isStringAValidFixedLengthAcronym(s=estado, length=2, acronym_list=estados_brasileiros):
-        print("ERRO: o segundo argumento deve ser uma sigla válida de estado brasileiro (UF).")
-        print("\n - Siglas válidas: {}".format(
-            conectar(getBrazilianStatesAcronymsList(lista_estados=estados_brasileiros), ' ou ')))
-    elif len(inputs) == 4:
-        headless = inputs[3]
-        if re.match('(?i)true|false', headless):
-            if re.match('(?i)true', headless):
-                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=True)
-            if re.match('(?i)false', headless):
-                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=False)
-    else:
-        condicao_previsao_do_tempo(cidade=cidade, estado=estado)
+def limit_empty_spaces(text: str):
+    return re.sub(r"\s{2,}", " ", text, 0)
 
 if __name__ == "__main__":
     main()
