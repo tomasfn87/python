@@ -10,14 +10,11 @@ from typing import Any, Dict, List, Union
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
     print(data_hora)
-    print(fill_with_times('-', len(data_hora)))
+    print('-' * len(data_hora))
     print()
-    condicao_tempo_accuweather(cidade, estado, headless)
+    condicao_tempo_accuweather(cidade=cidade, estado=estado, headless=headless)
     print()
-    previsao_tempo_climatempo(cidade, estado, headless)
-
-def fill_with_times(char: str, times: int):
-    return times * char[0]
+    previsao_tempo_climatempo(cidade=cidade, estado=estado, headless=headless)
 
 def limit_empty_spaces(text: str):
     return re.sub(r"\s{2,}", " ", text, 0)
@@ -33,7 +30,7 @@ def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     browser.implicitly_wait(2)
     title = f"[AccuWeather] Condições meteorológicas em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
-    print(fill_with_times('-', len(title)))
+    print('-' * len(title))
     TempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card h1').text
     tempoAtual = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.current-weather-info div.temp').text
     tempoAtualSensacao = browser.find_element(By.CSS_SELECTOR, '.current-weather-card div.phrase').text
@@ -69,7 +66,7 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
 
     title = f"[ClimaTempo] Previsão do tempo em {capitalize_all(cidade)}/{estado.upper()}, Brasil"
     print(title)
-    print(fill_with_times('-', len(title)))
+    print('-' * len(title))
 
     try:
         data = browser.find_element(By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text.split("\n")
@@ -183,42 +180,42 @@ def remove_empty_elements(arr:List[str]):
     return clean_arr
 
 estados_brasileiros = [
-    {"sigla": "AC", "estado": "Acre"},
-    {"sigla": "AL", "estado": "Alagoas"},
-    {"sigla": "AP", "estado": "Amapá"},
-    {"sigla": "AM", "estado": "Amazonas"},
-    {"sigla": "BA", "estado": "Bahia"},
-    {"sigla": "CE", "estado": "Ceará"},
-    {"sigla": "DF", "estado": "Distrito Federal"},
-    {"sigla": "ES", "estado": "Espírito Santo"},
-    {"sigla": "GO", "estado": "Goiás"},
-    {"sigla": "MA", "estado": "Maranhão"},
-    {"sigla": "MT", "estado": "Mato Grosso"},
-    {"sigla": "MS", "estado": "Mato Grosso do Sul"},
-    {"sigla": "MG", "estado": "Minas Gerais"},
-    {"sigla": "PA", "estado": "Pará"},
-    {"sigla": "PB", "estado": "Paraíba"},
-    {"sigla": "PR", "estado": "Paraná"},
-    {"sigla": "PE", "estado": "Pernambuco"},
-    {"sigla": "PI", "estado": "Piauí"},
-    {"sigla": "RJ", "estado": "Rio de Janeiro"},
-    {"sigla": "RN", "estado": "Rio Grande do Norte"},
-    {"sigla": "RS", "estado": "Rio Grande do Sul"},
-    {"sigla": "RO", "estado": "Rondônia"},
-    {"sigla": "RR", "estado": "Roraima"},
-    {"sigla": "SC", "estado": "Santa Catarina"},
-    {"sigla": "SP", "estado": "São Paulo"},
-    {"sigla": "SE", "estado": "Sergipe"},
-    {"sigla": "TO", "estado": "Tocantins"}
+    {"acronym": "AC", "name": "Acre"},
+    {"acronym": "AL", "name": "Alagoas"},
+    {"acronym": "AP", "name": "Amapá"},
+    {"acronym": "AM", "name": "Amazonas"},
+    {"acronym": "BA", "name": "Bahia"},
+    {"acronym": "CE", "name": "Ceará"},
+    {"acronym": "DF", "name": "Distrito Federal"},
+    {"acronym": "ES", "name": "Espírito Santo"},
+    {"acronym": "GO", "name": "Goiás"},
+    {"acronym": "MA", "name": "Maranhão"},
+    {"acronym": "MT", "name": "Mato Grosso"},
+    {"acronym": "MS", "name": "Mato Grosso do Sul"},
+    {"acronym": "MG", "name": "Minas Gerais"},
+    {"acronym": "PA", "name": "Pará"},
+    {"acronym": "PB", "name": "Paraíba"},
+    {"acronym": "PR", "name": "Paraná"},
+    {"acronym": "PE", "name": "Pernambuco"},
+    {"acronym": "PI", "name": "Piauí"},
+    {"acronym": "RJ", "name": "Rio de Janeiro"},
+    {"acronym": "RN", "name": "Rio Grande do Norte"},
+    {"acronym": "RS", "name": "Rio Grande do Sul"},
+    {"acronym": "RO", "name": "Rondônia"},
+    {"acronym": "RR", "name": "Roraima"},
+    {"acronym": "SC", "name": "Santa Catarina"},
+    {"acronym": "SP", "name": "São Paulo"},
+    {"acronym": "SE", "name": "Sergipe"},
+    {"acronym": "TO", "name": "Tocantins"}
 ]
 
-def isStringABrazilianStateAcronym(s:str, estados_brasileiros:List[Dict[str, str]]):
-    if len(s.strip()) != 2:
+def isStringAValidFixedLengthAcronym(s:str, length:int, acronym_list:List[Dict[str, str]]):
+    if len(s.strip()) != length:
         return False
-    return any(estado['sigla'] == s.strip().upper() for estado in estados_brasileiros)
+    return any(estado['acronym'] == s.strip().upper() for estado in estados_brasileiros)
 
-def getBrazilianStatesAcronymsList(estados_brasileiros:List[Dict[str, str]]):
-    return [estado['sigla'] for estado in estados_brasileiros]
+def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
+    return [estado['acronym'] for estado in estados_brasileiros]
 
 def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espacador_2:str=", "):
         assert type(espacador_1) == str \
@@ -233,29 +230,37 @@ def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espaca
             else:
                 texto += espacador_2
 
-if __name__ == "__main__":
+def print_examples():
+    print("\n - Exemplo 1:")
+    print("\tpython3 previsao_do_tempo_brasil.py Brasília DF")
+    print("\n - Exemplo 2:")
+    print("\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp")
+    print("\n - Exemplo 3:")
+    print("\t", end="")
+    print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
+
+def main():
     inputs = sys.argv
 
     if len(inputs) < 3:
-        print("ERRO: é necessário digitar cidade e estado.\
-            \nExemplo:\
-                \n\tpython3 previsao_do_tempo_brasil.py manaus am")
+        print("ERRO: é necessário digitar cidade e estado.")
+        print_examples()
+        return
     elif len(inputs) > 4:
-        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas\
-            \nse o nome da cidade possuir mais de uma palavra ou utilize\
-            \na barra invertida (\\) para cancelar um espaço em branco como\
-            \nseparador de argumentos.\
-            \nExemplo 1:\
-                \n\tpython3 previsao_do_tempo_brasil.py \"são paulo\" sp\
-            \nExemplo 2:\
-                \n\tpython3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
+        print("ERRO: digite apenas cidade e estado; coloque aspas simples ou duplas")
+        print("  se o nome da cidade possuir mais de uma palavra ou utilize")
+        print(r"  a barra invertida (\) para cancelar um espaço em branco como")
+        print("  separador de argumentos.")
+        print_examples()
+        return
     else:
         cidade = inputs[1]
         estado = inputs[2]
 
-    if not isStringABrazilianStateAcronym(estado, estados_brasileiros):
-        print('ERRO: digite uma sigla de algum estado brasileiro:')
-        print(f" - Siglas válidas: {conectar(getBrazilianStatesAcronymsList(estados_brasileiros), ' ou ')}")
+    if not isStringAValidFixedLengthAcronym(s=estado, length=2, acronym_list=estados_brasileiros):
+        print("ERRO: o segundo argumento deve ser uma sigla válida de estado brasileiro (UF).")
+        print("\n - Siglas válidas: {}".format(
+            conectar(getBrazilianStatesAcronymsList(lista_estados=estados_brasileiros), ' ou ')))
     elif len(inputs) == 4:
         headless = inputs[3]
         if re.match('(?i)true|false', headless):
@@ -265,3 +270,6 @@ if __name__ == "__main__":
                 condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=False)
     else:
         condicao_previsao_do_tempo(cidade=cidade, estado=estado)
+
+if __name__ == "__main__":
+    main()
