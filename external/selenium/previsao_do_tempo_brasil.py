@@ -5,6 +5,7 @@ import datetime as dt
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from typing import Any, Dict, List, Union
 
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
@@ -174,12 +175,63 @@ def capitalize_all(text:str):
             capitalized_text += " "
     return capitalized_text
 
-def remove_empty_elements(arr:list):
+def remove_empty_elements(arr:List[str]):
     clean_arr = []
     for i in arr:
         if i != "":
             clean_arr.append(i)
     return clean_arr
+
+estados_brasileiros = [
+    {"sigla": "AC", "estado": "Acre"},
+    {"sigla": "AL", "estado": "Alagoas"},
+    {"sigla": "AP", "estado": "Amapá"},
+    {"sigla": "AM", "estado": "Amazonas"},
+    {"sigla": "BA", "estado": "Bahia"},
+    {"sigla": "CE", "estado": "Ceará"},
+    {"sigla": "DF", "estado": "Distrito Federal"},
+    {"sigla": "ES", "estado": "Espírito Santo"},
+    {"sigla": "GO", "estado": "Goiás"},
+    {"sigla": "MA", "estado": "Maranhão"},
+    {"sigla": "MT", "estado": "Mato Grosso"},
+    {"sigla": "MS", "estado": "Mato Grosso do Sul"},
+    {"sigla": "MG", "estado": "Minas Gerais"},
+    {"sigla": "PA", "estado": "Pará"},
+    {"sigla": "PB", "estado": "Paraíba"},
+    {"sigla": "PR", "estado": "Paraná"},
+    {"sigla": "PE", "estado": "Pernambuco"},
+    {"sigla": "PI", "estado": "Piauí"},
+    {"sigla": "RJ", "estado": "Rio de Janeiro"},
+    {"sigla": "RN", "estado": "Rio Grande do Norte"},
+    {"sigla": "RS", "estado": "Rio Grande do Sul"},
+    {"sigla": "RO", "estado": "Rondônia"},
+    {"sigla": "RR", "estado": "Roraima"},
+    {"sigla": "SC", "estado": "Santa Catarina"},
+    {"sigla": "SP", "estado": "São Paulo"},
+    {"sigla": "SE", "estado": "Sergipe"},
+    {"sigla": "TO", "estado": "Tocantins"}
+]
+
+def isStringABrazilianStateAcronym(s:str, estados_brasileiros:List[Dict[str, str]]):
+    if len(s.strip()) != 2:
+        return False
+    return any(estado['sigla'] == s.strip().upper() for estado in estados_brasileiros)
+
+def getBrazilianStatesAcronymsList(estados_brasileiros:List[Dict[str, str]]):
+    return [estado['sigla'] for estado in estados_brasileiros]
+
+def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espacador_2:str=", "):
+        assert type(espacador_1) == str \
+            and  type(espacador_2) == str
+        texto = ""
+        for i in range(0, len(lista_de_itens)):
+            texto += str(lista_de_itens[i])
+            if i == len(lista_de_itens) - 1:
+                return texto
+            elif i == len(lista_de_itens) - 2:
+                texto += espacador_1
+            else:
+                texto += espacador_2
 
 if __name__ == "__main__":
     inputs = sys.argv
@@ -198,15 +250,18 @@ if __name__ == "__main__":
             \nExemplo 2:\
                 \n\tpython3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
     else:
-        cidade = inputs[1].strip()
-        estado = inputs[2].strip()
+        cidade = inputs[1]
+        estado = inputs[2]
 
-    if len(inputs) == 4:
-        headless = inputs[3].strip()
+    if not isStringABrazilianStateAcronym(estado, estados_brasileiros):
+        print('ERRO: digite uma sigla de algum estado brasileiro:')
+        print(f" - Siglas válidas: {conectar(getBrazilianStatesAcronymsList(estados_brasileiros), ' ou ')}")
+    elif len(inputs) == 4:
+        headless = inputs[3]
         if re.match('(?i)true|false', headless):
             if re.match('(?i)true', headless):
-                condicao_previsao_do_tempo(cidade, estado, True)
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=True)
             if re.match('(?i)false', headless):
-                condicao_previsao_do_tempo(cidade, estado, False)
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=False)
     else:
-        condicao_previsao_do_tempo(cidade, estado)
+        condicao_previsao_do_tempo(cidade=cidade, estado=estado)
