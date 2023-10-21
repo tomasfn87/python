@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Union
 
 def main():
     inputs = sys.argv
-
     if len(inputs) < 3:
         print("ERRO: é necessário digitar cidade e estado.")
         print_examples()
@@ -21,13 +20,11 @@ def main():
         print("  separador de argumentos.")
         print_examples()
         return
-    else:
-        cidade = inputs[1]
-        estado = inputs[2]
 
+    cidade, estado = inputs[1], inputs[2]
     if not isStringAValidFixedLengthAcronym(s=estado, length=2, acronym_list=estados_brasileiros):
         print("ERRO: o segundo argumento deve ser uma sigla válida de estado brasileiro (UF).")
-        print("\n - Siglas válidas: {}".format(
+        print("\n - Siglas válidas: {}.".format(
             conectar(getBrazilianStatesAcronymsList(lista_estados=estados_brasileiros), ' ou ')))
     elif len(inputs) == 4:
         headless = inputs[3]
@@ -53,12 +50,7 @@ def isStringAValidFixedLengthAcronym(s:str, length:int, acronym_list:List[Dict[s
         return False
     return any(item['acronym'] == s.strip().upper() for item in acronym_list)
 
-def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
-    return [estado['acronym'] for estado in estados_brasileiros]
-
 def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espacador_2:str=", "):
-        assert type(espacador_1) == str \
-            and  type(espacador_2) == str
         texto = ""
         for i in range(0, len(lista_de_itens)):
             texto += str(lista_de_itens[i])
@@ -68,6 +60,9 @@ def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espaca
                 texto += espacador_1
             else:
                 texto += espacador_2
+
+def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
+    return [f"{estado['acronym']} ({estado['name']})" for estado in lista_estados]
 
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
@@ -104,8 +99,7 @@ estados_brasileiros = [
     {"acronym": "SC", "name": "Santa Catarina"},
     {"acronym": "SP", "name": "São Paulo"},
     {"acronym": "SE", "name": "Sergipe"},
-    {"acronym": "TO", "name": "Tocantins"},
-]
+    {"acronym": "TO", "name": "Tocantins"}]
 
 def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     browser = start_chrome(headless)
@@ -251,12 +245,7 @@ def capitalize_all(text:str):
             capitalized_words.append(w)
         else:
             capitalized_words.append(w.capitalize())
-    capitalized_text = ""
-    for i in range(0, len(words)):
-        capitalized_text += capitalized_words[i]
-        if i != len(words)-1:
-            capitalized_text += " "
-    return capitalized_text
+    return " ".join(capitalized_words)
 
 def remove_empty_elements(arr:List[str]):
     clean_arr = []
