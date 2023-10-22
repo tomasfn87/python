@@ -7,6 +7,7 @@ external/pymongo/.vscode
 external/pymongo/data/
 external/RegEx/data.csv
 *.jpg
+*.jpeg
 *.png
 *.tool-versions
 *.env
