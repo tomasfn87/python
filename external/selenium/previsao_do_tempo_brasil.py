@@ -22,19 +22,21 @@ def main():
         return
 
     cidade, estado = inputs[1], inputs[2]
+    padding = 33
     if not isStringAValidFixedLengthAcronym(s=estado, length=2, acronym_list=estados_brasileiros):
         print("ERRO: o segundo argumento deve ser uma sigla válida de estado brasileiro (UF).")
         print("\n - Siglas válidas: {}.".format(
             conectar(getBrazilianStatesAcronymsList(lista_estados=estados_brasileiros), ' ou ')))
     elif len(inputs) == 4:
         headless = inputs[3]
-        if re.match('(?i)true|false', headless):
+        
+        if re.match('(?i)^(true|false)$', headless):
             if re.match('(?i)true', headless):
-                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=True)
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, padding=padding, headless=True)
             if re.match('(?i)false', headless):
-                condicao_previsao_do_tempo(cidade=cidade, estado=estado, headless=False)
+                condicao_previsao_do_tempo(cidade=cidade, estado=estado, padding=padding, headless=False)
     else:
-        condicao_previsao_do_tempo(cidade=cidade, estado=estado)
+        condicao_previsao_do_tempo(cidade=cidade, estado=estado, padding=padding)
 
 def print_examples():
     print("\n - Exemplo 1:")
@@ -64,13 +66,13 @@ def conectar(lista_de_itens:List[Union[Any, str]], espacador_1:str=" e ", espaca
 def getBrazilianStatesAcronymsList(lista_estados:List[Dict[str, str]]):
     return [f"{estado['acronym']} ({estado['name']})" for estado in lista_estados]
 
-def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
+def condicao_previsao_do_tempo(cidade:str, estado:str, padding:int, headless:bool=False):
     data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
     print(f"{data_hora}\n{'-' * len(data_hora)}")
     print()
-    condicao_tempo_accuweather(cidade=cidade, estado=estado, headless=headless)
+    condicao_tempo_accuweather(cidade=cidade, estado=estado, padding=padding, headless=headless)
     print()
-    previsao_tempo_climatempo(cidade=cidade, estado=estado, headless=headless)
+    previsao_tempo_climatempo(cidade=cidade, estado=estado, padding=padding, headless=headless)
 
 estados_brasileiros = [
     {"acronym": "AC", "name": "Acre"},
@@ -101,7 +103,7 @@ estados_brasileiros = [
     {"acronym": "SE", "name": "Sergipe"},
     {"acronym": "TO", "name": "Tocantins"}]
 
-def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
+def condicao_tempo_accuweather(cidade:str, estado:str, padding:int, headless:bool=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, 'input[type=text]')\
@@ -123,17 +125,17 @@ def condicao_tempo_accuweather(cidade:str, estado:str, headless:bool=False):
     if len(tempoAtualExtraRealFeelData) == 2:
         tempoAtualExtraRealFeelShadeTitulo = tempoAtualExtraRealFeelData[1].split(' ')[0]+tempoAtualExtraRealFeelData[1].split(' ')[1]
         tempoAtualExtraRealFeelShadeValor = tempoAtualExtraRealFeelData[1].split(' ')[2]
-    print(f"{TempoAtual.rjust(20)}: {tempoAtual} ({tempoAtualSensacao})")
-    print(f"{tempoAtualExtraRealFeelTitulo.rjust(20)}: {tempoAtualExtraRealFeelValor}C")
+    print(f"{TempoAtual.rjust(padding)}: {tempoAtual} ({tempoAtualSensacao})")
+    print(f"{tempoAtualExtraRealFeelTitulo.rjust(padding)}: {tempoAtualExtraRealFeelValor}C")
     if len(tempoAtualExtraRealFeelData) == 2:
-        print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(20)}: {tempoAtualExtraRealFeelShadeValor}C")
+        print(f"{tempoAtualExtraRealFeelShadeTitulo.rjust(padding)}: {tempoAtualExtraRealFeelShadeValor}C")
     weather_details = browser.find_element(By.CSS_SELECTOR, '.current-weather-card .current-weather-details').text.split('\n')
     for i in range(len(weather_details)):
         if i % 2 == 0:
-            print(f'{weather_details[i].rjust(20)}: {weather_details[i+1].replace("° C", "°C")}')
+            print(f'{weather_details[i].rjust(padding)}: {weather_details[i+1].replace("° C", "°C")}')
     browser.quit()
 
-def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
+def previsao_tempo_climatempo(cidade:str, estado:str, padding:int, headless:bool=False):
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
     browser.find_element(By.CSS_SELECTOR, "input[type=text]")\
@@ -161,6 +163,7 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
             browser.quit()
             return
 
+    padding = padding + 2
     if option == 1:
         comparacao = data[0]
         previsao = limit_empty_spaces(data[1])
@@ -175,15 +178,16 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
             if data[i] == 'Sol':
                 nascer_por_sol = data[i+1].replace('h', '')
 
-        print("Temp. mínima: ".rjust(22)+f"{temp_min}C")
-        print("Temp. máxima: ".rjust(22)+f"{temp_max}C")
-        print("Comparação: ".rjust(22)+comparacao)
-        print("Previsão: ".rjust(22)+limit_empty_spaces(previsao))
-        print("Precipitação: ".rjust(22)+precipitacao)
-        print("Humidade mínima: ".rjust(22)+umidade_min)
-        print("Humidade máxima: ".rjust(22)+umidade_max)
+        
+        print("Temp. mínima: ".rjust(padding)+f"{temp_min}C")
+        print("Temp. máxima: ".rjust(padding)+f"{temp_max}C")
+        print("Comparação: ".rjust(padding)+comparacao)
+        print("Previsão: ".rjust(padding)+limit_empty_spaces(previsao))
+        print("Precipitação: ".rjust(padding)+precipitacao)
+        print("Humidade mínima: ".rjust(padding)+umidade_min)
+        print("Humidade máxima: ".rjust(padding)+umidade_max)
         if nascer_por_sol:
-            print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' ', ' / '))
+            print("Nascer/pôr do sol: ".rjust(padding)+nascer_por_sol.replace(' ', ' / '))
 
     elif option == 2:
         temp_min = data[2]
@@ -208,13 +212,13 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False):
 
         browser.quit()
 
-        print("Temp. mínima: ".rjust(22)+f"{temp_min}C")
-        print("Temp. máxima: ".rjust(22)+f"{temp_max}C")
-        print("Previsão: ".rjust(22)+previsao)
-        print("Pluviosidade: ".rjust(22)+pluviosidade)
-        print("Umidade: ".rjust(22)+umidade)
-        print("Nascer/pôr do sol: ".rjust(22)+nascer_por_sol.replace(' - ', ' / '))
-        print("Lua: ".rjust(22)+lua)
+        print("Temp. mínima: ".rjust(padding)+f"{temp_min}C")
+        print("Temp. máxima: ".rjust(padding)+f"{temp_max}C")
+        print("Previsão: ".rjust(padding)+previsao)
+        print("Pluviosidade: ".rjust(padding)+pluviosidade)
+        print("Umidade: ".rjust(padding)+umidade)
+        print("Nascer/pôr do sol: ".rjust(padding)+nascer_por_sol.replace(' - ', ' / '))
+        print("Lua: ".rjust(padding)+lua)
 
 def start_chrome(headless:bool=False):
     options = webdriver.ChromeOptions()
