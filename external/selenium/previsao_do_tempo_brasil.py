@@ -107,11 +107,13 @@ def list_brazilian_states_acronyms_list(lista_estados:List[Dict[str, str]]):
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     resultados_condicao_tempo = condicao_tempo_accuweather(
         cidade=cidade, estado=estado, headless=headless)
+
     resultados_previsao_tempo = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
+    
     results_printer = ResultsPrinter()
-    results_printer.add(resultados_condicao_tempo)
-    results_printer.add(resultados_previsao_tempo)
+    results_printer.add_results(resultados_condicao_tempo)
+    results_printer.add_results(resultados_previsao_tempo)
     results_printer.print_all()
 
 class Results:
@@ -119,7 +121,7 @@ class Results:
         self.title:str = title
         self.results:List[Dict[str, str]] = []
     
-    def add(self:Any, result:Dict[str, str]):
+    def add_key_value(self:Any, result:Dict[str, str]):
         if list(result.keys())[0].strip() \
             and list(result.values())[0].strip():
             self.results.append(result)
@@ -140,7 +142,7 @@ class ResultsPrinter:
     def __init__(self:Any):
         self.result_list:List[Results] = []
     
-    def add(self:Any, results:Results):
+    def add_results(self:Any, results:Results):
         self.result_list.append(results)
         
     def print_all(self:Any):
@@ -170,11 +172,14 @@ def condicao_tempo_accuweather(
     
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
+
     browser.find_element(
         By.CSS_SELECTOR, 'input[type=text]').send_keys(
             f"accuweather pt br brazil weather {cidade} {estado}", Keys.ENTER)
+
     url = browser.find_element(
         By.CSS_SELECTOR, '#r1-0 h2 a').get_attribute("href")
+
     browser.get(format_accuweather_url(url))
     t.sleep(2)
     browser.implicitly_wait(2)
@@ -185,30 +190,30 @@ def condicao_tempo_accuweather(
 
     TempoAtual = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card h1').text
-    
+
     tempoAtual = browser.find_element(
         By.CSS_SELECTOR,
             '.current-weather-card div.current-weather-info div.temp').text
-    
+
     tempoAtualSensacao = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card div.phrase').text
-    
+
     tempoAtualExtraRealFeelData = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card div.current-weather-extra'
             ).text.split('\n')
-    
+
     weather_details = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card .current-weather-details'
             ).text.split('\n')
-    
+
     browser.quit()
-    
+
     tempoAtualExtraRealFeelTitulo = tempoAtualExtraRealFeelData[0].split(' ')[0]
     tempoAtualExtraRealFeelValor = tempoAtualExtraRealFeelData[0].split(' ')[1]
-    
+
     tempoAtualExtraRealFeelShadeTitulo = ''
     tempoAtualExtraRealFeelShadeValor = ''
-    
+
     if len(tempoAtualExtraRealFeelData) == 2:
         tempoAtualExtraRealFeelShadeTitulo = \
             tempoAtualExtraRealFeelData[1].split(' ')[0] \
@@ -216,38 +221,40 @@ def condicao_tempo_accuweather(
 
         tempoAtualExtraRealFeelShadeValor = \
             tempoAtualExtraRealFeelData[1].split(' ')[2]
-    
-    results.add({TempoAtual:
+
+    results.add_key_value({TempoAtual:
         f"{tempoAtual} ({tempoAtualSensacao})"})
 
-    results.add({tempoAtualExtraRealFeelTitulo:
+    results.add_key_value({tempoAtualExtraRealFeelTitulo:
         f"{tempoAtualExtraRealFeelValor}C"})
-    
+
     if tempoAtualExtraRealFeelShadeTitulo and tempoAtualExtraRealFeelShadeValor:
-        results.add({tempoAtualExtraRealFeelShadeTitulo:
+        results.add_key_value({tempoAtualExtraRealFeelShadeTitulo:
             f"{tempoAtualExtraRealFeelShadeValor}C"})
  
     for i in range(len(weather_details)):
         if i % 2 == 0:
-            results.add({f"{weather_details[i]}":
+            results.add_key_value({f"{weather_details[i]}":
                 f"{weather_details[i+1].replace('° C', '°C')}"})
-            
+  
     return results
 
-def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False) -> Results:
+def previsao_tempo_climatempo(
+    cidade:str, estado:str, headless:bool=False) -> Results:
+
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
-    
+
     browser.find_element(
         By.CSS_SELECTOR, "input[type=text]").send_keys(
             f"climatempo {cidade} {estado} brasil", Keys.ENTER)
 
     browser.find_element(
         By.CSS_SELECTOR, "#r1-0 h2 a").click()
-    
+
     t.sleep(2)
     browser.implicitly_wait(2)
-    
+
     data, option = [], 0
     title = "[ClimaTempo] Previsão do tempo em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
@@ -270,7 +277,7 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False) -> Re
             print("Informações indisponíveis. Tente novamente.")
             browser.quit()
             return
-    
+
     browser.quit()
 
     if option == 1:
@@ -287,15 +294,15 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False) -> Re
             if data[i] == 'Sol':
                 nascer_por_sol = data[i+1].replace('h', '')
 
-        results.add({"Temperatura mínima": f"{temp_min}C"})    
-        results.add({"Temperatura máxima": f"{temp_max}C"})    
-        results.add({"Comparação": comparacao})    
-        results.add({"Previsão": limit_empty_spaces(previsao)})
-        results.add({"Precipitação": precipitacao})
-        results.add({"Humidade mínima": umidade_min})
-        results.add({"Humidade máxima": umidade_max})
+        results.add_key_value({"Temperatura mínima": f"{temp_min}C"})
+        results.add_key_value({"Temperatura máxima": f"{temp_max}C"})
+        results.add_key_value({"Comparação": comparacao})
+        results.add_key_value({"Previsão": limit_empty_spaces(previsao)})
+        results.add_key_value({"Precipitação": precipitacao})
+        results.add_key_value({"Humidade mínima": umidade_min})
+        results.add_key_value({"Humidade máxima": umidade_max})
         if nascer_por_sol:
-            results.add({
+            results.add_key_value({
                 "Nascer/pôr do sol": nascer_por_sol.replace(' ', ' / ')})
 
     elif option == 2:
@@ -319,13 +326,13 @@ def previsao_tempo_climatempo(cidade:str, estado:str, headless:bool=False) -> Re
             if data[i] == 'LUA':
                 lua = data[i+1]
 
-        results.add({"Temperatura mínima": f"{temp_min}C"})
-        results.add({"Temperatura máxima": f"{temp_max}C"})
-        results.add({"Previsão": previsao})
-        results.add({"Pluviosidade": pluviosidade})
-        results.add({"Umidade": umidade})
-        results.add({"Nascer/pôr do sol": nascer_por_sol.replace('-', '/')})
-        results.add({"Lua": lua})
+        results.add_key_value({"Temperatura mínima": f"{temp_min}C"})
+        results.add_key_value({"Temperatura máxima": f"{temp_max}C"})
+        results.add_key_value({"Previsão": previsao})
+        results.add_key_value({"Pluviosidade": pluviosidade})
+        results.add_key_value({"Umidade": umidade})
+        results.add_key_value({"Nascer/pôr do sol": nascer_por_sol.replace('-', '/')})
+        results.add_key_value({"Lua": lua})
 
     return results
 
@@ -342,7 +349,7 @@ def start_chrome(headless:bool=False):
     options.add_experimental_option('useAutomationExtension', False)
     prefs = {"profile.managed_default_content_settings.images": 2}
     options.add_experimental_option("prefs", prefs)
-    
+
     return webdriver.Chrome(options=options)
 
 def format_accuweather_url(url:str):
