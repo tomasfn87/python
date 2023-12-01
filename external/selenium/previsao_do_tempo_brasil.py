@@ -101,9 +101,11 @@ def join(lista_de_itens:List[Union[Any, str]],
             else:
                 texto += f"{espacador_2} "
 
-def list_brazilian_states_acronyms_list(lista_estados:List[Dict[str, str]]):
-    return [f"{estado['acronym']} ({estado['name']})"
-        for estado in lista_estados]
+def list_brazilian_states_acronyms_list(
+    lista_estados:List[Dict[str, str]]) -> List[Dict[str, str]]:
+
+    return [ f"{estado['acronym']} ({estado['name']})"
+        for estado in lista_estados ]
 
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     resultados_condicao_tempo = condicao_tempo_accuweather(
@@ -112,7 +114,7 @@ def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     resultados_previsao_tempo = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
     
-    results_printer = ResultsPrinter()
+    results_printer = ResultsPrinter(margin=2)
     results_printer.add_results(resultados_condicao_tempo)
     results_printer.add_results(resultados_previsao_tempo)
     results_printer.print_all()
@@ -120,15 +122,13 @@ def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
 class Results:
     def __init__(self:Any, title:str):
         self.title:str = title
-        self.results: np.ndarray = np.array([],
+        self.results:np.ndarray = np.array([],
             dtype=[('key', 'U100'), ('value', 'U100')])
     
     def add_key_value(self:Any, result:Dict[str, str]):
         if list(result.keys())[0].strip() \
             and list(result.values())[0].strip():
             self.results = np.append(self.results, result)
-        else:
-            print("Resultado não foi adicionado pois ou a chave ou")
         
     def get_title(self:Any) -> str:
         return self.title
@@ -141,12 +141,16 @@ class Results:
         return max_title_length
         
 class ResultsPrinter:
-    def __init__(self:Any):
+    def __init__(self:Any, margin):
+        if margin < 1:
+            self.margin = 2
+        else:
+            self.margin = margin
         self.result_list:np.ndarray = np.array([], dtype=Results)
     
     def add_results(self:Any, results:Results):
         self.result_list = np.append(self.result_list, results)
-        
+    
     def print_all(self:Any):
         data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
         print(f"{data_hora}\n{'-' * len(data_hora)}\n")
@@ -155,7 +159,7 @@ class ResultsPrinter:
         for r in r_list:
             if r.get_max_key_length() > padding:
                 padding = r.get_max_key_length()
-        padding += 2
+        padding += self.margin
         
         for i in range(len(r_list)):
             title = r_list[i].get_title()
@@ -188,16 +192,16 @@ def condicao_tempo_accuweather(
     
     title = "[AccuWeather] Condições meteorológicas em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    results = Results(title)
+    results = Results(title=title)
 
-    TempoAtual = browser.find_element(
+    tempoAtualTitulo = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card h1').text
 
-    tempoAtual = browser.find_element(
+    tempoAtualValor = browser.find_element(
         By.CSS_SELECTOR,
             '.current-weather-card div.current-weather-info div.temp').text
 
-    tempoAtualSensacao = browser.find_element(
+    tempoAtualSensacaoValor = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card div.phrase').text
 
     tempoAtualExtraRealFeelData = browser.find_element(
@@ -224,8 +228,8 @@ def condicao_tempo_accuweather(
         tempoAtualExtraRealFeelShadeValor = \
             tempoAtualExtraRealFeelData[1].split(' ')[2]
 
-    results.add_key_value({TempoAtual:
-        f"{tempoAtual} ({tempoAtualSensacao})"})
+    results.add_key_value({tempoAtualTitulo:
+        f"{tempoAtualValor} ({tempoAtualSensacaoValor})"})
 
     results.add_key_value({tempoAtualExtraRealFeelTitulo:
         f"{tempoAtualExtraRealFeelValor}C"})
@@ -260,7 +264,7 @@ def previsao_tempo_climatempo(
     data, option = [], 0
     title = "[ClimaTempo] Previsão do tempo em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    results = Results(title)
+    results = Results(title=title)
 
     try:
         data = browser.find_element(
@@ -285,36 +289,36 @@ def previsao_tempo_climatempo(
     if option == 1:
         comparacao = data[0]
         previsao = limit_empty_spaces(data[1])
-        temp_min = data[7]
-        temp_max = data[8]
+        tempMin = data[7]
+        tempMax = data[8]
         precipitacao = data[10]
-        umidade_min = data[14]
-        umidade_max = data[15]
-        nascer_por_sol = ""
+        umidadeMin = data[14]
+        umidadeMax = data[15]
+        nascerPorSol = ""
 
         for i in range(0, len(data)):
             if data[i] == 'Sol':
-                nascer_por_sol = data[i+1].replace('h', '')
+                nascerPorSol = data[i+1].replace('h', '')
 
-        results.add_key_value({"Temperatura mínima": f"{temp_min}C"})
-        results.add_key_value({"Temperatura máxima": f"{temp_max}C"})
+        results.add_key_value({"Temperatura mínima": f"{tempMin}C"})
+        results.add_key_value({"Temperatura máxima": f"{tempMax}C"})
         results.add_key_value({"Comparação": comparacao})
         results.add_key_value({"Previsão": limit_empty_spaces(previsao)})
         results.add_key_value({"Precipitação": precipitacao})
-        results.add_key_value({"Humidade mínima": umidade_min})
-        results.add_key_value({"Humidade máxima": umidade_max})
-        if nascer_por_sol:
+        results.add_key_value({"Humidade mínima": umidadeMin})
+        results.add_key_value({"Humidade máxima": umidadeMax})
+        if nascerPorSol:
             results.add_key_value({
-                "Nascer/pôr do sol": nascer_por_sol.replace(' ', ' / ')})
+                "Nascer/pôr do sol": nascerPorSol.replace(' ', ' / ')})
 
     elif option == 2:
-        temp_min = data[2]
-        temp_max = data[3]
+        tempMin = data[2]
+        tempMax = data[3]
         pluviosidade = data[4]
         previsao = limit_empty_spaces(data[5])
         umidade = ""
         lua = ""
-        nascer_por_sol = ""
+        nascerPorSol = ""
 
         for i in range(0, len(data)):
             if data[i] == 'UMIDADE DO AR':
@@ -328,18 +332,18 @@ def previsao_tempo_climatempo(
             if data[i] == 'LUA':
                 lua = data[i+1]
 
-        results.add_key_value({"Temperatura mínima": f"{temp_min}C"})
-        results.add_key_value({"Temperatura máxima": f"{temp_max}C"})
+        results.add_key_value({"Temperatura mínima": f"{tempMin}C"})
+        results.add_key_value({"Temperatura máxima": f"{tempMax}C"})
         results.add_key_value({"Previsão": previsao})
         results.add_key_value({"Pluviosidade": pluviosidade})
         results.add_key_value({"Umidade": umidade})
-        results.add_key_value({"Nascer/pôr do sol": nascer_por_sol.replace('-', '/')})
+        results.add_key_value({"Nascer/pôr do sol": nascerPorSol.replace('-', '/')})
         results.add_key_value({"Lua": lua})
 
     return results
 
 def start_chrome(headless:bool=False):
-    options = webdriver.ChromeOptions()
+    options:webdriver.ChromeOptions = webdriver.ChromeOptions()
     headless and options.add_argument('--headless')
     options.add_argument('--disable-extensions')
     options.add_argument('--profile-directory=Default')
@@ -349,7 +353,7 @@ def start_chrome(headless:bool=False):
     options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    prefs = {"profile.managed_default_content_settings.images": 2}
+    prefs:Dict[str, int] = {"profile.managed_default_content_settings.images": 2}
     options.add_experimental_option("prefs", prefs)
 
     return webdriver.Chrome(options=options)
