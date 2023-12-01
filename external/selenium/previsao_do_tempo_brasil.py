@@ -2,6 +2,7 @@ import re
 import sys
 import time as t
 import datetime as dt
+import numpy as np
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -22,7 +23,7 @@ def main():
         return
 
     cidade, estado = inputs[1], inputs[2]
-    if not isStringAValidFixedLengthAcronym(
+    if not is_a_valid_fixed_length_acronym(
         s=estado, length=2, acronym_list=estados_brasileiros):
         print("ERRO: o segundo argumento deve ser uma sigla válida ", end='')
         print("de estado brasileiro (UF).")
@@ -51,7 +52,7 @@ def print_examples():
     print("\t", end="")
     print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
 
-def isStringAValidFixedLengthAcronym(
+def is_a_valid_fixed_length_acronym(
     s:str, length:int, acronym_list:List[Dict[str, str]]):
     
     if len(s.strip()) != length:
@@ -87,7 +88,7 @@ estados_brasileiros:List[Dict[str, str]] = [
     {"acronym": "SE", "name": "Sergipe"},
     {"acronym": "TO", "name": "Tocantins"}]
 
-def join(lista_de_itens:List[Union[Any, str]], 
+def join(lista_de_itens:List[Union[Any, str]],
         espacador_1:str="e", espacador_2:str=",") -> str:
     
         texto = ""
@@ -119,12 +120,13 @@ def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
 class Results:
     def __init__(self:Any, title:str):
         self.title:str = title
-        self.results:List[Dict[str, str]] = []
+        self.results: np.ndarray = np.array([],
+            dtype=[('key', 'U100'), ('value', 'U100')])
     
     def add_key_value(self:Any, result:Dict[str, str]):
         if list(result.keys())[0].strip() \
             and list(result.values())[0].strip():
-            self.results.append(result)
+            self.results = np.append(self.results, result)
         else:
             print("Resultado não foi adicionado pois ou a chave ou")
         
@@ -140,10 +142,10 @@ class Results:
         
 class ResultsPrinter:
     def __init__(self:Any):
-        self.result_list:List[Results] = []
+        self.result_list:np.ndarray = np.array([], dtype=Results)
     
     def add_results(self:Any, results:Results):
-        self.result_list.append(results)
+        self.result_list = np.append(self.result_list, results)
         
     def print_all(self:Any):
         data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
@@ -181,8 +183,8 @@ def condicao_tempo_accuweather(
         By.CSS_SELECTOR, '#r1-0 h2 a').get_attribute("href")
 
     browser.get(format_accuweather_url(url))
-    t.sleep(2)
-    browser.implicitly_wait(2)
+    t.sleep(1)
+    browser.implicitly_wait(1)
     
     title = "[AccuWeather] Condições meteorológicas em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
@@ -252,8 +254,8 @@ def previsao_tempo_climatempo(
     browser.find_element(
         By.CSS_SELECTOR, "#r1-0 h2 a").click()
 
-    t.sleep(2)
-    browser.implicitly_wait(2)
+    t.sleep(1)
+    browser.implicitly_wait(1)
 
     data, option = [], 0
     title = "[ClimaTempo] Previsão do tempo em "
