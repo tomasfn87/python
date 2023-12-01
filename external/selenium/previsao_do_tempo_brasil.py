@@ -3,7 +3,7 @@ import sys
 import time as t
 import datetime as dt
 import numpy as np
-from selenium import webdriver
+from selenium import webdriver as wd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from typing import Any, Dict, List, Union
@@ -32,7 +32,7 @@ def main():
                 lista_estados=estados_brasileiros), 'ou')))
     elif len(inputs) == 4:
         headless = inputs[3]
-        
+
         if re.match('(?i)^(true|false)$', headless):
             if re.match('(?i)true', headless):
                 condicao_previsao_do_tempo(
@@ -54,7 +54,7 @@ def print_examples():
 
 def is_a_valid_fixed_length_acronym(
     s:str, length:int, acronym_list:List[Dict[str, str]]):
-    
+
     if len(s.strip()) != length:
         return False
     return any(item['acronym'] == s.strip().upper() for item in acronym_list)
@@ -90,7 +90,7 @@ estados_brasileiros:List[Dict[str, str]] = [
 
 def join(lista_de_itens:List[Union[Any, str]],
         espacador_1:str="e", espacador_2:str=",") -> str:
-    
+
         texto = ""
         for i in range(0, len(lista_de_itens)):
             texto += str(lista_de_itens[i])
@@ -113,7 +113,7 @@ def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
 
     resultados_previsao_tempo = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
-    
+
     results_printer = ResultsPrinter(margin=2)
     results_printer.add_results(resultados_condicao_tempo)
     results_printer.add_results(resultados_previsao_tempo)
@@ -124,22 +124,26 @@ class Results:
         self.title:str = title
         self.results:np.ndarray = np.array([],
             dtype=[('key', 'U100'), ('value', 'U100')])
-    
+
     def add_key_value(self:Any, result:Dict[str, str]):
-        if list(result.keys())[0].strip() \
-            and list(result.values())[0].strip():
+        key = list(result.keys())[0]
+        value = list(result.values())[0]
+        if key.strip() and value.strip():
             self.results = np.append(self.results, result)
-        
+        else:
+            print(f'Resultado não foi adicionado (chave: {key}, valor: {value}).')
+
     def get_title(self:Any) -> str:
         return self.title
 
     def get_max_key_length(self:Any) -> int:
         max_title_length:int = 0
         for i in range(len(self.results)):
-            if len(list(self.results[i].keys())[0]) > max_title_length:
-                max_title_length = len(list(self.results[i].keys())[0])
+            key = list(self.results[i].keys())[0]
+            if len(key) > max_title_length:
+                max_title_length = len(key)
         return max_title_length
-        
+
 class ResultsPrinter:
     def __init__(self:Any, margin):
         if margin < 1:
@@ -147,35 +151,34 @@ class ResultsPrinter:
         else:
             self.margin = margin
         self.result_list:np.ndarray = np.array([], dtype=Results)
-    
+
     def add_results(self:Any, results:Results):
         self.result_list = np.append(self.result_list, results)
-    
+
     def print_all(self:Any):
         data_hora = f"Data/hora: {str(dt.datetime.now())[0:19]}"
         print(f"{data_hora}\n{'-' * len(data_hora)}\n")
         padding, r_list = 0, self.result_list
-        
+
         for r in r_list:
             if r.get_max_key_length() > padding:
                 padding = r.get_max_key_length()
         padding += self.margin
-        
+
         for i in range(len(r_list)):
             title = r_list[i].get_title()
             print(f"{title}\n{'-' * len(title)}")
             for j in range(len(r_list[i].results)):
-                print(
-                    f"{list(r_list[i].results[j].keys())[0].rjust(padding)}:",
-                        end='')
-                print(f" {list(r_list[i].results[j].values())[0]}")
+                key = list(r_list[i].results[j].keys())[0]
+                value = list(r_list[i].results[j].values())[0]
+                print(f"{key.rjust(padding)}: {value}")
                 if j is len(r_list[i].results) - 1 \
                     and i is not len(self.result_list) - 1:
                     print()
 
 def condicao_tempo_accuweather(
     cidade:str, estado:str, headless:bool=False) -> Results:
-    
+
     browser = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
 
@@ -189,7 +192,7 @@ def condicao_tempo_accuweather(
     browser.get(format_accuweather_url(url))
     t.sleep(1)
     browser.implicitly_wait(1)
-    
+
     title = "[AccuWeather] Condições meteorológicas em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
     results = Results(title=title)
@@ -208,7 +211,7 @@ def condicao_tempo_accuweather(
         By.CSS_SELECTOR, '.current-weather-card div.current-weather-extra'
             ).text.split('\n')
 
-    weather_details = browser.find_element(
+    weatherDetails = browser.find_element(
         By.CSS_SELECTOR, '.current-weather-card .current-weather-details'
             ).text.split('\n')
 
@@ -237,12 +240,12 @@ def condicao_tempo_accuweather(
     if tempoAtualExtraRealFeelShadeTitulo and tempoAtualExtraRealFeelShadeValor:
         results.add_key_value({tempoAtualExtraRealFeelShadeTitulo:
             f"{tempoAtualExtraRealFeelShadeValor}C"})
- 
-    for i in range(len(weather_details)):
+
+    for i in range(len(weatherDetails)):
         if i % 2 == 0:
-            results.add_key_value({f"{weather_details[i]}":
-                f"{weather_details[i+1].replace('° C', '°C')}"})
-  
+            results.add_key_value({f"{weatherDetails[i]}":
+                f"{weatherDetails[i+1].replace('° C', '°C')}"})
+
     return results
 
 def previsao_tempo_climatempo(
@@ -326,7 +329,7 @@ def previsao_tempo_climatempo(
 
         for i in range(0, len(data)):
             if data[i] == 'SOL':
-                nascer_por_sol = data[i+1]
+                nascerPorSol = data[i+1]
 
         for i in range(0, len(data)):
             if data[i] == 'LUA':
@@ -343,7 +346,7 @@ def previsao_tempo_climatempo(
     return results
 
 def start_chrome(headless:bool=False):
-    options:webdriver.ChromeOptions = webdriver.ChromeOptions()
+    options:wd.ChromeOptions = wd.ChromeOptions()
     headless and options.add_argument('--headless')
     options.add_argument('--disable-extensions')
     options.add_argument('--profile-directory=Default')
@@ -356,7 +359,7 @@ def start_chrome(headless:bool=False):
     prefs:Dict[str, int] = {"profile.managed_default_content_settings.images": 2}
     options.add_experimental_option("prefs", prefs)
 
-    return webdriver.Chrome(options=options)
+    return wd.Chrome(options=options)
 
 def format_accuweather_url(url:str):
     return url.replace('en', 'pt').replace(
