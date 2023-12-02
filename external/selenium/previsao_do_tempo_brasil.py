@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from typing import Any, Dict, List, Union
 
 def main():
-    inputs:list[str] = sys.argv
+    inputs:List[str] = sys.argv
     if len(inputs) < 3:
         print("ERRO: é necessário digitar cidade e estado.")
         print_examples()
@@ -29,7 +29,7 @@ def main():
         print("ERRO: o segundo argumento deve ser uma sigla válida ", end="")
         print("de estado brasileiro (UF).")
         print("\n  Siglas válidas:\n  ---------------\n\n    {}.".format(
-            join(list_brazilian_states_acronyms_list(
+            unite(list_brazilian_states_acronyms_list(
                 lista_estados=estados_brasileiros), "ou")))
     
     if not is_web_connection_active():
@@ -58,7 +58,7 @@ def print_examples():
     print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
 
 def is_a_valid_fixed_length_acronym(
-    s:str, length:int, acronym_list:List[Dict[str, str]]):
+    s:str, length:int, acronym_list:List[Dict[str, str]]) -> bool:
 
     if len(s.strip()) != length:
         return False
@@ -93,7 +93,7 @@ estados_brasileiros:List[Dict[str, str]] = [
     {"acronym": "SE", "name": "Sergipe"},
     {"acronym": "TO", "name": "Tocantins"}]
 
-def join(lista_de_itens:List[Union[Any, str]],
+def unite(lista_de_itens:List[Union[Any, str]],
         espacador_1:str="e", espacador_2:str=",") -> str:
 
         texto:str = ""
@@ -109,10 +109,8 @@ def join(lista_de_itens:List[Union[Any, str]],
 def list_brazilian_states_acronyms_list(
     lista_estados:List[Dict[str, str]]) -> List[str]:
 
-    return [
-        f'{estado["acronym"]} ({estado["name"]})'
-            for estado in lista_estados
-    ]
+    return [ f'{estado["acronym"]} ({estado["name"]})'
+            for estado in lista_estados ]
 
 def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     resultados_condicao_tempo:Results = condicao_tempo_accuweather(
@@ -128,7 +126,7 @@ def condicao_previsao_do_tempo(cidade:str, estado:str, headless:bool=False):
     
 def is_web_connection_active() -> bool:
     try:
-        response:req.Response = req.get("https://www.google.com", timeout=5)
+        response:req.Response = req.get(url="https://www.google.com", timeout=5)
         response.raise_for_status()
         return True
     except req.RequestException:
@@ -137,16 +135,18 @@ def is_web_connection_active() -> bool:
 class Results:
     def __init__(self:Any, title:str):
         self.title:str = title
-        self.results:np.ndarray = np.array([],
+        self.results:np.array = np.array([],
             dtype=[("key", "U100"), ("value", "U100")])
 
-    def add_key_value(self:Any, result:Dict[str, str]):
-        key:str = list(result.keys())[0]
+    def add_key_value(self:Any, result:Dict[str, str]) -> bool:
+        key:str   = list(result.keys())[0]
         value:str = list(result.values())[0]
         if key.strip() and value.strip():
             self.results = np.append(self.results, result)
+            return True
         else:
             print(f"Resultado não foi adicionado (chave: {key}, valor: {value}).")
+            return False
 
     def get_title(self:Any) -> str:
         return self.title
@@ -165,7 +165,7 @@ class ResultsPrinter:
             self.margin = 2
         else:
             self.margin = margin
-        self.result_list:np.ndarray = np.array([], dtype=Results)
+        self.result_list:np.array = np.array([], dtype=Results)
 
     def add_results(self:Any, results:Results):
         self.result_list = np.append(self.result_list, results)
@@ -175,7 +175,7 @@ class ResultsPrinter:
         print(f'{data_hora}\n{"-" * len(data_hora)}\n')
 
         padding:int = 0
-        r_list:np.ndarray = self.result_list
+        r_list:np.array = self.result_list
 
         for r in r_list:
             if r.get_max_key_length() > padding:
@@ -186,7 +186,7 @@ class ResultsPrinter:
             title = r_list[i].get_title()
             print(f'{title}\n{"-" * len(title)}')
             for j in range(len(r_list[i].results)):
-                key = list(r_list[i].results[j].keys())[0]
+                key   = list(r_list[i].results[j].keys())[0]
                 value = list(r_list[i].results[j].values())[0]
                 print(f"{key.rjust(padding)}: {value}")
                 if j is len(r_list[i].results) - 1 \
@@ -284,7 +284,7 @@ def previsao_tempo_climatempo(
     t.sleep(1)
     browser.implicitly_wait(1)
 
-    data:List[str] = []
+    data:np.array = np.array([], dtype="S")
     option:int = 0
     
     title:str = "[ClimaTempo] Previsão do tempo em "
@@ -292,18 +292,18 @@ def previsao_tempo_climatempo(
     results:Results = Results(title=title)
 
     try:
-        data = browser.find_element(
+        data = np.char.splitlines(browser.find_element(
             By.CSS_SELECTOR,
-            'div[class="card -no-top -no-bottom"]').text.split("\n")
+            'div[class="card -no-top -no-bottom"]').text)[0]
 
         option = 1
     except:
         try:
-            data = browser.find_element(
+            data = remove_empty_elements(browser.find_element(
                 By.CSS_SELECTOR, "#first-block-of-days section")
+                    .text.split("\n"))
 
             option = 2
-            data = remove_empty_elements(data.text.split("\n"))
         except:
             print("Informações indisponíveis. Tente novamente.")
             browser.quit()
@@ -312,14 +312,14 @@ def previsao_tempo_climatempo(
     browser.quit()
 
     if option == 1:
-        comparacao = data[0]
-        previsao = limit_empty_spaces(data[1])
-        tempMin = data[7]
-        tempMax = data[8]
-        precipitacao = data[10]
-        umidadeMin = data[14]
-        umidadeMax = data[15]
-        nascerPorSol = ""
+        comparacao:str = data[0]
+        previsao:str = limit_empty_spaces(data[1])
+        tempMin:str = data[7]
+        tempMax:str = data[8]
+        precipitacao:str = data[10]
+        umidadeMin:str = data[14]
+        umidadeMax:str = data[15]
+        nascerPorSol:str = ""
 
         for i in range(0, len(data)):
             if data[i] == "Sol":
@@ -337,13 +337,13 @@ def previsao_tempo_climatempo(
                 "Nascer/pôr do sol": nascerPorSol.replace(" ", " / ")})
 
     elif option == 2:
-        tempMin = data[2]
-        tempMax = data[3]
-        pluviosidade = data[4]
-        previsao = limit_empty_spaces(data[5])
-        umidade = ""
-        lua = ""
-        nascerPorSol = ""
+        tempMin:str = data[2]
+        tempMax:str = data[3]
+        pluviosidade:str = data[4]
+        previsao:str = limit_empty_spaces(data[5])
+        umidade:str = ""
+        lua:str = ""
+        nascerPorSol:str = ""
 
         for i in range(0, len(data)):
             if data[i] == "UMIDADE DO AR":
@@ -367,7 +367,7 @@ def previsao_tempo_climatempo(
 
     return results
 
-def start_chrome(headless:bool=False):
+def start_chrome(headless:bool=False) -> wd.Chrome:
     options:wd.ChromeOptions = wd.ChromeOptions()
     headless and options.add_argument("--headless")
     options.add_argument("--disable-extensions")
@@ -383,31 +383,34 @@ def start_chrome(headless:bool=False):
 
     return wd.Chrome(options=options)
 
-def format_accuweather_url(url:str):
+def format_accuweather_url(url:str) -> str:
     return url.replace("en", "pt").replace(
         "weather-forecast", "current-weather")
 
-def capitalize_all(text:str):
-    exclude = ["de", "da", "do", "dos", "das"]
-    words = text.split(" ")
-    for w in words:
+def capitalize_all(text:str) -> str:
+    if " " not in text:
+        return text.capitalize()
+    exclude:np.string_ = np.array(["de", "da", "do", "dos", "das"])
+    words = np.char.split([text])
+    for w in words[0]:
         w = w.lower()
-    capitalized_words = []
-    for w in words:
-        if w in exclude or w[0:2] == 'd\"':
-            capitalized_words.append(w)
+    capitalized_words:np.array = np.array([], dtype="S")
+    for w in words[0]:
+        if w in exclude or w[0:2] == "d'":
+            capitalized_words = np.append(capitalized_words, w)
         else:
-            capitalized_words.append(w.capitalize())
-    return " ".join(capitalized_words)
+            capitalized_words = np.append(capitalized_words, w.capitalize())
+    result:str = np.char.add(" ", capitalized_words)
+    return "".join(result).strip()
 
-def remove_empty_elements(arr:List[str]):
-    clean_arr = []
+def remove_empty_elements(arr:np.array) -> np.array:
+    clean_arr:np.array = np.array([], dtype="S")
     for i in arr:
         if i != "":
-            clean_arr.append(i)
+            clean_arr = np.append(clean_arr, i)
     return clean_arr
 
-def limit_empty_spaces(text: str):
+def limit_empty_spaces(text: str) -> str:
     return re.sub(r"\s{2,}", " ", text, 0)
 
 if __name__ == "__main__":
