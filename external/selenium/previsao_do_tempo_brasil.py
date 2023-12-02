@@ -1,3 +1,5 @@
+import json
+import os
 import requests as req
 import re
 import sys
@@ -26,13 +28,22 @@ def main() -> None:
     cidade:str = inputs[1]
     estado:str = inputs[2]
 
+    file_dir:str = os.path.dirname(os.path.realpath(__file__))
+    with open(f"{file_dir}/brazilian_states_list.min.json", "r") as fh:
+        json_str:str = fh.read()
+        json_value:Any = json.loads(json_str)
+    estados_brasileiros:List[Dict[str, str]] = json_value
+
     if not is_a_valid_fixed_length_acronym(
         s=estado, length=2, acronym_list=estados_brasileiros):
         print("ERRO: o segundo argumento deve ser uma sigla válida ", end="")
         print("de estado brasileiro (UF).")
-        print("\n  Siglas válidas:\n  ---------------\n\n    {}.".format(
-            unite(list_brazilian_states_acronyms(
-                lista_estados=estados_brasileiros), "ou")))
+        subtitle = "Siglas válidas:"
+        print("\n  {}\n  {}\n\n    {}.".format(
+            subtitle, "-" * len(subtitle), semantically_unite(
+                list_brazilian_states_acronyms(
+                    states_list=estados_brasileiros), "ou")))
+        return
 
     if not is_web_connection_active():
         print("ERRO: sem conexão à Internet.")
@@ -66,37 +77,16 @@ def is_a_valid_fixed_length_acronym(
         return False
     return any(i["acronym"] == s.strip().upper() for i in acronym_list)
 
-estados_brasileiros:List[Dict[str, str]] = [
-    {"acronym": "AC", "name": "Acre"},
-    {"acronym": "AL", "name": "Alagoas"},
-    {"acronym": "AP", "name": "Amapá"},
-    {"acronym": "AM", "name": "Amazonas"},
-    {"acronym": "BA", "name": "Bahia"},
-    {"acronym": "CE", "name": "Ceará"},
-    {"acronym": "DF", "name": "Distrito Federal"},
-    {"acronym": "ES", "name": "Espírito Santo"},
-    {"acronym": "GO", "name": "Goiás"},
-    {"acronym": "MA", "name": "Maranhão"},
-    {"acronym": "MT", "name": "Mato Grosso"},
-    {"acronym": "MS", "name": "Mato Grosso do Sul"},
-    {"acronym": "MG", "name": "Minas Gerais"},
-    {"acronym": "PA", "name": "Pará"},
-    {"acronym": "PB", "name": "Paraíba"},
-    {"acronym": "PR", "name": "Paraná"},
-    {"acronym": "PE", "name": "Pernambuco"},
-    {"acronym": "PI", "name": "Piauí"},
-    {"acronym": "RJ", "name": "Rio de Janeiro"},
-    {"acronym": "RN", "name": "Rio Grande do Norte"},
-    {"acronym": "RS", "name": "Rio Grande do Sul"},
-    {"acronym": "RO", "name": "Rondônia"},
-    {"acronym": "RR", "name": "Roraima"},
-    {"acronym": "SC", "name": "Santa Catarina"},
-    {"acronym": "SP", "name": "São Paulo"},
-    {"acronym": "SE", "name": "Sergipe"},
-    {"acronym": "TO", "name": "Tocantins"}]
+def is_web_connection_active() -> bool:
+    try:
+        response:req.Response = req.get(url="https://www.google.com", timeout=5)
+        response.raise_for_status()
+        return True
+    except req.RequestException:
+        return False
 
-def unite(lista_de_itens:List[Union[Any, str]],
-    espacador_1:str="e", espacador_2:str=",") -> str:
+def semantically_unite(lista_de_itens:List[Union[Any, str]],
+    last_union:str="and", general_union:str=",") -> str:
 
     texto:str = ""
     for i in range(0, len(lista_de_itens)):
@@ -104,16 +94,16 @@ def unite(lista_de_itens:List[Union[Any, str]],
         if i == len(lista_de_itens) - 1:
             return texto
         elif i == len(lista_de_itens) - 2:
-            texto += f" {espacador_1} "
+            texto += f" {last_union} "
         else:
-            texto += f"{espacador_2} "
+            texto += f"{general_union} "
     return texto
 
 def list_brazilian_states_acronyms(
-    lista_estados:List[Dict[str, str]]) -> List[str]:
+    states_list:List[Dict[str, str]]) -> List[str]:
 
-    return [ f'{estado["acronym"]} ({estado["name"]})'
-            for estado in lista_estados ]
+    return [ f'{state["acronym"]} ({state["name"]})'
+            for state in states_list ]
 
 def condicao_previsao_do_tempo(
     cidade:str, estado:str, headless:bool=False) -> None:
@@ -133,14 +123,6 @@ def condicao_previsao_do_tempo(
         results_printer.add_results(resultados_previsao_tempo)
 
     results_printer.print_all()
-
-def is_web_connection_active() -> bool:
-    try:
-        response:req.Response = req.get(url="https://www.google.com", timeout=5)
-        response.raise_for_status()
-        return True
-    except req.RequestException:
-        return False
 
 class Results:
     def __init__(self:Any, title:str):
@@ -235,7 +217,7 @@ def condicao_tempo_accuweather(
         By.CSS_SELECTOR, ".current-weather-card div.current-weather-extra"
             ).text.split("\n")
 
-    weatherDetails:List[str] = browser.find_element(
+    detalhes:List[str] = browser.find_element(
         By.CSS_SELECTOR, ".current-weather-card .current-weather-details"
             ).text.split("\n")
 
@@ -267,10 +249,10 @@ def condicao_tempo_accuweather(
     if tempoAtualExtraRealFeelShadeTitulo and tempoAtualExtraRealFeelShadeValor:
         results.add_key_value(tempoAtualExtraRealFeelShadeTitulo, f"{tempoAtualExtraRealFeelShadeValor}C")
 
-    for i in range(len(weatherDetails)):
+    for i in range(len(detalhes)):
         if i % 2 == 0:
-            results.add_key_value(f"{weatherDetails[i]}",
-                f'{weatherDetails[i+1].replace("° C", "°C")}')
+            results.add_key_value(f"{detalhes[i]}",
+                f'{detalhes[i+1].replace("° C", "°C")}')
 
     return results
 
@@ -330,7 +312,7 @@ def previsao_tempo_climatempo(
         precipitacao:str = data[10]
         umidadeMin:str = data[14]
         umidadeMax:str = data[15]
-        nascerPorSol:str = ""
+        nascerPorDoSol = ""
 
         for i in range(0, len(data)):
             if data[i] == "Sol":
@@ -343,9 +325,9 @@ def previsao_tempo_climatempo(
         results.add_key_value("Precipitação", precipitacao)
         results.add_key_value("Humidade mínima", umidadeMin)
         results.add_key_value("Humidade máxima", umidadeMax)
-        if nascerPorSol:
-            results.add_key_value(
-                "Nascer/pôr do sol", nascerPorSol.replace(" ", " / "))
+        if nascerPorDoSol:
+            results.add_key_value("Nascer/pôr do sol",
+                nascerPorDoSol.replace(" ", " / "))
 
     elif option == 2:
         tempMin = data[2]
@@ -354,7 +336,7 @@ def previsao_tempo_climatempo(
         previsao = limit_empty_spaces(data[5])
         umidade:str = ""
         lua:str = ""
-        nascerPorSol = ""
+        nascerPorDoSol = ""
 
         for i in range(0, len(data)):
             if data[i] == "UMIDADE DO AR":
@@ -362,7 +344,7 @@ def previsao_tempo_climatempo(
 
         for i in range(0, len(data)):
             if data[i] == "SOL":
-                nascerPorSol = data[i+1]
+                nascerPorDoSol = data[i+1]
 
         for i in range(0, len(data)):
             if data[i] == "LUA":
@@ -373,7 +355,7 @@ def previsao_tempo_climatempo(
         results.add_key_value("Previsão", previsao)
         results.add_key_value("Pluviosidade", pluviosidade)
         results.add_key_value("Umidade", umidade)
-        results.add_key_value("Nascer/pôr do sol", nascerPorSol.replace("-", "/"))
+        results.add_key_value("Nascer/pôr do sol", nascerPorDoSol.replace("-", "/"))
         results.add_key_value("Lua", lua)
 
     return results
