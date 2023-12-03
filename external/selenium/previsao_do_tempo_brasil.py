@@ -116,7 +116,7 @@ def condicao_previsao_do_tempo(
     resultados_previsao_tempo:ResultSet = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
 
-    results_printer:ResultSetPrinter = ResultSetPrinter(margin=2)
+    results_printer:ResultSetsPrinter = ResultSetsPrinter(margin=2)
 
     if resultados_condicao_tempo.get_num_of_results():
         results_printer.add_results(resultados_condicao_tempo)
@@ -136,7 +136,8 @@ class ResultSet:
         self.results:List[Dict[str, str]] = []
 
     def add_key_value(self:Any, key:str, value:str) -> bool:
-        if key.strip() and value.strip():
+        if (not any(list(i.keys())[0] == key for i in self.results) \
+            and key.strip() and value.strip()):
             self.results.append({key: value})
             self.num_of_results += 1
             return True
@@ -158,7 +159,7 @@ class ResultSet:
                 max_key_length = len(key)
         return max_key_length
 
-class ResultSetPrinter:
+class ResultSetsPrinter:
     def __init__(self:Any, margin:int):
         if margin < 1:
             self.margin = 2
