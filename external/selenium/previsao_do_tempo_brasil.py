@@ -176,7 +176,7 @@ class ResultSetsPrinter:
 
     def print_all(self:Any):
         data_hora:str = f"Data/hora: {str(dt.datetime.now())[0:19]}"
-        print(f'{data_hora}\n{"-" * len(data_hora)}\n')
+        print(f'{data_hora}\n{"-" * len(data_hora)}')
 
         padding:int = 0
         r_list = self.result_list
@@ -285,36 +285,22 @@ def previsao_tempo_climatempo(
     browser.implicitly_wait(1)
 
     data = np.array([], dtype="S")
-    option:int = 0
 
     title:str = "[ClimaTempo] Previsão do tempo em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
     results:ResultSet = ResultSet(title=title)
-
-    try:
-        data = np.char.splitlines([browser.find_element(
-            By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text])[0]
-
-        option = 1
-    except:
-        try:
-            data = remove_empty_elements(np.char.splitlines(
-                [browser.find_element(By.CSS_SELECTOR,
-                    "#first-block-of-days section").text])[0])
-
-            option = 2
-        except:
-            browser.quit()
-            return ResultSet()
-
-    browser.quit()
 
     tempMin:str = ""
     tempMax:str = ""
     previsao:str = ""
     nascerPorDoSol:str = ""
 
-    if option == 1:
+    try:
+        data = np.char.splitlines([browser.find_element(
+            By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text])[0]
+
+        browser.quit()
+
         comparacao:str = data[0]
         previsao = limit_empty_spaces(data[1])
         tempMin = data[7]
@@ -338,35 +324,46 @@ def previsao_tempo_climatempo(
         if nascerPorDoSol:
             results.add_key_value("Nascer/pôr do sol",
                 nascerPorDoSol.replace(" ", " / "))
+        return results
+    except:
+        pass
 
-    elif option == 2:
-        tempMin = data[2]
-        tempMax = data[3]
-        pluviosidade:str = data[4]
-        previsao = limit_empty_spaces(data[5])
-        umidade:str = ""
-        lua:str = ""
-        nascerPorDoSol = ""
+    try:
+        data = remove_empty_elements(np.char.splitlines(
+            [browser.find_element(By.CSS_SELECTOR,
+                "#first-block-of-days section").text])[0])
+    except:
+        return ResultSet()
+    finally:
+        browser.quit()
 
-        for i in range(0, len(data)):
-            if data[i] == "UMIDADE DO AR":
-                umidade = data[i+1]
+    tempMin = data[2]
+    tempMax = data[3]
+    pluviosidade:str = data[4]
+    previsao = limit_empty_spaces(data[5])
+    umidade:str = ""
+    lua:str = ""
+    nascerPorDoSol = ""
 
-        for i in range(0, len(data)):
-            if data[i] == "SOL":
-                nascerPorDoSol = data[i+1]
+    for i in range(0, len(data)):
+        if data[i] == "UMIDADE DO AR":
+            umidade = data[i+1]
 
-        for i in range(0, len(data)):
-            if data[i] == "LUA":
-                lua = data[i+1]
+    for i in range(0, len(data)):
+        if data[i] == "SOL":
+            nascerPorDoSol = data[i+1]
 
-        results.add_key_value("Temperatura mínima", f"{tempMin}C")
-        results.add_key_value("Temperatura máxima", f"{tempMax}C")
-        results.add_key_value("Previsão", previsao)
-        results.add_key_value("Pluviosidade", pluviosidade)
-        results.add_key_value("Umidade", umidade)
-        results.add_key_value("Nascer/pôr do sol", nascerPorDoSol.replace("-", "/"))
-        results.add_key_value("Lua", lua)
+    for i in range(0, len(data)):
+        if data[i] == "LUA":
+            lua = data[i+1]
+
+    results.add_key_value("Temperatura mínima", f"{tempMin}C")
+    results.add_key_value("Temperatura máxima", f"{tempMax}C")
+    results.add_key_value("Previsão", previsao)
+    results.add_key_value("Pluviosidade", pluviosidade)
+    results.add_key_value("Umidade", umidade)
+    results.add_key_value("Nascer/pôr do sol", nascerPorDoSol.replace("-", "/"))
+    results.add_key_value("Lua", lua)
 
     return results
 
