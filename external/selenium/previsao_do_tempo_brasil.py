@@ -230,32 +230,28 @@ def condicao_tempo_accuweather(
     tempoAtualSensacaoValor:str = browser.find_element(
         By.CSS_SELECTOR, ".current-weather-card div.phrase").text
 
-    tempoAtualExtraRealFeelData:List[str] = browser.find_element(
+    tempoAtualExtraRealFeelData = np.char.splitlines([browser.find_element(
         By.CSS_SELECTOR, ".current-weather-card div.current-weather-extra"
-            ).text.split("\n")
+            ).text])[0]
 
-    detalhes:List[str] = browser.find_element(
+    detalhes = np.char.splitlines([browser.find_element(
         By.CSS_SELECTOR, ".current-weather-card .current-weather-details"
-            ).text.split("\n")
+            ).text])[0]
 
     browser.quit()
 
-    tempoAtualExtraRealFeelTitulo:str = \
-        tempoAtualExtraRealFeelData[0].split(" ")[0]
-
-    tempoAtualExtraRealFeelValor:str = \
-        tempoAtualExtraRealFeelData[0].split(" ")[1]
-
+    tempoAtualExtraRealFeelTitulo:str = np.char.split(
+        [tempoAtualExtraRealFeelData[0]])[0][0]
+    tempoAtualExtraRealFeelValor:str = np.char.split(
+        [tempoAtualExtraRealFeelData[0]])[0][1]
+    
     tempoAtualExtraRealFeelShadeTitulo:str = ""
     tempoAtualExtraRealFeelShadeValor:str = ""
 
     if len(tempoAtualExtraRealFeelData) == 2:
-        tempoAtualExtraRealFeelShadeTitulo = \
-            tempoAtualExtraRealFeelData[1].split(" ")[0] \
-                + tempoAtualExtraRealFeelData[1].split(" ")[1]
-
-        tempoAtualExtraRealFeelShadeValor = \
-            tempoAtualExtraRealFeelData[1].split(" ")[2]
+        realFeel = np.char.split([tempoAtualExtraRealFeelData[1]])[0]
+        tempoAtualExtraRealFeelShadeTitulo = f"{realFeel[0]} {realFeel[1]}"
+        tempoAtualExtraRealFeelShadeValor = realFeel[2]
 
     results.add_key_value(tempoAtualTitulo,
         f"{tempoAtualValor} ({tempoAtualSensacaoValor})")
@@ -264,7 +260,8 @@ def condicao_tempo_accuweather(
         f"{tempoAtualExtraRealFeelValor}C")
 
     if tempoAtualExtraRealFeelShadeTitulo and tempoAtualExtraRealFeelShadeValor:
-        results.add_key_value(tempoAtualExtraRealFeelShadeTitulo, f"{tempoAtualExtraRealFeelShadeValor}C")
+        results.add_key_value(tempoAtualExtraRealFeelShadeTitulo,
+            f"{tempoAtualExtraRealFeelShadeValor}C")
 
     for i in range(len(detalhes)):
         if i % 2 == 0:
