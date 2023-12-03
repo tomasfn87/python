@@ -87,18 +87,16 @@ def is_web_connection_active() -> bool:
 def semantically_unite(item_list:List[Union[Any, str]],
     last_union:str="and", general_union:str=",") -> str:
 
-    if len(item_list) == 1:
-        return item_list[0].strip()
-
     result:str = ""
-    for i in range(0, len(item_list)):
-        result += str(item_list[i])
-        if i == len(item_list) - 1:
-            return result
-        elif i == len(item_list) - 2:
-            result += f" {last_union} "
-        else:
-            result += f"{general_union} "
+    if len(item_list) == 1:
+        result = item_list[0].strip()
+    else:
+        for i in range(0, len(item_list)):
+            result += str(item_list[i])
+            if i == len(item_list) - 2:
+                result += f" {last_union} "
+            else:
+                result += f"{general_union} "
     return result
 
 def list_brazilian_states_acronyms(
@@ -116,16 +114,16 @@ def condicao_previsao_do_tempo(
     resultados_previsao_tempo:ResultSet = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
 
-    results_printer:ResultSetsPrinter = ResultSetsPrinter(margin=2)
+    result_printer:ResultSetsPrinter = ResultSetsPrinter(margin=2)
 
     if resultados_condicao_tempo.get_num_of_results():
-        results_printer.add_results(resultados_condicao_tempo)
+        result_printer.add_results(resultados_condicao_tempo)
 
     if resultados_previsao_tempo.get_num_of_results():
-        results_printer.add_results(resultados_previsao_tempo)
+        result_printer.add_results(resultados_previsao_tempo)
 
-    if results_printer.get_num_of_results():
-        results_printer.print_all()
+    if result_printer.get_num_of_results():
+        result_printer.print_all()
     else:
         print("ERRO: as informações estão indisponíveis. Tenta novamente mais tarde.")
 
@@ -165,7 +163,7 @@ class ResultSetsPrinter:
             self.margin = 2
         else:
             self.margin = margin
-        self.num_of_results = 0
+        self.num_of_results:int = 0
         self.result_list:List[ResultSet] = []
 
     def add_results(self:Any, results:ResultSet):
@@ -244,7 +242,7 @@ def condicao_tempo_accuweather(
         [tempoAtualExtraRealFeelData[0]])[0][0]
     tempoAtualExtraRealFeelValor:str = np.char.split(
         [tempoAtualExtraRealFeelData[0]])[0][1]
-    
+
     tempoAtualExtraRealFeelShadeTitulo:str = ""
     tempoAtualExtraRealFeelShadeValor:str = ""
 
@@ -294,20 +292,18 @@ def previsao_tempo_climatempo(
     results:ResultSet = ResultSet(title=title)
 
     try:
-        data = np.char.splitlines(browser.find_element(
-            By.CSS_SELECTOR,
-            'div[class="card -no-top -no-bottom"]').text)[0]
+        data = np.char.splitlines([browser.find_element(
+            By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text])[0]
 
         option = 1
     except:
         try:
-            data = remove_empty_elements(browser.find_element(
-                By.CSS_SELECTOR, "#first-block-of-days section")
-                    .text.split("\n"))
+            data = remove_empty_elements(np.char.splitlines(
+                [browser.find_element(By.CSS_SELECTOR,
+                    "#first-block-of-days section").text])[0])
 
             option = 2
         except:
-            print("Informações indisponíveis. Tente novamente.")
             browser.quit()
             return ResultSet()
 
@@ -330,7 +326,7 @@ def previsao_tempo_climatempo(
 
         for i in range(0, len(data)):
             if data[i] == "Sol":
-                nascerPorSol = data[i+1].replace("h", "")
+                nascerPorDoSol = data[i+1].replace("h", "")
 
         results.add_key_value("Temperatura mínima", f"{tempMin}C")
         results.add_key_value("Temperatura máxima", f"{tempMax}C")
