@@ -29,10 +29,9 @@ def main() -> None:
     estado:str = inputs[2]
 
     file_dir:str = os.path.dirname(os.path.realpath(__file__))
-    with open(f"{file_dir}/brazilian_states_list.min.json", "r") as fh:
-        json_str:str = fh.read()
-        json_value:Any = json.loads(json_str)
-    estados_brasileiros:List[Dict[str, str]] = json_value
+    with open(f"{file_dir}/brazilian_states_list.min.json", "r") as data:
+        states_list_json:str = data.read()
+        estados_brasileiros:List[Dict[str, str]] = json.loads(states_list_json)
 
     if not is_a_valid_fixed_length_acronym(
         s=estado, length=2, acronym_list=estados_brasileiros):
@@ -85,19 +84,22 @@ def is_web_connection_active() -> bool:
     except req.RequestException:
         return False
 
-def semantically_unite(lista_de_itens:List[Union[Any, str]],
+def semantically_unite(item_list:List[Union[Any, str]],
     last_union:str="and", general_union:str=",") -> str:
 
-    texto:str = ""
-    for i in range(0, len(lista_de_itens)):
-        texto += str(lista_de_itens[i])
-        if i == len(lista_de_itens) - 1:
-            return texto
-        elif i == len(lista_de_itens) - 2:
-            texto += f" {last_union} "
+    if len(item_list) == 1:
+        return item_list[0].strip()
+
+    result:str = ""
+    for i in range(0, len(item_list)):
+        result += str(item_list[i])
+        if i == len(item_list) - 1:
+            return result
+        elif i == len(item_list) - 2:
+            result += f" {last_union} "
         else:
-            texto += f"{general_union} "
-    return texto
+            result += f"{general_union} "
+    return result
 
 def list_brazilian_states_acronyms(
     states_list:List[Dict[str, str]]) -> List[str]:
@@ -108,30 +110,35 @@ def list_brazilian_states_acronyms(
 def condicao_previsao_do_tempo(
     cidade:str, estado:str, headless:bool=False) -> None:
 
-    resultados_condicao_tempo:Results|None = condicao_tempo_accuweather(
+    resultados_condicao_tempo:ResultSet = condicao_tempo_accuweather(
         cidade=cidade, estado=estado, headless=headless)
 
-    resultados_previsao_tempo:Results|None = previsao_tempo_climatempo(
+    resultados_previsao_tempo:ResultSet = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
 
-    results_printer:ResultsPrinter = ResultsPrinter(margin=2)
+    results_printer:ResultSetPrinter = ResultSetPrinter(margin=2)
 
-    if resultados_condicao_tempo is not None:
+    if resultados_condicao_tempo.get_num_of_results():
         results_printer.add_results(resultados_condicao_tempo)
 
-    if resultados_previsao_tempo is not None:
+    if resultados_previsao_tempo.get_num_of_results():
         results_printer.add_results(resultados_previsao_tempo)
 
-    results_printer.print_all()
+    if results_printer.get_num_of_results():
+        results_printer.print_all()
+    else:
+        print("ERRO: as informações estão indisponíveis. Tenta novamente mais tarde.")
 
-class Results:
-    def __init__(self:Any, title:str):
+class ResultSet:
+    def __init__(self:Any, title:str="Result set title"):
         self.title:str = title
+        self.num_of_results:int = 0
         self.results:List[Dict[str, str]] = []
 
     def add_key_value(self:Any, key:str, value:str) -> bool:
         if key.strip() and value.strip():
             self.results.append({key: value})
+            self.num_of_results += 1
             return True
         else:
             print(f"Resultado não foi adicionado (chave: {key}, valor: {value}).")
@@ -139,6 +146,9 @@ class Results:
 
     def get_title(self:Any) -> str:
         return self.title
+
+    def get_num_of_results(self:Any) -> int:
+        return self.num_of_results
 
     def get_max_key_length(self:Any) -> int:
         max_key_length:int = 0
@@ -148,18 +158,24 @@ class Results:
                 max_key_length = len(key)
         return max_key_length
 
-class ResultsPrinter:
+class ResultSetPrinter:
     def __init__(self:Any, margin:int):
         if margin < 1:
             self.margin = 2
         else:
             self.margin = margin
-        self.result_list:List[Results] = []
+        self.num_of_results = 0
+        self.result_list:List[ResultSet] = []
 
-    def add_results(self:Any, results:Results) -> None:
-        self.result_list.append(results)
+    def add_results(self:Any, results:ResultSet):
+        if results.get_num_of_results():
+            self.result_list.append(results)
+            self.num_of_results += results.get_num_of_results()
 
-    def print_all(self:Any) -> None:
+    def get_num_of_results(self:Any) -> int:
+        return self.num_of_results
+
+    def print_all(self:Any):
         data_hora:str = f"Data/hora: {str(dt.datetime.now())[0:19]}"
         print(f'{data_hora}\n{"-" * len(data_hora)}\n')
 
@@ -183,7 +199,7 @@ class ResultsPrinter:
                     print()
 
 def condicao_tempo_accuweather(
-    cidade:str, estado:str, headless:bool=False) -> Results:
+    cidade:str, estado:str, headless:bool=False) -> ResultSet:
 
     browser:wd.Chrome = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
@@ -201,7 +217,7 @@ def condicao_tempo_accuweather(
 
     title:str = "[AccuWeather] Condições meteorológicas em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    results:Results = Results(title=title)
+    results:ResultSet = ResultSet(title=title)
 
     tempoAtualTitulo:str = browser.find_element(
         By.CSS_SELECTOR, ".current-weather-card h1").text
@@ -257,7 +273,7 @@ def condicao_tempo_accuweather(
     return results
 
 def previsao_tempo_climatempo(
-    cidade:str, estado:str, headless:bool=False) -> Results|None:
+    cidade:str, estado:str, headless:bool=False) -> ResultSet:
 
     browser:wd.Chrome = start_chrome(headless)
     browser.get("https://www.duckduckgo.com")
@@ -277,7 +293,7 @@ def previsao_tempo_climatempo(
 
     title:str = "[ClimaTempo] Previsão do tempo em "
     title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
-    results:Results = Results(title=title)
+    results:ResultSet = ResultSet(title=title)
 
     try:
         data = np.char.splitlines(browser.find_element(
@@ -295,7 +311,7 @@ def previsao_tempo_climatempo(
         except:
             print("Informações indisponíveis. Tente novamente.")
             browser.quit()
-            return None
+            return ResultSet()
 
     browser.quit()
 
