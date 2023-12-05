@@ -203,30 +203,36 @@ class ResultSetsPrinter:
         padding += self.margin
 
         max_header_length: int = self.get_max_header_length()
-        header_parts: List[str] = ["    ", " | ", "    "]
+        header_parts: List[str] = ["    ", " ", "│", " ", "    "]
         for p in header_parts:
             max_header_length += len(p)
 
         for i in range(len(r_list)):
-            main_content = "{}{}{}{}".format(
+            provider = "{}{}{}".format(
                 header_parts[0], r_list[i].get_provider(),
-                header_parts[1], r_list[i].get_title())
-            header: str = "{}{}{}".format(
-                main_content,
-                " " * (max_header_length - len(main_content)
-                    - len(header_parts[2])),
-                header_parts[2])
+                header_parts[1])
+            union = header_parts[2]
+            title = "{}{}{}".format(
+                header_parts[3], r_list[i].get_title(), header_parts[4])
+            header = f"{provider}{union}{title}"
+            frame = "{}{}{}".format(
+                "─" * len(provider), "┬",
+                "─" * (max_header_length
+                    - (len(provider) + len(union))))
+
             if i == 0:
-                print(f'{"-" * max_header_length}', end="")
+                print(frame.replace("─", "═").replace("┬", "╤"), end="")
             else:
-                print(f'{"-" * max_header_length}', end="")
-            print(f'\n{header}\n{"-" * max_header_length}')
+                print(frame, end="")
+            print("\n{}\n{}".format(
+                header, frame.replace("┬", "┴")))
+
             for j in range(len(r_list[i].results)):
                 key   = list(r_list[i].results[j].keys())[0]
                 value = list(r_list[i].results[j].values())[0]
                 print(f"{key.rjust(padding)}: {value}")
             if i is len(self.result_list) - 1:
-                print(f'{"=" * max_header_length}')
+                print(f'{"═" * max_header_length}')
 
 def condicao_tempo_accuweather(
     cidade: str, estado: str, headless: bool=False) -> ResultSet:
@@ -279,9 +285,9 @@ def condicao_tempo_accuweather(
         tempoAtualExtraRealFeelShadeValor: str = ""
 
         if len(tempoAtualExtraRealFeelData) == 2:
-            realFeel = np.char.split([tempoAtualExtraRealFeelData[1]])[0]
-            tempoAtualExtraRealFeelShadeTitulo = f"{realFeel[0]} {realFeel[1]}"
-            tempoAtualExtraRealFeelShadeValor = realFeel[2]
+            rFShade = np.char.split([tempoAtualExtraRealFeelData[1]])[0]
+            tempoAtualExtraRealFeelShadeTitulo = f"{rFShade[0]} {rFShade[1]}"
+            tempoAtualExtraRealFeelShadeValor = rFShade[2]
 
         results.add_key_value(tempoAtualTitulo,
             f"{tempoAtualValor} ({tempoAtualSensacaoValor})")
