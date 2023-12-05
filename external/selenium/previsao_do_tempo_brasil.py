@@ -30,8 +30,8 @@ def main() -> None:
 
     file_dir: str = os.path.dirname(os.path.realpath(__file__))
     with open(f"{file_dir}/brazilian_states_list.min.json", "r") as data:
-        states_list_json: str = data.read()
-        estados_brasileiros: List[Dict[str, str]] = json.loads(states_list_json)
+        states_json: str = data.read()
+        estados_brasileiros: List[Dict[str, str]] = json.loads(states_json)
 
     if not is_a_valid_fixed_length_acronym(
         s=estado, length=2, acronym_list=estados_brasileiros):
@@ -212,6 +212,8 @@ class ResultSetsPrinter:
                 header_parts[0], r_list[i].get_provider(),
                 header_parts[1])
             union = header_parts[2]
+            if not len(union) == 1:
+                union = union[0] or "│"
             title = "{}{}{}".format(
                 header_parts[3], r_list[i].get_title(), header_parts[4])
             header = f"{provider}{union}{title}"
