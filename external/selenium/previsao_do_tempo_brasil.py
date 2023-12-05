@@ -4,8 +4,9 @@ import requests as req
 import re
 import sys
 import time as t
-import datetime as dt
 import numpy as np
+from result_set import ResultSet
+from result_sets_printer import ResultSetsPrinter
 from selenium import webdriver as wd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -128,113 +129,6 @@ def condicao_previsao_do_tempo(
     else:
         print("ERRO: as informações estão indisponíveis. ", end="")
         print("Tente novamente mais tarde.")
-
-class ResultSet:
-    def __init__(self: Any,
-        provider: str="Result set provider", title: str="Result set title"):
-
-        self.title: str = title
-        self.provider: str = provider
-        self.num_of_results: int = 0
-        self.results: List[Dict[str, str]] = []
-
-    def add_key_value(self: Any, key: str, value: str) -> bool:
-        if (not any(list(i.keys())[0] == key for i in self.results) \
-            and key.strip() and value.strip()):
-            self.results.append({key: value})
-            self.num_of_results += 1
-            return True
-        else:
-            print("Resultado não foi adicionado ", end="")
-            print(f"(chave: {key}, valor: {value}).")
-            return False
-
-    def get_provider(self: Any) -> str:
-        return self.provider
-
-    def get_title(self: Any) -> str:
-        return self.title
-
-    def get_num_of_results(self: Any) -> int:
-        return self.num_of_results
-
-    def get_max_key_length(self: Any) -> int:
-        max_key_length: int = 0
-        for i in range(len(self.results)):
-            key: str = list(self.results[i].keys())[0]
-            if len(key) > max_key_length:
-                max_key_length = len(key)
-        return max_key_length
-
-class ResultSetsPrinter:
-    def __init__(self: Any, margin: int):
-        if margin < 1:
-            self.margin = 2
-        else:
-            self.margin = margin
-        self.num_of_results: int = 0
-        self.result_list: List[ResultSet] = []
-
-    def add_results(self: Any, results: ResultSet):
-        if results.get_num_of_results():
-            self.result_list.append(results)
-            self.num_of_results += results.get_num_of_results()
-
-    def get_num_of_results(self: Any) -> int:
-        return self.num_of_results
-
-    def get_max_header_length(self: Any) -> int:
-        max_header_length: int = 0
-        for i in self.result_list:
-            header_length = len(i.get_provider()) + len(i.get_title())
-            if header_length > max_header_length:
-                max_header_length = header_length
-        return max_header_length
-
-    def print_all(self: Any):
-        print(f"->  {str(dt.datetime.now())[0:19]}")
-
-        padding: int = 0
-        r_list = self.result_list
-
-        for r in r_list:
-            if r.get_max_key_length() > padding:
-                padding = r.get_max_key_length()
-        padding += self.margin
-
-        max_header_length: int = self.get_max_header_length()
-        header_parts: List[str] = ["    ", " ", "│", " ", "    "]
-        for p in header_parts:
-            max_header_length += len(p)
-
-        for i in range(len(r_list)):
-            provider = "{}{}{}".format(
-                header_parts[0], r_list[i].get_provider(),
-                header_parts[1])
-            union = header_parts[2]
-            if not len(union) == 1:
-                union = union[0] or "│"
-            title = "{}{}{}".format(
-                header_parts[3], r_list[i].get_title(), header_parts[4])
-            header = f"{provider}{union}{title}"
-            frame = "{}{}{}".format(
-                "─" * len(provider), "┬",
-                "─" * (max_header_length
-                    - (len(provider) + len(union))))
-
-            if i == 0:
-                print(frame.replace("─", "═").replace("┬", "╤"), end="")
-            else:
-                print(frame, end="")
-            print("\n{}\n{}".format(
-                header, frame.replace("┬", "┴")))
-
-            for j in range(len(r_list[i].results)):
-                key   = list(r_list[i].results[j].keys())[0]
-                value = list(r_list[i].results[j].values())[0]
-                print(f"{key.rjust(padding)}: {value}")
-            if i is len(self.result_list) - 1:
-                print(f'{"═" * max_header_length}')
 
 def condicao_tempo_accuweather(
     cidade: str, estado: str, headless: bool=False) -> ResultSet:
