@@ -1,11 +1,12 @@
+import re
 from typing import Any, Dict, List
 
 class ResultSet:
     def __init__(self: Any,
         provider: str="Result set provider", title: str="Result set title"):
 
-        self.title: str = title.strip()
-        self.provider: str = provider.strip()
+        self.title = re.sub(r"\s{2,}", " ", title.strip(), 0)
+        self.provider = re.sub(r"\s{2,}", " ", provider.strip(), 0)
         self.num_of_results: int = 0
         self.results: List[Dict[str, str]] = []
 
