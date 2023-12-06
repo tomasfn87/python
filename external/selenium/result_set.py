@@ -4,8 +4,8 @@ class ResultSet:
     def __init__(self: Any,
         provider: str="Result set provider", title: str="Result set title"):
 
-        self.title: str = title
-        self.provider: str = provider
+        self.title: str = title.strip()
+        self.provider: str = provider.strip()
         self.num_of_results: int = 0
         self.results: List[Dict[str, str]] = []
 

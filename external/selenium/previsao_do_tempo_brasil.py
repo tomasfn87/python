@@ -1,10 +1,11 @@
 import json
+import numpy as np
 import os
-import requests as req
 import re
+import requests as req
 import sys
 import time as t
-import numpy as np
+import utils as ut
 from result_set import ResultSet
 from result_sets_printer import ResultSetsPrinter
 from selenium import webdriver as wd
@@ -151,7 +152,7 @@ def condicao_tempo_accuweather(
 
         provider: str = "AccuWeather"
         title: str = "Condições meteorológicas em "
-        title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
+        title += f"{ut.capitalize_all(cidade)}/{estado.upper()}, Brasil"
         results: ResultSet = ResultSet(provider=provider, title=title)
 
         tempoAtualTitulo: str = browser.find_element(
@@ -227,7 +228,7 @@ def previsao_tempo_climatempo(
 
     provider: str = "ClimaTempo"
     title: str = "Previsão do tempo em "
-    title += f"{capitalize_all(cidade)}/{estado.upper()}, Brasil"
+    title += f"{ut.capitalize_all(cidade)}/{estado.upper()}, Brasil"
     results: ResultSet = ResultSet(provider=provider, title=title)
 
     tempMin: str = ""
@@ -242,7 +243,7 @@ def previsao_tempo_climatempo(
         browser.quit()
 
         comparacao: str = data[0]
-        previsao = limit_empty_spaces(data[1])
+        previsao = ut.limit_empty_spaces(data[1])
         tempMin = data[7]
         tempMax = data[8]
         precipitacao: str = data[10]
@@ -257,7 +258,7 @@ def previsao_tempo_climatempo(
         results.add_key_value("Temperatura mínima", f"{tempMin}C")
         results.add_key_value("Temperatura máxima", f"{tempMax}C")
         results.add_key_value("Comparação", comparacao)
-        results.add_key_value("Previsão", limit_empty_spaces(previsao))
+        results.add_key_value("Previsão", ut.limit_empty_spaces(previsao))
         results.add_key_value("Precipitação", precipitacao)
         results.add_key_value("Humidade mínima", umidadeMin)
         results.add_key_value("Humidade máxima", umidadeMax)
@@ -269,7 +270,7 @@ def previsao_tempo_climatempo(
         pass
 
     try:
-        data = remove_empty_elements(np.char.splitlines(
+        data = ut.remove_empty_elements(np.char.splitlines(
             [browser.find_element(By.CSS_SELECTOR,
                 "#first-block-of-days section").text])[0])
     except:
@@ -280,7 +281,7 @@ def previsao_tempo_climatempo(
     tempMin = data[2]
     tempMax = data[3]
     pluviosidade: str = data[4]
-    previsao = limit_empty_spaces(data[5])
+    previsao = ut.limit_empty_spaces(data[5])
     umidade: str = ""
     lua: str = ""
     nascerPorDoSol = ""
@@ -326,29 +327,6 @@ def format_accuweather_url(url: str|None) -> str:
         return ""
     return url.replace("en", "pt").replace(
         "weather-forecast", "current-weather")
-
-def capitalize_all(text: str) -> str:
-    if " " not in text:
-        return text.capitalize()
-    exclude = np.array(["de", "da", "do", "dos", "das"], dtype="S")
-    words = np.char.split([text])
-    for w in words[0]:
-        w = w.lower()
-    capitalized_words = np.array([], dtype="S")
-    for w in words[0]:
-        if w in exclude or w[0:2] == "d'":
-            capitalized_words = np.append(capitalized_words, w)
-        else:
-            capitalized_words = np.append(capitalized_words, w.capitalize())
-    result = np.char.add(" ", capitalized_words)
-    return "".join(result).strip()
-
-def remove_empty_elements(arr: List[str]) -> np.ndarray:
-    clean_arr = np.array([x for x in arr if x != ""], dtype=np.str_)
-    return clean_arr
-
-def limit_empty_spaces(text: str) -> str:
-    return re.sub(r"\s{2,}", " ", text, 0)
 
 if __name__ == "__main__":
     main()
