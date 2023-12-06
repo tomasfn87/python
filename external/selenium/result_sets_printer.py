@@ -3,7 +3,7 @@ from typing import Any, List
 import datetime as dt
 
 class ResultSetsPrinter:
-    def __init__(self: Any, margin: int):
+    def __init__(self: Any, margin: int) -> None:
         if margin < 1:
             self.margin = 2
         else:

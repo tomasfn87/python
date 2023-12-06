@@ -2,8 +2,10 @@ import re
 from typing import Any, Dict, List
 
 class ResultSet:
-    def __init__(self: Any,
-        provider: str="Result set provider", title: str="Result set title"):
+    def __init__(
+        self: Any,
+        provider: str="Result set provider",
+        title: str="Result set title") -> None:
 
         self.title = re.sub(r"\s{2,}", " ", title.strip(), 0)
         self.provider = re.sub(r"\s{2,}", " ", provider.strip(), 0)
