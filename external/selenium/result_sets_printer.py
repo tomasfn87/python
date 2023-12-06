@@ -40,6 +40,9 @@ class ResultSetsPrinter:
 
         max_header_length: int = self.get_max_header_length()
         header_parts: List[str] = ["    ", " ", "", " ", "    "]
+        if not len(header_parts[2]) == 1:
+                header_parts[2] = header_parts[2][0] if header_parts[2] \
+                    else "│"
         for p in header_parts:
             max_header_length += len(p)
 
@@ -48,8 +51,6 @@ class ResultSetsPrinter:
                 header_parts[0], r_list[i].get_provider(),
                 header_parts[1])
             union = header_parts[2]
-            if not len(union) == 1:
-                union = union[0] if union else "│"
             title = "{}{}{}".format(
                 header_parts[3], r_list[i].get_title(), header_parts[4])
             header = f"{provider}{union}{title}"
