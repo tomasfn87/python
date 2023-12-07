@@ -39,10 +39,10 @@ class ResultSetsPrinter:
         padding += self.margin
 
         max_header_length: int = self.get_max_header_length()
-        header_parts: List[str] = ["    ", " ", "", " ", "    "]
+        header_parts: List[str] = ["    ", " ", "│", " ", "    "]
         if not len(header_parts[2]) == 1:
                 header_parts[2] = header_parts[2][0] if header_parts[2] \
-                    else "│"
+                    else " "
         for p in header_parts:
             max_header_length += len(p)
 
