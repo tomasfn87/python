@@ -28,7 +28,7 @@ class ResultSetsPrinter:
         return max_header_length
 
     def print_all(self: Any):
-        print(f"->  {str(dt.datetime.now())[0:19]}")
+        print(f" ->  {str(dt.datetime.now())[0:19]}")
 
         padding: int = 0
         r_list = self.result_list
@@ -38,37 +38,62 @@ class ResultSetsPrinter:
                 padding = r.get_max_key_length()
         padding += self.margin
 
-        max_header_length: int = self.get_max_header_length()
-        header_parts: List[str] = ["    ", " ", "│", " ", "    "]
+        header_parts: List[str] = ["│   ", "  ", "│", "  ", "   │"]
         if not len(header_parts[2]) == 1:
-                header_parts[2] = header_parts[2][0] if header_parts[2] \
-                    else " "
+            header_parts[2] = header_parts[2][0] \
+                if header_parts[2] else " "
+
+        max_header_length: int = self.get_max_header_length()
         for p in header_parts:
             max_header_length += len(p)
 
         for i in range(len(r_list)):
             provider = "{}{}{}".format(
-                header_parts[0], r_list[i].get_provider(),
+                header_parts[0],
+                r_list[i].get_provider(),
                 header_parts[1])
+
             union = header_parts[2]
+
             title = "{}{}{}".format(
-                header_parts[3], r_list[i].get_title(), header_parts[4])
+                header_parts[3],
+                r_list[i].get_title(),
+                "{}{}".format(
+                   " " * (max_header_length - (
+                       len(provider)
+                       + len(union)
+                       + len(header_parts[3])
+                       + len(r_list[i].get_title())
+                       + len(header_parts[4]))),
+                   header_parts[4]))
+
             header = f"{provider}{union}{title}"
-            frame = "{}{}{}".format(
-                "─" * len(provider), "┬",
-                "─" * (max_header_length
-                    - (len(provider) + len(union))))
 
+            frame = "{}{}{}{}{}".format(
+                "┌",
+                "─" * (len(provider) - 1),
+                "┬",
+                "─" * (max_header_length - (len(provider) + len(union)) - 1),
+                "┐")
+
+            # Start impression job
             if i == 0:
-                print(frame.replace("─", "═").replace("┬", "╤"), end="")
+                # First Result Set
+                print(frame
+                    .replace("─", "═").replace("┬", "╤")
+                    .replace("┌", "╒").replace("┐", "╕"), end="")
             else:
+                # Remaining Result Sets
                 print(frame, end="")
-            print("\n{}\n{}".format(
-                header, frame.replace("┬", "┴")))
+            print("\n{}\n{}".format(header, frame
+                .replace("┬", "┴").replace("┌", "└").replace("┐", "┘")))
 
+            # Display Results
             for j in range(len(r_list[i].results)):
                 key   = list(r_list[i].results[j].keys())[0]
                 value = list(r_list[i].results[j].values())[0]
                 print(f"{key.rjust(padding)}: {value}")
+
+            # Finish impression job
             if i is len(self.result_list) - 1:
                 print(f'{"═" * max_header_length}')
