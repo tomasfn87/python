@@ -2,7 +2,6 @@ import json
 import numpy as np
 import os
 import re
-import requests as req
 import sys
 import time as t
 import utils as ut
@@ -11,7 +10,7 @@ from result_sets_printer import ResultSetsPrinter
 from selenium import webdriver as wd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from typing import Any, Dict, List, Union
+from typing import Dict, List
 
 def main() -> None:
     inputs: List[str] = sys.argv
@@ -35,18 +34,18 @@ def main() -> None:
         states_json: str = data.read()
         estados_brasileiros: List[Dict[str, str]] = json.loads(states_json)
 
-    if not is_a_valid_fixed_length_acronym(
+    if not ut.is_a_valid_fixed_length_acronym(
         s=estado, length=2, acronym_list=estados_brasileiros):
         print("ERRO: o segundo argumento deve ser uma sigla válida ", end="")
         print("de estado brasileiro (UF).")
         subtitle: str = "Siglas válidas:"
         print("\n  {}\n  {}\n\n    {}.".format(
-            subtitle, "-" * len(subtitle), semantically_unite(
-                list_brazilian_states_acronyms(
+            subtitle, "-" * len(subtitle), ut.semantically_unite(
+                ut.list_brazilian_states_acronyms(
                     states_list=estados_brasileiros), "ou")))
         return
 
-    if not is_web_connection_active():
+    if not ut.is_web_connection_active():
         print("ERRO: sem conexão à Internet.")
         return
 
@@ -71,42 +70,6 @@ def print_examples() -> None:
     print("\t", end="")
     print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
 
-def is_a_valid_fixed_length_acronym(
-    s: str, length: int, acronym_list: List[Dict[str, str]]) -> bool:
-
-    if len(s.strip()) != length:
-        return False
-    return any(i["acronym"] == s.strip().upper() for i in acronym_list)
-
-def is_web_connection_active() -> bool:
-    try:
-        response: req.Response = req.get(
-            url="https://www.google.com", timeout=5)
-        response.raise_for_status()
-        return True
-    except req.RequestException:
-        return False
-
-def semantically_unite(item_list: List[Union[Any, str]],
-    last_union: str="and", general_union: str=",") -> str:
-
-    result: str = ""
-    if len(item_list) == 1:
-        result = item_list[0].strip()
-    else:
-        for i in range(0, len(item_list)):
-            result += str(item_list[i])
-            if i == len(item_list) - 2:
-                result += f" {last_union} "
-            else:
-                result += f"{general_union} "
-    return result
-
-def list_brazilian_states_acronyms(
-    states_list: List[Dict[str, str]]) -> List[str]:
-
-    return [ f'{state["acronym"]} ({state["name"]})'
-            for state in states_list ]
 
 def condicao_previsao_do_tempo(
     cidade: str, estado: str, headless: bool=False) -> None:
@@ -117,7 +80,8 @@ def condicao_previsao_do_tempo(
     resultados_previsao_tempo: ResultSet = previsao_tempo_climatempo(
         cidade=cidade, estado=estado, headless=headless)
 
-    result_printer: ResultSetsPrinter = ResultSetsPrinter(margin=2)
+    result_printer: ResultSetsPrinter = ResultSetsPrinter(
+        margin=2, min_width=72)
 
     if resultados_condicao_tempo.get_num_of_results():
         result_printer.add_results(resultados_condicao_tempo)
