@@ -1,4 +1,5 @@
 import re
+import utils as ut
 from typing import Any, Dict, List
 
 class ResultSet:
@@ -7,8 +8,8 @@ class ResultSet:
         provider: str="Result set provider",
         title: str="Result set title") -> None:
 
-        self.title = re.sub(r"\s{2,}", " ", title.strip(), 0)
-        self.provider = re.sub(r"\s{2,}", " ", provider.strip(), 0)
+        self.title = ut.limit_empty_spaces(title.strip())
+        self.provider = ut.limit_empty_spaces(provider.strip())
         self.num_of_results: int = 0
         self.results: List[Dict[str, str]] = []
 
@@ -16,8 +17,8 @@ class ResultSet:
         if (not any(list(i.keys())[0] == key for i in self.results) \
             and key.strip() and value.strip()):
             self.results.append({
-                re.sub(r"\s{2,}", " ", key.strip(), 0):
-                re.sub(r"\s{2,}", " ", value.strip(), 0)})
+                ut.limit_empty_spaces(key.strip()):
+                ut.limit_empty_spaces(value.strip())})
             self.num_of_results += 1
             return True
         else:

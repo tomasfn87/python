@@ -243,7 +243,7 @@ def previsao_tempo_climatempo(
         browser.quit()
 
         comparacao: str = data[0]
-        previsao = ut.limit_empty_spaces(data[1])
+        previsao = data[1]
         tempMin = data[7]
         tempMax = data[8]
         precipitacao: str = data[10]
@@ -258,7 +258,7 @@ def previsao_tempo_climatempo(
         results.add_key_value("Temperatura mínima", f"{tempMin}C")
         results.add_key_value("Temperatura máxima", f"{tempMax}C")
         results.add_key_value("Comparação", comparacao)
-        results.add_key_value("Previsão", ut.limit_empty_spaces(previsao))
+        results.add_key_value("Previsão", previsao)
         results.add_key_value("Precipitação", precipitacao)
         results.add_key_value("Humidade mínima", umidadeMin)
         results.add_key_value("Humidade máxima", umidadeMax)
@@ -281,7 +281,7 @@ def previsao_tempo_climatempo(
     tempMin = data[2]
     tempMax = data[3]
     pluviosidade: str = data[4]
-    previsao = ut.limit_empty_spaces(data[5])
+    previsao = data[5]
     umidade: str = ""
     lua: str = ""
     nascerPorDoSol = ""
