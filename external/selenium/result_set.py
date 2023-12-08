@@ -1,4 +1,3 @@
-import re
 import utils as ut
 from typing import Any, Dict, List
 
@@ -8,7 +7,8 @@ class ResultSet:
         provider: str="Result set provider",
         title: str="Result set title") -> None:
 
-        self.title = ut.limit_empty_spaces(title.strip())
+        self.title = ut.remove_starting_empty_spaces(
+            ut.limit_empty_spaces(title))
         self.provider = ut.limit_empty_spaces(provider.strip())
         self.num_of_results: int = 0
         self.results: List[Dict[str, str]] = []
@@ -33,6 +33,11 @@ class ResultSet:
 
     def get_title(self: Any) -> str:
         return self.title
+
+    def set_title(self: Any, new_title: str) -> bool:
+        if len(ut.remove_starting_empty_spaces(new_title)):
+            self.title = new_title
+        return bool(ut.remove_starting_empty_spaces(new_title))
 
     def get_num_of_results(self: Any) -> int:
         return self.num_of_results
