@@ -24,3 +24,23 @@ def remove_empty_elements(arr: List[str]) -> np.ndarray:
 
 def limit_empty_spaces(text: str) -> str:
     return re.sub(r"\s{2,}", " ", text, 0)
+
+def splitlines_by_length(text, length):
+    words = text.split()
+    lines = []
+    current_line = ""
+
+    for word in words:
+        if len(current_line) + len(word) + bool(current_line):
+            if len(current_line) + len(word) + bool(current_line) <= length:
+                current_line += word + " "
+            else:
+                lines.append(current_line.strip())
+                current_line = word + " "
+        else:
+            current_line += word + " "
+
+    if current_line:
+        lines.append(current_line.strip())
+
+    return np.array(lines)
