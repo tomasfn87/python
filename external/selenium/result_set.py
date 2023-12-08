@@ -24,8 +24,8 @@ class ResultSet:
         else:
             print("Resultado não foi adicionado ", end="")
             print("(chave: {}, valor: {}).".format(
-                re.sub(r"\s{2,}", " ", key.strip(), 0),
-                re.sub(r"\s{2,}", " ", value.strip(), 0)))
+                ut.limit_empty_spaces(key.strip()),
+                ut.limit_empty_spaces(value.strip())))
             return False
 
     def get_provider(self: Any) -> str:
