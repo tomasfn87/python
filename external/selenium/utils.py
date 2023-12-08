@@ -1,6 +1,7 @@
 import numpy as np
 import re
-from typing import List
+import requests as req
+from typing import Any, Dict, List, Union
 
 def capitalize_all(text: str) -> str:
     if " " not in text:
@@ -18,12 +19,52 @@ def capitalize_all(text: str) -> str:
     result = np.char.add(" ", capitalized_words)
     return "".join(result).strip()
 
+def is_a_valid_fixed_length_acronym(
+    s: str, length: int, acronym_list: List[Dict[str, str]]) -> bool:
+
+    if len(s.strip()) != length:
+        return False
+    return any(i["acronym"] == s.strip().upper() for i in acronym_list)
+
+def is_web_connection_active() -> bool:
+    try:
+        response: req.Response = req.get(
+            url="https://www.google.com", timeout=5)
+        response.raise_for_status()
+        return True
+    except req.RequestException:
+        return False
+
+def limit_empty_spaces(text: str) -> str:
+    return re.sub(r"\s{2,}", " ", text, 0)
+
+def list_brazilian_states_acronyms(
+    states_list: List[Dict[str, str]]) -> List[str]:
+
+    return [ f'{state["acronym"]} ({state["name"]})'
+            for state in states_list ]
+
 def remove_empty_elements(arr: List[str]) -> np.ndarray:
     clean_arr = np.array([x for x in arr if x != ""], dtype=np.str_)
     return clean_arr
 
-def limit_empty_spaces(text: str) -> str:
-    return re.sub(r"\s{2,}", " ", text, 0)
+def remove_starting_empty_spaces(text: str) -> str:
+    return re.sub(r"^\s+", "", text, 0)
+
+def semantically_unite(item_list: List[Union[Any, str]],
+    last_union: str="and", general_union: str=",") -> str:
+
+    result: str = ""
+    if len(item_list) == 1:
+        result = item_list[0].strip()
+    else:
+        for i in range(0, len(item_list)):
+            result += str(item_list[i])
+            if i == len(item_list) - 2:
+                result += f" {last_union} "
+            else:
+                result += f"{general_union} "
+    return result
 
 def splitlines_by_length(text, length):
     words = text.split()
