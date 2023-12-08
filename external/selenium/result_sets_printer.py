@@ -48,14 +48,14 @@ class ResultSetsPrinter:
             max_header_length += len(p)
 
         for i in range(len(r_list)):
-            provider = "{}{}{}".format(
+            provider: str = "{}{}{}".format(
                 header_parts[0],
                 r_list[i].get_provider(),
                 header_parts[1])
 
-            union = header_parts[2]
+            union: str = header_parts[2]
 
-            title = "{}{}{}".format(
+            title: str = "{}{}{}".format(
                 header_parts[3],
                 r_list[i].get_title(),
                 "{}{}".format(
@@ -67,9 +67,9 @@ class ResultSetsPrinter:
                        + len(header_parts[4]))),
                    header_parts[4]))
 
-            header = f"{provider}{union}{title}"
+            header: str = f"{provider}{union}{title}"
 
-            frame = "{}{}{}{}{}".format(
+            frame: str = "{}{}{}{}{}".format(
                 "┌",
                 "─" * (len(provider) - 1),
                 "┬",
@@ -90,8 +90,8 @@ class ResultSetsPrinter:
 
             # Display Results
             for j in range(len(r_list[i].results)):
-                key   = list(r_list[i].results[j].keys())[0]
-                value = list(r_list[i].results[j].values())[0]
+                key  : str = list(r_list[i].results[j].keys())[0]
+                value: str = list(r_list[i].results[j].values())[0]
                 print(f"{key.rjust(padding)}: {value}")
 
             # Finish impression job
