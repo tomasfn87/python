@@ -15,12 +15,16 @@ class ResultSet:
     def add_key_value(self: Any, key: str, value: str) -> bool:
         if (not any(list(i.keys())[0] == key for i in self.results) \
             and key.strip() and value.strip()):
-            self.results.append({key: value})
+            self.results.append({
+                re.sub(r"\s{2,}", " ", key.strip(), 0):
+                re.sub(r"\s{2,}", " ", value.strip(), 0)})
             self.num_of_results += 1
             return True
         else:
             print("Resultado não foi adicionado ", end="")
-            print(f"(chave: {key}, valor: {value}).")
+            print("(chave: {}, valor: {}).".format(
+                re.sub(r"\s{2,}", " ", key.strip(), 0),
+                re.sub(r"\s{2,}", " ", value.strip(), 0)))
             return False
 
     def get_provider(self: Any) -> str:
