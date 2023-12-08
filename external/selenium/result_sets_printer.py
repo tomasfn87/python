@@ -4,11 +4,17 @@ import datetime as dt
 import utils as ut
 
 class ResultSetsPrinter:
-    def __init__(self: Any, margin: int) -> None:
+    def __init__(self: Any, margin: int, min_width: int) -> None:
         if margin < 1:
             self.margin = 2
         else:
             self.margin = margin
+
+        if min_width < 3:
+            self.min_width = 79
+        else:
+            self.min_width = min_width
+
         self.num_of_results: int = 0
         self.result_list: List[ResultSet] = []
 
@@ -16,6 +22,9 @@ class ResultSetsPrinter:
         if results.get_num_of_results():
             self.result_list.append(results)
             self.num_of_results += results.get_num_of_results()
+            
+    def get_min_width(self: Any) -> int:
+        return self.min_width
 
     def get_num_of_results(self: Any) -> int:
         return self.num_of_results
@@ -39,54 +48,65 @@ class ResultSetsPrinter:
                 padding = r.get_max_key_length()
         padding += self.margin
 
-        left           : str = "│   "
-        left_to_middle : str = "  "
-        middle         : str = "│"
-        right_to_middle: str = "  "
-        right          : str = "   │"
+        left         : str = "│   "
+        before_middle: str = "  "
+        middle       : str = "│"
+        after_middle : str = "  "
+        right        : str = "   │"
 
-        header_parts: List[str] = [
-            left,
-            left_to_middle,
-            middle,
-            right_to_middle,
-            right
-        ]
-        if not len(header_parts[2]) == 1:
-            header_parts[2] = header_parts[2][0] \
-                if header_parts[2] else " "
+        if not len(middle) == 1:
+            middle = middle[0] if middle else " "
 
-        max_header_length: int = self.get_max_header_length()
-        for p in header_parts:
-            max_header_length += len(p)
+        max_header_length: int = self.get_max_header_length() \
+            + len(left) \
+            + len(before_middle) \
+            + len(middle) \
+            + len(after_middle) \
+            + len(right)
+            
+        # Fix titles that are too small
+        for r in r_list:
+            header_length = len(left) \
+                + len(before_middle) \
+                + len(middle) \
+                + len(after_middle) \
+                + len(right) \
+                + len(r.get_provider()) \
+                + len(r.get_title())
+            
+            if header_length < self.get_min_width():
+                r.set_title("{}{}".format(
+                    r.get_title(),
+                    " " * (self.get_min_width() - header_length)))
+        
+        if self.get_min_width() > max_header_length:
+            max_header_length = self.get_min_width()
 
         for i in range(len(r_list)):
             provider: str = "{}{}{}".format(
-                header_parts[0],
+                left,
                 r_list[i].get_provider(),
-                header_parts[1])
-
-            union: str = header_parts[2]
+                before_middle)
 
             title: str = "{}{}{}".format(
-                header_parts[3],
+                after_middle,
                 r_list[i].get_title(),
                 "{}{}".format(
                     " " * (max_header_length - (
                         len(provider)
-                        + len(union)
-                        + len(header_parts[3])
+                        + len(middle)
+                        + len(after_middle)
                         + len(r_list[i].get_title())
-                        + len(header_parts[4]))),
-                    header_parts[4]))
+                        + len(right))),
+                    right))
 
-            header: str = f"{provider}{union}{title}"
+            header: str = f"{provider}{middle}{title}"
 
             frame: str = "{}{}{}{}{}".format(
                 "┌",
                 "─" * (len(provider) - 1),
                 "┬",
-                "─" * (max_header_length - (len(provider) + len(union)) - 1),
+                "─" * (max_header_length - (len(provider) + len(middle)) - 1),
                 "┐")
 
             # Start impression job
@@ -103,7 +123,7 @@ class ResultSetsPrinter:
             print("\n{}\n{}".format(header, frame
                 .replace("┬", "┴").replace("┌", "└").replace("┐", "┘")))
 
-            union = ": "
+            union: str = ": "
 
             # Maximum line size is defined by provider and title lengths
             max_result_length: int = max_header_length \
