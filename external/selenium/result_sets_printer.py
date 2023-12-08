@@ -1,6 +1,7 @@
 from result_set import ResultSet
 from typing import Any, List
 import datetime as dt
+import utils as ut
 
 class ResultSetsPrinter:
     def __init__(self: Any, margin: int) -> None:
@@ -38,7 +39,19 @@ class ResultSetsPrinter:
                 padding = r.get_max_key_length()
         padding += self.margin
 
-        header_parts: List[str] = ["│   ", "  ", "│", "  ", "   │"]
+        left           : str = "│   "
+        left_to_middle : str = "  "
+        middle         : str = "│"
+        right_to_middle: str = "  "
+        right          : str = "   │"
+
+        header_parts: List[str] = [
+            left,
+            left_to_middle,
+            middle,
+            right_to_middle,
+            right
+        ]
         if not len(header_parts[2]) == 1:
             header_parts[2] = header_parts[2][0] \
                 if header_parts[2] else " "
@@ -59,13 +72,13 @@ class ResultSetsPrinter:
                 header_parts[3],
                 r_list[i].get_title(),
                 "{}{}".format(
-                   " " * (max_header_length - (
-                       len(provider)
-                       + len(union)
-                       + len(header_parts[3])
-                       + len(r_list[i].get_title())
-                       + len(header_parts[4]))),
-                   header_parts[4]))
+                    " " * (max_header_length - (
+                        len(provider)
+                        + len(union)
+                        + len(header_parts[3])
+                        + len(r_list[i].get_title())
+                        + len(header_parts[4]))),
+                    header_parts[4]))
 
             header: str = f"{provider}{union}{title}"
 
@@ -78,21 +91,42 @@ class ResultSetsPrinter:
 
             # Start impression job
             if i == 0:
-                # First Result Set
+                # Frame for first Result Set
                 print(frame
                     .replace("─", "═").replace("┬", "╤")
                     .replace("┌", "╒").replace("┐", "╕"), end="")
             else:
-                # Remaining Result Sets
+                # Frame for remaining Result Sets
                 print(frame, end="")
+
+            # Display header inside the frame
             print("\n{}\n{}".format(header, frame
                 .replace("┬", "┴").replace("┌", "└").replace("┐", "┘")))
 
-            # Display Results
+            union = ": "
+
+            # Maximum line size is defined by provider and title lengths
+            max_result_length: int = max_header_length \
+                - (padding + len(union)) - 1
+
+            # Display the actual results (key-value pairs)
             for j in range(len(r_list[i].results)):
                 key  : str = list(r_list[i].results[j].keys())[0]
                 value: str = list(r_list[i].results[j].values())[0]
-                print(f"{key.rjust(padding)}: {value}")
+
+                print(f"{key.rjust(padding)}{union}", end="")
+
+                # Case when values need more than one line to be displayed
+                if len(value) > max_result_length:
+                    lines: List[str] = \
+                        ut.splitlines_by_length(value, max_result_length)
+                    print(f"{lines[0]}")
+                    for k in range(1, len(lines)):
+                        print("{}{}".format(
+                            " " * (padding + len(union)), lines[k]))
+                # Case when values need only one line to be displayed
+                else:
+                    print(value)
 
             # Finish impression job
             if i is len(self.result_list) - 1:
