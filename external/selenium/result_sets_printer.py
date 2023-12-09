@@ -31,7 +31,7 @@ class ResultSetsPrinter:
     def get_num_of_results(self: Any) -> int:
         return self.num_of_results
 
-    def get_max_header_length(self: Any) -> int:
+    def get_base_header_length(self: Any) -> int:
         max_header_length: int = 0
         for i in self.result_list:
             header_length = len(i.get_provider()) + len(i.get_title())
@@ -59,7 +59,7 @@ class ResultSetsPrinter:
         if not len(middle) == 1:
             middle = middle[0] if middle else " "
 
-        max_header_length: int = self.get_max_header_length() \
+        max_header_length: int = self.get_base_header_length() \
             + len(left) \
             + len(before_middle) \
             + len(middle) \
