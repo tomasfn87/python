@@ -10,7 +10,7 @@ from result_sets_printer import ResultSetsPrinter
 from selenium import webdriver as wd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from typing import Dict, List
+from typing import Any, Dict, List
 
 def main() -> None:
     inputs: List[str] = sys.argv
@@ -50,7 +50,7 @@ def main() -> None:
         return
 
     if len(inputs) == 4:
-        headless = inputs[3]
+        headless: str = inputs[3]
         if re.match("(?i)^(true|false)$", headless):
             if re.match("(?i)true", headless):
                 condicao_previsao_do_tempo(
@@ -69,7 +69,6 @@ def print_examples() -> None:
     print("\n - Exemplo 3:")
     print("\t", end="")
     print(r"python3 previsao_do_tempo_brasil.py rio\ de\ janeiro rj")
-
 
 def condicao_previsao_do_tempo(
     cidade: str, estado: str, headless: bool=False) -> None:
@@ -129,36 +128,43 @@ def condicao_tempo_accuweather(
         tempoAtualSensacaoValor: str = browser.find_element(
             By.CSS_SELECTOR, ".current-weather-card div.phrase").text
 
-        tempoAtualExtraRealFeelData = np.char.splitlines([browser.find_element(
-            By.CSS_SELECTOR, ".current-weather-card div.current-weather-extra"
-                ).text])[0]
+        tempoAtualExtraRealFeelData: np.ndarray[Any, np.dtype[np.str_]] = \
+            np.char.splitlines([browser.find_element(
+                By.CSS_SELECTOR,
+                ".current-weather-card div.current-weather-extra").text])[0]
 
-        detalhes = np.char.splitlines([browser.find_element(
-            By.CSS_SELECTOR, ".current-weather-card .current-weather-details"
-                ).text])[0]
+        detalhes: np.ndarray[Any, np.dtype[np.str_]] = np.char.splitlines(
+            [browser.find_element(
+                By.CSS_SELECTOR,
+                ".current-weather-card .current-weather-details").text])[0]
 
-        tempoAtualExtraRealFeelTitulo: str = np.char.split(
+        tempoAtualRealFeelTitulo: str = np.char.split(
             [tempoAtualExtraRealFeelData[0]])[0][0]
-        tempoAtualExtraRealFeelValor: str = np.char.split(
+
+        tempoAtualRealFeelValor: str = np.char.split(
             [tempoAtualExtraRealFeelData[0]])[0][1]
 
-        tempoAtualExtraRealFeelShadeTitulo: str = ""
-        tempoAtualExtraRealFeelShadeValor: str = ""
+        tempoAtualRealFeelShadeTitulo: str = ""
+        tempoAtualRealFeelShadeValor: str = ""
 
         if len(tempoAtualExtraRealFeelData) == 2:
-            rFShade = np.char.split([tempoAtualExtraRealFeelData[1]])[0]
+            rFShade: np.ndarray[Any, np.dtype[np.str_]] = \
+                np.char.split([tempoAtualExtraRealFeelData[1]])[0]
             tempoAtualExtraRealFeelShadeTitulo = f"{rFShade[0]} {rFShade[1]}"
             tempoAtualExtraRealFeelShadeValor = rFShade[2]
 
-        results.add_key_value(tempoAtualTitulo,
+        results.add_key_value(
+            tempoAtualTitulo,
             f"{tempoAtualValor} ({tempoAtualSensacaoValor})")
 
-        results.add_key_value(tempoAtualExtraRealFeelTitulo,
-            f"{tempoAtualExtraRealFeelValor}C")
+        results.add_key_value(
+            tempoAtualRealFeelTitulo,
+            f"{tempoAtualRealFeelValor}C")
 
-        if tempoAtualExtraRealFeelShadeTitulo \
-            and tempoAtualExtraRealFeelShadeValor:
-            results.add_key_value(tempoAtualExtraRealFeelShadeTitulo,
+        if tempoAtualRealFeelShadeTitulo \
+            and tempoAtualRealFeelShadeValor:
+            results.add_key_value(
+                tempoAtualRealFeelShadeTitulo,
                 f"{tempoAtualExtraRealFeelShadeValor}C")
 
         for i in range(len(detalhes)):
@@ -202,7 +208,8 @@ def previsao_tempo_climatempo(
 
     try:
         data = np.char.splitlines([browser.find_element(
-            By.CSS_SELECTOR, 'div[class="card -no-top -no-bottom"]').text])[0]
+            By.CSS_SELECTOR,
+            'div[class="card -no-top -no-bottom"]').text])[0]
 
         browser.quit()
 
@@ -226,16 +233,19 @@ def previsao_tempo_climatempo(
         results.add_key_value("Precipitação", precipitacao)
         results.add_key_value("Humidade mínima", umidadeMin)
         results.add_key_value("Humidade máxima", umidadeMax)
+
         if nascerPorDoSol:
             results.add_key_value("Nascer/pôr do sol",
                 nascerPorDoSol.replace(" ", " / "))
+
         return results
     except:
         pass
 
     try:
         data = ut.remove_empty_elements(np.char.splitlines(
-            [browser.find_element(By.CSS_SELECTOR,
+            [browser.find_element(
+                By.CSS_SELECTOR,
                 "#first-block-of-days section").text])[0])
     except:
         return ResultSet()
