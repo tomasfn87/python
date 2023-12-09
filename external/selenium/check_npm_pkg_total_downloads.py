@@ -1,56 +1,66 @@
 import time as t
 import datetime as dt
-from selenium import webdriver  # control the browse
-from selenium.webdriver.common.by import By  # access HTML elements
+from selenium import webdriver as wd
+from selenium.webdriver.common.by import By
+from typing import Any, List
 
 class NpmPackage:
-    def __init__(self, package_name, publication_dateDMY):
-        self.pname = package_name
-        self.pdateDMY = publication_dateDMY
+    def __init__(
+        self:Any, package_name: str, publication_dateDMY: str) -> None:
 
-    def show_total_downloads(self, show=True):
-        todayYMD = str(dt.date.today())
-        todayDMY = f"{todayYMD[8:10]}-{todayYMD[5:7]}-{todayYMD[0:4]}"
+        self.pName = package_name
+        self.pDateDMY = publication_dateDMY
 
-        package_info = self.pname.split("/")
-        organization, package_name = "", ""
+    def show_total_downloads(self, show=True) -> int|None:
+        todayYMD:str = str(dt.date.today())
+        todayDMY:str = "{}-{}-{}".format(
+            todayYMD[8:10], todayYMD[5:7], todayYMD[0:4])
+
+        package_info:List[str] = self.pName.split("/")
+        organization: str = ""
+        package_name: str = ""
 
         if len(package_info) == 1:
             package_name = package_info[0]
         elif len(package_info) == 2:
             organization, package_name = package_info[0], package_info[1]
 
-        pdateYMD = self.pdateDMY.split("-")
-        pdateYMD = f"{pdateYMD[2]}-{pdateYMD[1]}-{pdateYMD[0]}"
-        
-        #print(f"Publication Date DMY: {self.pdateDMY}")
-        #print(f"Publication Date YMD: {pdateYMD}")
+        lPDateYMD: List[str] = self.pDateDMY.split("-")
+        pDateYMD: str = f"{lPDateYMD[2]}-{lPDateYMD[1]}-{lPDateYMD[0]}"
 
-        npm_stat_url = "https://npm-stat.com/charts.html?package="
-        if organization:
-            npm_stat_url += f"{organization.replace('@', '%40')}%2F"
-        npm_stat_url += f"{package_name}&from={pdateYMD}&to={todayYMD}"
+        try:
+            npm_stat_url: str = "https://npm-stat.com/charts.html?package="
+            if organization:
+                npm_stat_url += f"{organization.replace('@', '%40')}%2F"
+            npm_stat_url += f"{package_name}&from={pDateYMD}&to={todayYMD}"
 
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        browser = webdriver.Chrome(options=options)
-        #browser = webdriver.Chrome()
-        browser.get(npm_stat_url)
-        
-        t.sleep(1)
-        browser.implicitly_wait(1)
-        total_downloads = browser.find_elements(By.TAG_NAME, 'td')[-1].text
-        browser.quit()
+            options: wd.ChromeOptions = wd.ChromeOptions()
+            options.add_argument('--headless')
+            browser: wd.Chrome = wd.Chrome(options=options)
+            browser.get(npm_stat_url)
 
-        if show == True:
-            print(f"package {self.pname}'s")
-            print(f"Total downloads from {self.pdateDMY.replace('-', '/')}")
-            print(f"                  to {todayDMY.replace('-', '/')}: {total_downloads}")
+            t.sleep(1)
+            browser.implicitly_wait(1)
 
-        return int(total_downloads.replace(",", ""))
+            total_downloads: str = browser.find_elements(
+                By.TAG_NAME, 'td')[-1].text
+            browser.quit()
 
-pkg = NpmPackage(
+            if show == True:
+                print(f"package {self.pName}'s")
+                print("Total downloads from {}".format(
+                    self.pDateDMY.replace('-', '/')))
+                print("                  to {}: {}".format(
+                    todayDMY.replace('-', '/'), total_downloads))
+
+            return int(total_downloads.replace(",", ""))
+        except:
+            print("ERRO: não foi possível recuperar os dados. ", end="")
+            print("Tente novamente mais tarde.")
+            return None
+
+pkg: NpmPackage = NpmPackage(
     package_name="@nighly/sort-object-array-by-property",
     publication_dateDMY="02-02-2022")
 
-print(pkg.show_total_downloads())
+pkg.show_total_downloads()
