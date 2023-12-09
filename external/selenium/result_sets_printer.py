@@ -1,6 +1,7 @@
 from result_set import ResultSet
 from typing import Any, List
 import datetime as dt
+import numpy as np
 import utils as ut
 
 class ResultSetsPrinter:
@@ -22,7 +23,7 @@ class ResultSetsPrinter:
         if results.get_num_of_results():
             self.result_list.append(results)
             self.num_of_results += results.get_num_of_results()
-            
+
     def get_min_width(self: Any) -> int:
         return self.min_width
 
@@ -63,7 +64,7 @@ class ResultSetsPrinter:
             + len(middle) \
             + len(after_middle) \
             + len(right)
-            
+
         # Fix titles that are too small
         for r in r_list:
             header_length = len(left) \
@@ -73,12 +74,12 @@ class ResultSetsPrinter:
                 + len(right) \
                 + len(r.get_provider()) \
                 + len(r.get_title())
-            
+
             if header_length < self.get_min_width():
                 r.set_title("{}{}".format(
                     r.get_title(),
                     " " * (self.get_min_width() - header_length)))
-        
+
         if self.get_min_width() > max_header_length:
             max_header_length = self.get_min_width()
 
@@ -138,7 +139,7 @@ class ResultSetsPrinter:
 
                 # Case when values need more than one line to be displayed
                 if len(value) > max_result_length:
-                    lines: List[str] = \
+                    lines: np.ndarray[Any, np.dtype[np.str_]] = \
                         ut.splitlines_by_length(value, max_result_length)
                     print(f"{lines[0]}")
                     for k in range(1, len(lines)):
