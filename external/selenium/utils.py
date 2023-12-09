@@ -1,7 +1,7 @@
 import numpy as np
 import re
 import requests as req
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 def capitalize_all(text: str) -> str:
     if " " not in text:
@@ -39,19 +39,22 @@ def limit_empty_spaces(text: str) -> str:
     return re.sub(r"\s{2,}", " ", text, 0)
 
 def list_brazilian_states_acronyms(
-    states_list: List[Dict[str, str]]) -> List[str]:
+    states_list: List[Dict[str, str]]) -> np.ndarray[Any, np.dtype[np.str_]]:
 
-    return [ f'{state["acronym"]} ({state["name"]})'
-            for state in states_list ]
+    return np.array([ f'{state["acronym"]} ({state["name"]})'
+            for state in states_list ])
 
-def remove_empty_elements(arr: List[str]) -> np.ndarray:
-    clean_arr = np.array([x for x in arr if x != ""], dtype=np.str_)
+def remove_empty_elements(
+    arr: List[str]) -> np.ndarray[Any, np.dtype[np.str_]]:
+
+    clean_arr: np.ndarray[Any, np.dtype[np.str_]] = \
+        np.array([x for x in arr if x != ""], dtype=np.str_)
     return clean_arr
 
 def remove_starting_empty_spaces(text: str) -> str:
     return re.sub(r"^\s+", "", text, 0)
 
-def semantically_unite(item_list: List[Union[Any, str]],
+def semantically_unite(item_list: np.ndarray[Any, np.dtype[np.str_]],
     last_union: str="and", general_union: str=",") -> str:
 
     result: str = ""
@@ -60,15 +63,17 @@ def semantically_unite(item_list: List[Union[Any, str]],
     else:
         for i in range(0, len(item_list)):
             result += str(item_list[i])
+            if i == len(item_list) - 1:
+                break
             if i == len(item_list) - 2:
                 result += f" {last_union} "
             else:
                 result += f"{general_union} "
     return result
 
-def splitlines_by_length(text, length):
-    words = text.split()
-    lines = []
+def splitlines_by_length(text, length) -> np.ndarray[Any, np.dtype[np.str_]]:
+    words: np.ndarray[Any, np.dtype[np.str_]] = np.char.split([text])[0]
+    lines: np.ndarray[Any, np.dtype[np.str_]] = np.array([], dtype="S")
     current_line = ""
 
     for word in words:
@@ -76,12 +81,12 @@ def splitlines_by_length(text, length):
             if len(current_line) + len(word) + bool(current_line) <= length:
                 current_line += word + " "
             else:
-                lines.append(current_line.strip())
+                lines = np.append(lines, current_line.strip())
                 current_line = word + " "
         else:
             current_line += word + " "
 
     if current_line:
-        lines.append(current_line.strip())
+        lines = np.append(lines, current_line.strip())
 
-    return np.array(lines)
+    return lines
