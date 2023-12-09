@@ -6,17 +6,20 @@ from typing import Any, Dict, List
 def capitalize_all(text: str) -> str:
     if " " not in text:
         return text.capitalize()
-    exclude = np.array(["de", "da", "do", "dos", "das"], dtype="S")
-    words = np.char.split([text])
-    for w in words[0]:
+    exclude: np.ndarray[Any, np.dtype[np.str_]] = \
+        np.array(["de", "da", "do", "dos", "das"], dtype="S")
+    words: np.ndarray[Any, np.dtype[np.str_]] = np.char.split([text])[0]
+    for w in words:
         w = w.lower()
-    capitalized_words = np.array([], dtype="S")
-    for w in words[0]:
+    capitalized_words: np.ndarray[Any, np.dtype[np.str_]] = \
+        np.array([], dtype="S")
+    for w in words:
         if w in exclude or w[0:2] == "d'":
             capitalized_words = np.append(capitalized_words, w)
         else:
             capitalized_words = np.append(capitalized_words, w.capitalize())
-    result = np.char.add(" ", capitalized_words)
+    result: np.ndarray[Any, np.dtype[np.str_]] = \
+        np.char.add(" ", capitalized_words)
     return "".join(result).strip()
 
 def is_a_valid_fixed_length_acronym(
@@ -42,7 +45,7 @@ def list_brazilian_states_acronyms(
     states_list: List[Dict[str, str]]) -> np.ndarray[Any, np.dtype[np.str_]]:
 
     return np.array([ f'{state["acronym"]} ({state["name"]})'
-            for state in states_list ])
+            for state in states_list ], dtype=np.str_)
 
 def remove_empty_elements(
     arr: List[str]) -> np.ndarray[Any, np.dtype[np.str_]]:
