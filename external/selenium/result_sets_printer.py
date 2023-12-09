@@ -19,10 +19,11 @@ class ResultSetsPrinter:
         self.num_of_results: int = 0
         self.result_list: List[ResultSet] = []
 
-    def add_results(self: Any, results: ResultSet):
+    def add_results(self: Any, results: ResultSet) -> bool:
         if results.get_num_of_results():
             self.result_list.append(results)
             self.num_of_results += results.get_num_of_results()
+        return bool(results.get_num_of_results())
 
     def get_min_width(self: Any) -> int:
         return self.min_width
@@ -38,12 +39,12 @@ class ResultSetsPrinter:
                 max_header_length = header_length
         return max_header_length
 
-    def print_all(self: Any):
+    def print_all(self: Any) -> None:
         print(f" ->  {str(dt.datetime.now())[0:19]}")
 
-        padding: int = 0
         r_list = self.result_list
 
+        padding: int = 0
         for r in r_list:
             if r.get_max_key_length() > padding:
                 padding = r.get_max_key_length()
@@ -141,7 +142,7 @@ class ResultSetsPrinter:
                 if len(value) > max_result_length:
                     lines: np.ndarray[Any, np.dtype[np.str_]] = \
                         ut.splitlines_by_length(value, max_result_length)
-                    print(f"{lines[0]}")
+                    print(lines[0])
                     for k in range(1, len(lines)):
                         print("{}{}".format(
                             " " * (padding + len(union)), lines[k]))
