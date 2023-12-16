@@ -74,7 +74,9 @@ def semantically_unite(item_list: np.ndarray[Any, np.dtype[np.str_]],
                 result += f"{general_union} "
     return result
 
-def splitlines_by_length(text, length) -> np.ndarray[Any, np.dtype[np.str_]]:
+def splitlines_by_length(
+    text: str, length: int) -> np.ndarray[Any, np.dtype[np.str_]]:
+
     words: np.ndarray[Any, np.dtype[np.str_]] = np.char.split([text])[0]
     lines: np.ndarray[Any, np.dtype[np.str_]] = np.array([], dtype="S")
     current_line = ""
